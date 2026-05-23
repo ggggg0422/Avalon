@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿瓦隆網頁小幫手</title>
+    <style>
+        :root {
+            --panel-bg: rgba(22, 33, 62, 0.9);
+            --text-color: #e94560;
+            --good-color: #4da6ff;
+            --evil-color: #ff4d4d;
+            --gold: #d4af37;
+            --purple: #b366ff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(rgba(10, 15, 25, 0.8), rgba(10, 15, 25, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .screen.active {
+            display: block;
+        }
+        h1, h2, h3 { color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        button {
+            background-color: var(--text-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        button:hover { background-color: #c8324a; transform: translateY(-2px); }
+        .btn-gold { background-color: var(--gold); color: #1a1a2e; }
+        .btn-gold:hover { background-color: #b5952f; }
+        .btn-danger { background-color: transparent; border: 2px solid var(--evil-color); color: var(--evil-color); margin-top: 30px;}
+        .btn-danger:hover { background-color: var(--evil-color); color: white; }
+        
+        .role-list { text-align: left; margin-bottom: 20px; }
+        .role-item { margin: 5px 0; font-size: 16px; }
+        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: rgba(15, 23, 42, 0.8);
+            color: white;
+            border: 1px solid var(--gold);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #setup-error { color: var(--evil-color); font-weight: bold; margin: 10px 0; min-height: 20px; }
+
+        /* ====== 3D 翻牌動畫 CSS ====== */
+        .card-container {
+            perspective: 1000px; 
+            border: none;
+            padding: 0;
+            margin: 20px auto;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+            background-color: transparent;
+            -webkit-touch-callout: none;
+            width: 280px; 
+            height: 392px; 
+            border-radius: 15px;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        .card-back {
+            background-color: transparent;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-front {
+            background-image: url('https://i.postimg.cc/0QvPKsGH/background.jpg');
+            background-size: cover;
+            background-position: center;
+            transform: rotateY(180deg);
+            box-sizing: border-box;
+            border: none; 
+            display: block; 
+            position: relative; 
+            padding: 0; 
+        }
+
+        #card-back-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .card-back .instruction {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+        }
+        
+        /* 角色名稱定位 - 位於星星下沿 */
+        #player-role-name {
+            margin: 0;
+            font-size: 32px; 
+            position: absolute;
+            top: 55px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
+
+        /* 角色圖案定位 - 中間圓圈 (已放大120%至156px) */
+        .role-img {
+            width: 156px; 
+            height: 156px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            object-fit: contain; 
+            display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            background-color: #222;
+            pointer-events: none; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            margin: 0; 
+        }
+
+        /* 角色資訊定位 - 下面文字，AVALON上沿 */
+        #player-info-text { 
+            font-size: 16px; 
+            line-height: 1.5; 
+            background: rgba(0,0,0,0.75); 
+            padding: 8px 10px; 
+            border-radius: 8px; 
+            box-sizing: border-box;
+            position: absolute; 
+            bottom: 45px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            margin: 0; 
+            width: 85%; 
+        }
+        
+        .final-reveal-item {
+            background: rgba(34, 34, 34, 0.9);
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setup-screen" class="screen active">
+        <h1 style="color: #B58252;">阿瓦隆小幫手</h1>
+        
+        <div class="role-list">
+            <h3>1. 選擇遊戲人數</h3>
+            <select id="player-count">
+                <option value="5">5 人局 (3正義 2邪惡)</option>
+                <option value="6">6 人局 (4正義 2邪惡)</option>
+                <option value="7">7 人局 (4正義 3邪惡)</option>
+                <option value="8">8 人局 (5正義 3邪惡)</option>
+                <option value="9">9 人局 (5正義 4邪惡)</option>
+                <option value="10" selected>10 人局 (6正義 4邪惡)</option>
+            </select>
+
+            <h3>2. 選擇特殊角色</h3>
+            <p style="font-size: 12px; color: #ccc;">空位將自動補齊一般忠臣或爪牙。</p>
+            <label class="role-item good"><input type="checkbox" id="role-merlin" checked> 梅林 (正義)</label><br>
+            <label class="role-item good"><input type="checkbox" id="role-percival" checked> 派西維爾 (正義)</label><br>
+            <label class="role-item good"><input type="checkbox" id="role-lizakang"> 李砸康 (正義)</label><br>
+            <label class="role-item evil"><input type="checkbox" id="role-assassin" checked> 刺客 (邪惡)</label><br>
+            <label class="role-item evil"><input type="checkbox" id="role-morgana" checked> 莫甘娜 (邪惡)</label><br>
+            <label class="role-item evil"><input type="checkbox" id="role-mordred" checked> 莫德雷德 (邪惡)</label><br>
+            <label class="role-item evil"><input type="checkbox" id="role-oberon" checked> 奧伯倫 (邪惡)</label><br>
+        </div>
+        
+        <div id="setup-error"></div>
+        <button class="btn-gold" onclick="startGame()">開始分配角色</button>
+    </div>
+
+    <div id="pass-screen" class="screen">
+        <h2 id="current-player-title">玩家 1 請接過手機</h2>
+        <p>確認旁人沒有偷看後，點擊卡牌查看身分</p>
+        
+        <div class="card-container" id="reveal-card">
+            <div class="card-inner" id="card-inner">
+                <div class="card-face card-back">
+                    <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
+                    <div class="instruction">👆 點擊翻開</div>
+                </div>
+                <div class="card-face card-front" id="card-content">
+                    <h2 id="player-role-name">角色名稱</h2>
+                    <img id="player-role-img" class="role-img" src="" alt="角色圖片">
+                    <div id="player-info-text">你的專屬資訊將顯示於此。</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width: 100%; box-sizing: border-box;">我看完了，換下一位</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <h2 style="margin-top: 40px; margin-bottom: 40px; line-height: 1.5;">所有玩家已確認身分<br>遊戲開始！</h2>
+
+        <button class="btn-gold" onclick="location.reload()" style="margin-bottom: 20px;">重新一局</button>
+        <br>
+        <button class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
+
+        <div id="final-reveal-area" style="display: none; margin-top: 30px;">
+            <h3>真實身分揭曉</h3>
+            <div id="final-reveal-list" style="text-align: left;"></div>
+        </div>
+    </div>
+
+    <script>
+        const preloadedBg = new Image();
+        preloadedBg.src = "https://i.postimg.cc/0QvPKsGH/background.jpg";
+
+        const roleData = {
+            merlin: { name: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
+            percival: { name: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
+            lizakang: { name: "李砸康", isEvil: false, img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
+            servant: { name: "亞瑟的忠臣", isEvil: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
+            assassin: { name: "刺客", isEvil: true, img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
+            morgana: { name: "莫甘娜", isEvil: true, img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
+            mordred: { name: "莫德雷德", isEvil: true, img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
+            oberon: { name: "奧伯倫", isEvil: true, img: "https://i.postimg.cc/fLYv319B/1.jpg" },
+            minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
+        };
+
+        Object.values(roleData).forEach(role => {
+            const img = new Image();
+            img.src = role.img;
+        });
+
+        const rules = {
+            5: { good: 3, evil: 2 },
+            6: { good: 4, evil: 2 },
+            7: { good: 4, evil: 3 },
+            8: { good: 5, evil: 3 },
+            9: { good: 5, evil: 4 },
+            10: { good: 6, evil: 4 }
+        };
+
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isTransitioning = false; 
+
+        function startGame() {
+            const errorEl = document.getElementById('setup-error');
+            errorEl.innerText = "";
+            currentPlayerIndex = 0; 
+            players = [];
+
+            const playerCount = parseInt(document.getElementById('player-count').value);
+            const ratio = rules[playerCount];
+
+            let goodRoles = [];
+            let evilRoles = [];
+
+            if(document.getElementById('role-merlin').checked) goodRoles.push('merlin');
+            if(document.getElementById('role-percival').checked) goodRoles.push('percival');
+            if(document.getElementById('role-lizakang').checked) goodRoles.push('lizakang');
+            if(document.getElementById('role-assassin').checked) evilRoles.push('assassin');
+            if(document.getElementById('role-morgana').checked) evilRoles.push('morgana');
+            if(document.getElementById('role-mordred').checked) evilRoles.push('mordred');
+            if(document.getElementById('role-oberon').checked) evilRoles.push('oberon');
+
+            if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
+                errorEl.innerText = `⚠️ 無法開始：${playerCount} 人局的上限是 ${ratio.good} 名正義與 ${ratio.evil} 名邪惡。請調整特殊角色數量！`;
+                return;
+            }
+
+            if(goodRoles.length === 0 && ratio.good > 0) {
+                 if(!confirm("⚠️ 警告：目前正義方沒有任何特殊角色(如梅林、李砸康)，遊戲可能變得極難。確定要開始嗎？")) {
+                     return;
+                 }
+            }
+
+            while(goodRoles.length < ratio.good) goodRoles.push('servant');
+            while(evilRoles.length < ratio.evil) evilRoles.push('minion');
+
+            let selectedRoles = goodRoles.concat(evilRoles);
+            selectedRoles = selectedRoles.sort(() => Math.random() - 0.5);
+
+            players = selectedRoles.map((roleKey, index) => {
+                return {
+                    id: index + 1,
+                    roleKey: roleKey,
+                    role: roleData[roleKey],
+                    info: ""
+                };
+            });
+
+            generateInfo();
+
+            document.getElementById('setup-screen').classList.remove('active');
+            document.getElementById('pass-screen').classList.add('active');
+            showPlayerPassScreen();
+        }
+
+        function generateInfo() {
+            const teamEvil = players.filter(p => p.role.isEvil && p.roleKey !== 'oberon').map(p => p.id + "號");
+            const seenByMerlin = players.filter(p => p.role.isEvil && p.roleKey !== 'mordred').map(p => p.id + "號");
+            const seenByPercival = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'morgana').map(p => p.id + "號");
+
+            let seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
+            seenByLiZakang = seenByLiZakang.sort(() => Math.random() - 0.5);
+
+            players.forEach(p => {
+                if (p.roleKey === 'merlin') {
+                    p.info = `邪惡陣營玩家<br><strong class="evil">${seenByMerlin.join(' ') || '無'}</strong>`;
+                } else if (p.roleKey === 'percival') {
+                    p.info = `兩位強大的法師<br><strong class="purple">${seenByPercival.join(' ') || '無'}</strong>`;
+                } else if (p.roleKey === 'lizakang') {
+                    if(seenByLiZakang.length > 0) {
+                         p.info = `兩股糾纏的力量<br><strong class="purple">${seenByLiZakang.join(' ')}</strong>`;
+                    } else {
+                         p.info = "你感應到了無盡的虛空。<br>本局似乎沒有相關特殊角色。";
+                    }
+                } else if (p.role.isEvil && p.roleKey !== 'oberon') {
+                    const otherEvils = teamEvil.filter(id => id !== p.id + "號");
+                    if(otherEvils.length > 0) {
+                        p.info = `你的邪惡同夥<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
+                    } else {
+                        p.info = "你是唯一的邪惡陣營<br>(或其他人是奧伯倫)。";
+                    }
+                } else if (p.roleKey === 'oberon') {
+                    p.info = "只知道自己是壞人<br>沒有其他資訊";
+                } else {
+                    p.info = "你是普通忠臣<br>沒有其他資訊";
+                }
+            });
+        }
+
+        const revealCardWrapper = document.getElementById('reveal-card');
+        const nextBtn = document.getElementById('next-player-btn');
+        const cardInner = document.getElementById('card-inner');
+
+        function flipCard() {
+            if (isTransitioning) return; 
+
+            cardInner.classList.toggle('flipped');
+            if (cardInner.classList.contains('flipped')) {
+                nextBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        revealCardWrapper.addEventListener('click', flipCard);
+
+        function showPlayerPassScreen() {
+            const player = players[currentPlayerIndex];
+            document.getElementById('current-player-title').innerText = `玩家 ${player.id} 請接過手機`;
+            
+            const roleNameEl = document.getElementById('player-role-name');
+            roleNameEl.innerText = player.role.name;
+            roleNameEl.className = player.role.isEvil ? 'evil' : 'good';
+            
+            const roleImgEl = document.getElementById('player-role-img');
+            roleImgEl.src = ""; 
+            
+            setTimeout(() => {
+                roleImgEl.src = player.role.img;
+            }, 10);
+            
+            document.getElementById('player-info-text').innerHTML = player.info;
+        }
+
+        function nextPlayer() {
+            if (isTransitioning) return; 
+            isTransitioning = true; 
+
+            nextBtn.style.display = 'none';
+            cardInner.classList.remove('flipped');
+
+            setTimeout(() => {
+                if (currentPlayerIndex < players.length - 1) {
+                    currentPlayerIndex++;
+                    showPlayerPassScreen(); 
+                } else {
+                    document.getElementById('pass-screen').classList.remove('active');
+                    showGameScreen();
+                }
+                
+                isTransitioning = false; 
+            }, 600);
+        }
+
+        function showGameScreen() {
+            document.getElementById('game-screen').classList.add('active');
+        }
+
+        function revealAll() {
+            if(confirm("確定要揭曉所有人的真實身分嗎？（如果遊戲還沒結束，請按取消以免破壞體驗）")) {
+                const revealArea = document.getElementById('final-reveal-area');
+                const listEl = document.getElementById('final-reveal-list');
+                
+                const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
+                
+                listEl.innerHTML = sortedPlayers.map(p => 
+                    `<div class="final-reveal-item">
+                        <span>玩家 ${p.id}</span>
+                        <strong class="${p.role.isEvil ? 'evil' : 'good'}">${p.role.name}</strong>
+                    </div>`
+                ).join('');
+                
+                revealArea.style.display = 'block';
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
