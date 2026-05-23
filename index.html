@@ -408,14 +408,15 @@
         const cardInner = document.getElementById('card-inner');
 
         function flipCard() {
+            // 如果卡牌正在換人過渡中，不允許點擊
             if (isTransitioning) return; 
 
-            cardInner.classList.toggle('flipped');
-            if (cardInner.classList.contains('flipped')) {
-                nextBtn.style.display = 'inline-block';
-            } else {
-                nextBtn.style.display = 'none';
-            }
+            // 新增：如果卡牌已經處於翻開狀態，就不做任何事情（防止點擊又蓋回去）
+            if (cardInner.classList.contains('flipped')) return;
+
+            // 確保加入翻開狀態
+            cardInner.classList.add('flipped');
+            nextBtn.style.display = 'inline-block';
         }
 
         revealCardWrapper.addEventListener('click', flipCard);
