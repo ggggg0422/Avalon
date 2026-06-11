@@ -172,7 +172,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
         }
 
-        /* 角色圖案定位 - 中間圓圈 (已放大120%至156px) */
+        /* 角色圖案定位 - 中間圓圈 (放大120%至156px) */
         .role-img {
             width: 156px; 
             height: 156px;
@@ -215,6 +215,18 @@
             justify-content: space-between;
             border: 1px solid #444;
         }
+
+        /* 玩家號碼的金色樣式 */
+        .player-number-text {
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* 查驗身分的白色樣式 */
+        .action-white-text {
+            color: white; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -249,8 +261,7 @@
     </div>
 
     <div id="pass-screen" class="screen">
-        <h2 id="current-player-title">玩家 1 請接過手機</h2>
-        <p>確認旁人沒有偷看後，點擊卡牌查看身分</p>
+        <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分</span></h2>
         
         <div class="card-container" id="reveal-card">
             <div class="card-inner" id="card-inner">
@@ -408,13 +419,9 @@
         const cardInner = document.getElementById('card-inner');
 
         function flipCard() {
-            // 如果卡牌正在換人過渡中，不允許點擊
             if (isTransitioning) return; 
-
-            // 新增：如果卡牌已經處於翻開狀態，就不做任何事情（防止點擊又蓋回去）
             if (cardInner.classList.contains('flipped')) return;
 
-            // 確保加入翻開狀態
             cardInner.classList.add('flipped');
             nextBtn.style.display = 'inline-block';
         }
@@ -423,7 +430,8 @@
 
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
-            document.getElementById('current-player-title').innerText = `玩家 ${player.id} 請接過手機`;
+            
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分</span>`;
             
             const roleNameEl = document.getElementById('player-role-name');
             roleNameEl.innerText = player.role.name;
