@@ -237,7 +237,7 @@
         
         <div class="role-list">
             <h3>1. 選擇遊戲人數</h3>
-            <select id="player-count">
+            <select id="player-count" onchange="updateDefaultRoles()">
                 <option value="5">5 人局 (3正義 2邪惡)</option>
                 <option value="6">6 人局 (4正義 2邪惡)</option>
                 <option value="7">7 人局 (4正義 3邪惡)</option>
@@ -295,7 +295,6 @@
     </div>
 
     <script>
-        // 更新為最新的預載圖片網址
         const preloadedBg = new Image();
         preloadedBg.src = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
 
@@ -328,6 +327,74 @@
         let players = [];
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
+
+        // 自動根據人數勾選角色的功能
+        function updateDefaultRoles() {
+            const count = parseInt(document.getElementById('player-count').value);
+            
+            // 取得所有 Checkbox
+            const merlin = document.getElementById('role-merlin');
+            const percival = document.getElementById('role-percival');
+            const lizakang = document.getElementById('role-lizakang');
+            const assassin = document.getElementById('role-assassin');
+            const morgana = document.getElementById('role-morgana');
+            const mordred = document.getElementById('role-mordred');
+            const oberon = document.getElementById('role-oberon');
+
+            // 先全部取消勾選
+            merlin.checked = false;
+            percival.checked = false;
+            lizakang.checked = false;
+            assassin.checked = false;
+            morgana.checked = false;
+            mordred.checked = false;
+            oberon.checked = false;
+
+            // 根據不同人數自動勾選指定配置
+            switch(count) {
+                case 5:
+                    merlin.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 6:
+                    merlin.checked = true;
+                    lizakang.checked = true;
+                    mordred.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 7:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    mordred.checked = true;
+                    morgana.checked = true;
+                    oberon.checked = true;
+                    break;
+                case 8:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    mordred.checked = true;
+                    morgana.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 9:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    lizakang.checked = true;
+                    assassin.checked = true;
+                    morgana.checked = true;
+                    mordred.checked = true;
+                    oberon.checked = true;
+                    break;
+                case 10:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    assassin.checked = true;
+                    morgana.checked = true;
+                    mordred.checked = true;
+                    oberon.checked = true;
+                    break;
+            }
+        }
 
         function startGame() {
             const errorEl = document.getElementById('setup-error');
