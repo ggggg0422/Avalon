@@ -47,7 +47,7 @@
             color: white;
             border: none;
             padding: 12px 24px;
-            margin: 10px 5px;
+            margin: 10px auto; /* 確保按鈕置中 */
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
@@ -278,7 +278,7 @@
             </div>
         </div>
         
-        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width: 100%; box-sizing: border-box;">我看完了，換下一位</button>
+        <button id="next-player-btn" onclick="nextPlayer()" style="display:none;">看完了 下一位</button>
     </div>
 
     <div id="game-screen" class="screen">
@@ -328,11 +328,9 @@
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
 
-        // 自動根據人數勾選角色的功能
         function updateDefaultRoles() {
             const count = parseInt(document.getElementById('player-count').value);
             
-            // 取得所有 Checkbox
             const merlin = document.getElementById('role-merlin');
             const percival = document.getElementById('role-percival');
             const lizakang = document.getElementById('role-lizakang');
@@ -341,7 +339,6 @@
             const mordred = document.getElementById('role-mordred');
             const oberon = document.getElementById('role-oberon');
 
-            // 先全部取消勾選
             merlin.checked = false;
             percival.checked = false;
             lizakang.checked = false;
@@ -350,7 +347,6 @@
             mordred.checked = false;
             oberon.checked = false;
 
-            // 根據不同人數自動勾選指定配置
             switch(count) {
                 case 5:
                     merlin.checked = true;
@@ -514,6 +510,12 @@
             }, 10);
             
             document.getElementById('player-info-text').innerHTML = player.info;
+
+            if (currentPlayerIndex === players.length - 1) {
+                nextBtn.innerText = "看完了 遊戲開始";
+            } else {
+                nextBtn.innerText = "看完了 下一位";
+            }
         }
 
         function nextPlayer() {
