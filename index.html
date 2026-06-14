@@ -47,7 +47,7 @@
             color: white;
             border: none;
             padding: 12px 24px;
-            margin: 10px auto; /* 確保按鈕置中 */
+            margin: 10px auto; 
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
@@ -172,7 +172,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
         }
 
-        /* 角色圖案定位 - 中間圓圈 (放大120%至156px) */
+        /* 角色圖案定位 - 中間圓圈 */
         .role-img {
             width: 156px; 
             height: 156px;
@@ -206,14 +206,24 @@
             margin: 0; 
             width: 85%; 
         }
+
+        /* ====== 遊戲結束：兩列直式排版 ====== */
+        #final-reveal-list {
+            display: flex;
+            gap: 12px; /* 兩列之間的間距 */
+            margin-top: 15px;
+        }
         
         .final-reveal-item {
             background: rgba(34, 34, 34, 0.9);
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 0; 
+            padding: 12px 5px;
+            border-radius: 8px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            gap: 5px; 
             border: 1px solid #444;
         }
 
@@ -290,7 +300,7 @@
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
             <h3>真實身分揭曉</h3>
-            <div id="final-reveal-list" style="text-align: left;"></div>
+            <div id="final-reveal-list"></div>
         </div>
     </div>
 
@@ -549,12 +559,27 @@
                 
                 const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
                 
-                listEl.innerHTML = sortedPlayers.map(p => 
-                    `<div class="final-reveal-item">
-                        <span>玩家 ${p.id}</span>
-                        <strong class="${p.role.isEvil ? 'evil' : 'good'}">${p.role.name}</strong>
-                    </div>`
-                ).join('');
+                // 將名單分為兩半
+                const half = Math.ceil(sortedPlayers.length / 2);
+                const col1 = sortedPlayers.slice(0, half);
+                const col2 = sortedPlayers.slice(half);
+
+                // 產生單一角色的 HTML
+                const renderItem = p => `
+                    <div class="final-reveal-item">
+                        <span style="color: #ccc; font-size: 14px;">${p.id}號</span>
+                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px;">${p.role.name}</strong>
+                    </div>`;
+                
+                // 套用到左列與右列
+                listEl.innerHTML = `
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                        ${col1.map(renderItem).join('')}
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                        ${col2.map(renderItem).join('')}
+                    </div>
+                `;
                 
                 revealArea.style.display = 'block';
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
