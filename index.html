@@ -207,24 +207,38 @@
             width: 85%; 
         }
 
-        /* ====== 遊戲結束：兩列直式排版 ====== */
+        /* ====== 遊戲結束：兩列直式、整條金色框、獨立黑底樣式 ====== */
         #final-reveal-list {
             display: flex;
-            gap: 12px; /* 兩列之間的間距 */
+            gap: 15px; /* 兩列之間的間距 */
             margin-top: 15px;
         }
+
+        /* 整條金框的樣式 */
+        .final-reveal-column {
+            flex: 1;
+            background: transparent; 
+            border: 4px solid var(--gold); /* ★ 將外層長條金色框加粗至 4px ★ */
+            border-radius: 10px;
+            padding: 10px; /* 金框內部的留白 */
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 每個玩家之間的間距 */
+            box-sizing: border-box;
+        }
         
+        /* 單一玩家身分的排列 (獨立黑底框) */
         .final-reveal-item {
-            background: rgba(34, 34, 34, 0.9);
+            background: rgba(34, 34, 34, 0.95); /* 每個人的獨立黑底 */
+            border: 1px solid #444; 
+            border-radius: 8px;
             margin: 0; 
             padding: 12px 5px;
-            border-radius: 8px;
             display: flex;
             flex-direction: column; 
             align-items: center;
             justify-content: center;
-            gap: 5px; 
-            border: 1px solid #444;
+            gap: 5px;
         }
 
         /* 玩家號碼的金色樣式 */
@@ -564,19 +578,19 @@
                 const col1 = sortedPlayers.slice(0, half);
                 const col2 = sortedPlayers.slice(half);
 
-                // 產生單一角色的 HTML
+                // 產生單一角色的 HTML (包含獨立的黑底框)
                 const renderItem = p => `
                     <div class="final-reveal-item">
                         <span style="color: #ccc; font-size: 14px;">${p.id}號</span>
-                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px;">${p.role.name}</strong>
+                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px; margin-top: 2px;">${p.role.name}</strong>
                     </div>`;
                 
-                // 套用到左列與右列
+                // 產生左右兩個完整長條金色框的 HTML
                 listEl.innerHTML = `
-                    <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                    <div class="final-reveal-column">
                         ${col1.map(renderItem).join('')}
                     </div>
-                    <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                    <div class="final-reveal-column">
                         ${col2.map(renderItem).join('')}
                     </div>
                 `;
