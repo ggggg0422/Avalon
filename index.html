@@ -61,14 +61,59 @@
         .btn-danger { background-color: transparent; border: 2px solid var(--evil-color); color: var(--evil-color); margin-top: 30px;}
         .btn-danger:hover { background-color: var(--evil-color); color: white; }
         
-        .role-list { text-align: left; margin-bottom: 20px; }
-        .role-item { margin: 5px 0; font-size: 16px; }
-        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        /* ====== 特殊角色選擇面板樣式 ====== */
+        .role-list { 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        
+        /* 隱藏原生的 Checkbox 勾選框 */
+        .role-checkbox {
+            display: none;
+        }
+
+        /* 角色卡牌樣式（預設沒使用：暗掉） */
+        .role-item { 
+            display: inline-block;
+            padding: 10px 16px;
+            margin: 6px 4px; 
+            font-size: 15px; 
+            border-radius: 25px;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.35; /* 暗掉 */
+            transition: all 0.25s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        /* 當隱藏的 Checkbox 被選取時（使用中：亮起來） */
+        .role-checkbox:checked + .role-item {
+            opacity: 1; /* 亮起來 */
+            background: rgba(22, 33, 62, 0.8);
+        }
+        
+        /* 正義方亮起時的特效 */
+        .role-checkbox:checked + .good { 
+            color: var(--good-color); 
+            font-weight: bold; 
+            border: 1.5px solid var(--good-color);
+            text-shadow: 0 0 8px rgba(77, 166, 255, 0.6);
+            box-shadow: 0 0 12px rgba(77, 166, 255, 0.4);
+        }
+        
+        /* 邪惡方亮起時的特效 */
+        .role-checkbox:checked + .evil { 
+            color: var(--evil-color); 
+            font-weight: bold; 
+            border: 1.5px solid var(--evil-color);
+            text-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+            box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
+        }
         
         select {
-            width: 100%;
+            width: auto; 
             padding: 10px;
             margin-bottom: 15px;
             background-color: rgba(15, 23, 42, 0.8);
@@ -160,7 +205,7 @@
             border: 1px solid var(--gold);
         }
         
-        /* 角色名稱定位 - 位於星星下沿 */
+        /* 角色名稱定位 */
         #player-role-name {
             margin: 0;
             font-size: 32px; 
@@ -172,7 +217,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
         }
 
-        /* 角色圖案定位 - 中間圓圈 */
+        /* 角色圖案定位 */
         .role-img {
             width: 156px; 
             height: 156px;
@@ -190,7 +235,7 @@
             margin: 0; 
         }
 
-        /* 角色資訊定位 - 下面文字，AVALON上沿 */
+        /* 角色資訊定位 */
         #player-info-text { 
             font-size: 16px; 
             line-height: 1.5; 
@@ -207,14 +252,13 @@
             width: 85%; 
         }
 
-        /* ====== 遊戲結束：兩列直式、整條金色框、獨立黑底樣式 ====== */
+        /* ====== 遊戲結束：兩列直式、整條金色框 ====== */
         #final-reveal-list {
             display: flex;
-            gap: 15px; /* 兩列之間的間距 */
+            gap: 15px; 
             margin-top: 15px;
         }
 
-        /* 整條金框的樣式 */
         .final-reveal-column {
             flex: 1;
             background: transparent; 
@@ -227,7 +271,6 @@
             box-sizing: border-box;
         }
         
-        /* 單一玩家身分的排列 (獨立黑底框) */
         .final-reveal-item {
             background: rgba(34, 34, 34, 0.95); 
             border: 1px solid #444; 
@@ -241,13 +284,11 @@
             gap: 5px;
         }
 
-        /* 玩家號碼的金色樣式 */
         .player-number-text {
             color: var(--gold);
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* 查驗身分的白色樣式 */
         .action-white-text {
             color: white; 
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -271,14 +312,28 @@
             </select>
 
             <h3>2. 選擇特殊角色</h3>
-            <p style="font-size: 12px; color: #ccc;">空位將自動補齊一般忠臣或爪牙。</p>
-            <label class="role-item good"><input type="checkbox" id="role-merlin" checked> 梅林 (正義)</label><br>
-            <label class="role-item good"><input type="checkbox" id="role-percival" checked> 派西維爾 (正義)</label><br>
-            <label class="role-item good"><input type="checkbox" id="role-lizakang"> 李砸康 (正義)</label><br>
-            <label class="role-item evil"><input type="checkbox" id="role-assassin" checked> 刺客 (邪惡)</label><br>
-            <label class="role-item evil"><input type="checkbox" id="role-morgana" checked> 莫甘娜 (邪惡)</label><br>
-            <label class="role-item evil"><input type="checkbox" id="role-mordred" checked> 莫德雷德 (邪惡)</label><br>
-            <label class="role-item evil"><input type="checkbox" id="role-oberon" checked> 奧伯倫 (邪惡)</label><br>
+            <p style="font-size: 12px; color: #ccc;">空位自動補忠臣或爪牙</p>
+            
+            <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
+            <label for="role-merlin" class="role-item good">梅林 (正義)</label>
+
+            <input type="checkbox" id="role-percival" class="role-checkbox" checked>
+            <label for="role-percival" class="role-item good">派西維爾 (正義)</label>
+
+            <input type="checkbox" id="role-lizakang" class="role-checkbox">
+            <label for="role-lizakang" class="role-item good">李砸康 (正義)</label>
+
+            <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
+            <label for="role-assassin" class="role-item evil">刺客 (邪惡)</label>
+
+            <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
+            <label for="role-morgana" class="role-item evil">莫甘娜 (邪惡)</label>
+
+            <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
+            <label for="role-mordred" class="role-item evil">莫德雷德 (邪惡)</label>
+
+            <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
+            <label for="role-oberon" class="role-item evil">奧伯倫 (邪惡)</label>
         </div>
         
         <div id="setup-error"></div>
@@ -514,7 +569,6 @@
             cardInner.classList.add('flipped');
             nextBtn.style.display = 'inline-block';
 
-            // 翻開卡牌瞬間，改變上方標題
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
         }
@@ -553,7 +607,6 @@
             nextBtn.style.display = 'none';
             cardInner.classList.remove('flipped');
 
-            // 蓋牌瞬間，將標題改回請查驗身分
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分</span>`;
 
@@ -581,19 +634,16 @@
                 
                 const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
                 
-                // 將名單分為兩半
                 const half = Math.ceil(sortedPlayers.length / 2);
                 const col1 = sortedPlayers.slice(0, half);
                 const col2 = sortedPlayers.slice(half);
 
-                // 產生單一角色的 HTML (包含獨立的黑底框)
                 const renderItem = p => `
                     <div class="final-reveal-item">
                         <span style="color: #ccc; font-size: 14px;">${p.id}號</span>
                         <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px; margin-top: 2px;">${p.role.name}</strong>
                     </div>`;
                 
-                // 產生左右兩個完整長條金色框的 HTML
                 listEl.innerHTML = `
                     <div class="final-reveal-column">
                         ${col1.map(renderItem).join('')}
