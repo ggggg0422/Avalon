@@ -67,12 +67,10 @@
             margin-bottom: 20px; 
         }
         
-        /* 隱藏原生的 Checkbox 勾選框 */
         .role-checkbox {
             display: none;
         }
 
-        /* 角色卡牌樣式（預設沒使用：暗掉） */
         .role-item { 
             display: inline-block;
             padding: 10px 16px;
@@ -82,19 +80,17 @@
             cursor: pointer;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.35; /* 暗掉 */
+            opacity: 0.35; 
             transition: all 0.25s ease;
             user-select: none;
             -webkit-user-select: none;
         }
         
-        /* 當隱藏的 Checkbox 被選取時（使用中：亮起來） */
         .role-checkbox:checked + .role-item {
-            opacity: 1; /* 亮起來 */
+            opacity: 1; 
             background: rgba(22, 33, 62, 0.8);
         }
         
-        /* 正義方亮起時的特效 */
         .role-checkbox:checked + .good { 
             color: var(--good-color); 
             font-weight: bold; 
@@ -103,7 +99,6 @@
             box-shadow: 0 0 12px rgba(77, 166, 255, 0.4);
         }
         
-        /* 邪惡方亮起時的特效 */
         .role-checkbox:checked + .evil { 
             color: var(--evil-color); 
             font-weight: bold; 
@@ -111,6 +106,11 @@
             text-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
             box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
         }
+
+        /* 文字顏色的基礎類別 */
+        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
         
         select {
             width: auto; 
@@ -252,7 +252,7 @@
             width: 85%; 
         }
 
-        /* ====== 遊戲結束：兩列直式、整條金色框 ====== */
+        /* ====== 遊戲結束 ====== */
         #final-reveal-list {
             display: flex;
             gap: 15px; 
@@ -591,7 +591,11 @@
                 roleImgEl.src = player.role.img;
             }, 10);
             
-            document.getElementById('player-info-text').innerHTML = player.info;
+            const infoTextEl = document.getElementById('player-info-text');
+            infoTextEl.innerHTML = player.info;
+            
+            // 移除全體上色的 class，讓基礎提示文字保持白色
+            infoTextEl.className = '';
 
             if (currentPlayerIndex === players.length - 1) {
                 nextBtn.innerText = "看完了 遊戲開始";
