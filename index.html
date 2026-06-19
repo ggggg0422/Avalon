@@ -37,7 +37,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            zoom: 1.1; /* ★ 將整體畫面等比例放大 110% */
+            zoom: 1.2; /* ★ 將整體畫面等比例放大 120% */
         }
         .screen.active {
             display: block;
@@ -413,6 +413,7 @@
     </div>
 
     <div id="game-screen" class="screen">
+        
         <button id="reveal-all-btn" class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
@@ -471,7 +472,6 @@
                 opt.addEventListener('click', function(e) {
                     e.stopPropagation();
                     input.value = this.dataset.value;
-                    // 更新顯示文字，加上倒三角形
                     display.innerHTML = `<span>${this.innerHTML}</span> <span style="font-size: 12px;">▼</span>`;
                     options.classList.remove('show');
                     updateDefaultRoles();
