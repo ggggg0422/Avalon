@@ -112,15 +112,58 @@
         .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
         .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
         
-        select {
-            width: auto; 
-            padding: 10px;
+        /* ====== 客製化下拉選單 CSS ====== */
+        .custom-select-wrapper {
+            display: inline-block;
+            position: relative;
             margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .custom-select-display {
+            padding: 10px 15px;
             background-color: rgba(15, 23, 42, 0.8);
             color: white;
             border: 1px solid var(--gold);
             border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .custom-select-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: max-content;
+            background-color: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--gold);
+            border-radius: 5px;
+            z-index: 100;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            white-space: nowrap;
+        }
+
+        .custom-select-options.show {
+            display: block;
+        }
+
+        .custom-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 16px;
+        }
+
+        .custom-option:hover {
+            background-color: rgba(212, 175, 55, 0.2);
         }
 
         #setup-error { color: var(--evil-color); font-weight: bold; margin: 10px 0; min-height: 20px; }
@@ -302,38 +345,46 @@
         
         <div class="role-list">
             <h3>1. 選擇遊戲人數</h3>
-            <select id="player-count" onchange="updateDefaultRoles()">
-                <option value="5">5 人局 (3正義 2邪惡)</option>
-                <option value="6">6 人局 (4正義 2邪惡)</option>
-                <option value="7">7 人局 (4正義 3邪惡)</option>
-                <option value="8">8 人局 (5正義 3邪惡)</option>
-                <option value="9">9 人局 (5正義 4邪惡)</option>
-                <option value="10" selected>10 人局 (6正義 4邪惡)</option>
-            </select>
+            
+            <div class="custom-select-wrapper">
+                <input type="hidden" id="player-count" value="10">
+                <div class="custom-select-display" id="custom-select-display">
+                    <span>10 人局 (<span class="good">6好人</span> <span class="evil">4壞人</span>)</span>
+                    <span style="font-size: 12px;">▼</span>
+                </div>
+                <div class="custom-select-options" id="custom-select-options">
+                    <div class="custom-option" data-value="5">5 人局 (<span class="good">3好人</span> <span class="evil">2壞人</span>)</div>
+                    <div class="custom-option" data-value="6">6 人局 (<span class="good">4好人</span> <span class="evil">2壞人</span>)</div>
+                    <div class="custom-option" data-value="7">7 人局 (<span class="good">4好人</span> <span class="evil">3壞人</span>)</div>
+                    <div class="custom-option" data-value="8">8 人局 (<span class="good">5好人</span> <span class="evil">3壞人</span>)</div>
+                    <div class="custom-option" data-value="9">9 人局 (<span class="good">5好人</span> <span class="evil">4壞人</span>)</div>
+                    <div class="custom-option" data-value="10">10 人局 (<span class="good">6好人</span> <span class="evil">4壞人</span>)</div>
+                </div>
+            </div>
 
             <h3>2. 選擇特殊角色</h3>
-            <p style="font-size: 12px; color: #ccc;">空位自動補忠臣或爪牙</p>
+            <p style="font-size: 12px; color: #ccc;">空位自動補<span class="good">忠臣</span>或<span class="evil">爪牙</span></p>
             
             <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
-            <label for="role-merlin" class="role-item good">梅林 (正義)</label>
+            <label for="role-merlin" class="role-item good">梅林</label>
 
             <input type="checkbox" id="role-percival" class="role-checkbox" checked>
-            <label for="role-percival" class="role-item good">派西維爾 (正義)</label>
+            <label for="role-percival" class="role-item good">派西維爾</label>
 
             <input type="checkbox" id="role-lizakang" class="role-checkbox">
-            <label for="role-lizakang" class="role-item good">李砸康 (正義)</label>
+            <label for="role-lizakang" class="role-item good">李砸康</label>
 
             <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
-            <label for="role-assassin" class="role-item evil">刺客 (邪惡)</label>
+            <label for="role-assassin" class="role-item evil">刺客</label>
 
             <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
-            <label for="role-morgana" class="role-item evil">莫甘娜 (邪惡)</label>
+            <label for="role-morgana" class="role-item evil">莫甘娜</label>
 
             <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
-            <label for="role-mordred" class="role-item evil">莫德雷德 (邪惡)</label>
+            <label for="role-mordred" class="role-item evil">莫德雷德</label>
 
             <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
-            <label for="role-oberon" class="role-item evil">奧伯倫 (邪惡)</label>
+            <label for="role-oberon" class="role-item evil">奧伯倫</label>
         </div>
         
         <div id="setup-error"></div>
@@ -361,15 +412,14 @@
     </div>
 
     <div id="game-screen" class="screen">
-        <h2 style="margin-top: 40px; margin-bottom: 40px; line-height: 1.5;">所有玩家已確認身分<br>遊戲開始！</h2>
+        <h2 id="game-start-title" style="margin-top: 40px; margin-bottom: 40px; line-height: 1.5;">所有玩家已確認身分<br>遊戲開始！</h2>
 
-        <button class="btn-gold" onclick="location.reload()" style="margin-bottom: 20px;">重新一局</button>
-        <br>
-        <button class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
+        <button id="reveal-all-btn" class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
-            <h3>真實身分揭曉</h3>
+            <h3 style="margin-bottom: 20px;">真實身分揭曉</h3>
             <div id="final-reveal-list"></div>
+            <button class="btn-gold" onclick="location.reload()" style="margin-top: 30px; padding: 15px 30px; font-size: 18px;">重新一局</button>
         </div>
     </div>
 
@@ -406,6 +456,33 @@
         let players = [];
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
+
+        // ====== 客製化下拉選單邏輯 ======
+        document.addEventListener('DOMContentLoaded', () => {
+            const display = document.getElementById('custom-select-display');
+            const options = document.getElementById('custom-select-options');
+            const input = document.getElementById('player-count');
+
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                options.classList.toggle('show');
+            });
+
+            document.querySelectorAll('.custom-option').forEach(opt => {
+                opt.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    input.value = this.dataset.value;
+                    // 更新顯示文字，加上倒三角形
+                    display.innerHTML = `<span>${this.innerHTML}</span> <span style="font-size: 12px;">▼</span>`;
+                    options.classList.remove('show');
+                    updateDefaultRoles();
+                });
+            });
+
+            document.addEventListener('click', () => {
+                options.classList.remove('show');
+            });
+        });
 
         function updateDefaultRoles() {
             const count = parseInt(document.getElementById('player-count').value);
@@ -492,7 +569,7 @@
             if(document.getElementById('role-oberon').checked) evilRoles.push('oberon');
 
             if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
-                errorEl.innerText = `⚠️ 無法開始：${playerCount} 人局的上限是 ${ratio.good} 名正義與 ${ratio.evil} 名邪惡。請調整特殊角色數量！`;
+                errorEl.innerText = `⚠️ 無法開始：${playerCount} 人局的上限是 ${ratio.good} 名好人與 ${ratio.evil} 名壞人。請調整特殊角色數量！`;
                 return;
             }
 
@@ -534,19 +611,19 @@
 
             players.forEach(p => {
                 if (p.roleKey === 'merlin') {
-                    p.info = `邪惡陣營玩家<br><strong class="evil">${seenByMerlin.join(' ') || '無'}</strong>`;
+                    p.info = `你看到的壞人<br><strong class="evil">${seenByMerlin.join(' ') || '無'}</strong>`;
                 } else if (p.roleKey === 'percival') {
-                    p.info = `兩位強大的法師<br><strong class="purple">${seenByPercival.join(' ') || '無'}</strong>`;
+                    p.info = `梅林或莫甘娜<br><strong class="purple">${seenByPercival.join(' ') || '無'}</strong>`;
                 } else if (p.roleKey === 'lizakang') {
                     if(seenByLiZakang.length > 0) {
-                         p.info = `兩股糾纏的力量<br><strong class="purple">${seenByLiZakang.join(' ')}</strong>`;
+                         p.info = `梅林或莫德雷德<br><strong class="purple">${seenByLiZakang.join(' ')}</strong>`;
                     } else {
                          p.info = "你感應到了無盡的虛空。<br>本局似乎沒有相關特殊角色。";
                     }
                 } else if (p.role.isEvil && p.roleKey !== 'oberon') {
                     const otherEvils = teamEvil.filter(id => id !== p.id + "號");
                     if(otherEvils.length > 0) {
-                        p.info = `你的邪惡同夥<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
+                        p.info = `你的壞人同伴<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
                     } else {
                         p.info = "你是唯一的邪惡陣營<br>(或其他人是奧伯倫)。";
                     }
@@ -594,7 +671,6 @@
             const infoTextEl = document.getElementById('player-info-text');
             infoTextEl.innerHTML = player.info;
             
-            // 移除全體上色的 class，讓基礎提示文字保持白色
             infoTextEl.className = '';
 
             if (currentPlayerIndex === players.length - 1) {
@@ -635,6 +711,8 @@
             if(confirm("確定要揭曉所有人的真實身分嗎？（如果遊戲還沒結束，請按取消以免破壞體驗）")) {
                 const revealArea = document.getElementById('final-reveal-area');
                 const listEl = document.getElementById('final-reveal-list');
+                const revealBtn = document.getElementById('reveal-all-btn'); 
+                const gameStartTitle = document.getElementById('game-start-title'); 
                 
                 const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
                 
@@ -658,6 +736,8 @@
                 `;
                 
                 revealArea.style.display = 'block';
+                revealBtn.style.display = 'none'; 
+                gameStartTitle.style.display = 'none'; // 隱藏遊戲開始的標題
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         }
