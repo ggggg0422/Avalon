@@ -37,6 +37,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(212, 175, 55, 0.3);
+            zoom: 1.1; /* ★ 將整體畫面等比例放大 110% */
         }
         .screen.active {
             display: block;
@@ -412,8 +413,6 @@
     </div>
 
     <div id="game-screen" class="screen">
-        <h2 id="game-start-title" style="margin-top: 40px; margin-bottom: 40px; line-height: 1.5;">所有玩家已確認身分<br>遊戲開始！</h2>
-
         <button id="reveal-all-btn" class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
@@ -712,7 +711,6 @@
                 const revealArea = document.getElementById('final-reveal-area');
                 const listEl = document.getElementById('final-reveal-list');
                 const revealBtn = document.getElementById('reveal-all-btn'); 
-                const gameStartTitle = document.getElementById('game-start-title'); 
                 
                 const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
                 
@@ -737,7 +735,6 @@
                 
                 revealArea.style.display = 'block';
                 revealBtn.style.display = 'none'; 
-                gameStartTitle.style.display = 'none'; // 隱藏遊戲開始的標題
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         }
