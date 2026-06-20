@@ -12,6 +12,8 @@
             --evil-color: #ff4d4d;
             --gold: #d4af37;
             --purple: #b366ff;
+            /* 定義亮黃色變數供按鈕使用 */
+            --warning-yellow: #ffcc00; 
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,7 +39,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            zoom: 1.2; /* ★ 整體畫面等比例放大 120% */
+            zoom: 1.2; /* ★ 將整體畫面等比例放大 120% */
         }
         .screen.active {
             display: block;
@@ -298,17 +300,15 @@
 
         /* ====== 遊戲結束樣式 ====== */
         
-        /* 1. 給遊戲畫面一個基礎高度，以便讓按鈕置中 */
         #game-screen.active {
             display: flex;
             flex-direction: column;
-            min-height: 500px; /* 給一個基礎高度 Baseline */
-            padding: 0; /* 重置 padding，交給 Flex 子元素處理 */
+            min-height: 500px; 
+            padding: 0; 
         }
         
-        /* 2. 重啟按鈕的容器，平時負責垂直置中的正方形按鈕 */
         #game-end-controls {
-            flex: 1; /* 佔滿剩餘垂直空間 */
+            flex: 1; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -317,24 +317,33 @@
             box-sizing: border-box;
         }
 
-        /* 3. 修改按鈕為正方形並置中 */
         #reveal-all-btn {
-            width: 200px; /* 正方形寬度 */
-            height: 200px; /* 正方形高度 */
-            padding: 15px; /* 內部間距，讓文字換行 */
-            font-size: 20px; /* 字體稍微加大 */
-            border-radius: 15px; /* 稍微圓潤的直角 */
-            
-            /* 文字換行並置中 */
+            width: 200px; 
+            height: 200px; 
+            padding: 15px; 
+            font-size: 20px; 
+            border-radius: 15px; 
             display: flex;
+            flex-direction: column; /* 讓文字垂直排列 */
             justify-content: center;
             align-items: center;
             text-align: center;
-            line-height: 1.4;
-            margin: 0; /* 移除原本的 margin auto */
+            line-height: 1.5;
+            margin: 0; 
+
+            /* ★ 關鍵修改：黃底黑字 ★ */
+            background-color: var(--warning-yellow);
+            color: #000000; /* 純黑色文字 */
+            text-shadow: none; /* 移除文字陰影以維持清晰度 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* 增加陰影凸顯按鈕 */
         }
 
-        /* 遊戲結束名單列表容器 */
+        /* 滑鼠懸停時顏色稍微變深一點 */
+        #reveal-all-btn:hover {
+            background-color: #e6b800;
+            transform: translateY(-3px);
+        }
+
         #final-reveal-list {
             display: flex;
             gap: 15px; 
@@ -453,7 +462,7 @@
     <div id="game-screen" class="screen">
         
         <div id="game-end-controls">
-            <button id="reveal-all-btn" class="btn-danger" onclick="revealAll()">遊戲結束：查看所有人身分</button>
+            <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人身分</button>
         </div>
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
@@ -743,7 +752,6 @@
         }
 
         function showGameScreen() {
-            // 切換到遊戲畫面時，確保容器維持彈性佈局以便置中按鈕
             const gameScreen = document.getElementById('game-screen');
             gameScreen.style.minHeight = '500px'; 
             gameScreen.style.display = 'flex';
@@ -778,11 +786,8 @@
                     </div>
                 `;
                 
-                // 1. 顯示名單
                 revealArea.style.display = 'block';
-                // 2. 隱藏置中容器（包含正方形按鈕）
                 gameEndControls.style.display = 'none'; 
-                // 3. 還原畫面容器排版，交給原本的 padding 和 scrolling
                 gameScreen.style.minHeight = 'auto';
                 gameScreen.style.display = 'block'; 
                 gameScreen.style.padding = '20px';
