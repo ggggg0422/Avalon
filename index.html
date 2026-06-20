@@ -321,14 +321,15 @@
             width: 200px; 
             height: 200px; 
             padding: 15px; 
-            font-size: 20px; 
+            font-size: 26px; /* ★ 將字體從 20px 加大到 26px */
+            font-weight: 900; /* ★ 加粗字體，讓它更醒目 */
             border-radius: 15px; 
             display: flex;
-            flex-direction: column; /* 讓文字垂直排列 */
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
             text-align: center;
-            line-height: 1.5;
+            line-height: 1.4;
             margin: 0; 
 
             /* ★ 關鍵修改：黃底黑字 ★ */
@@ -462,7 +463,7 @@
     <div id="game-screen" class="screen">
         
         <div id="game-end-controls">
-            <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人身分</button>
+            <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人<br>身分</button>
         </div>
 
         <div id="final-reveal-area" style="display: none; margin-top: 30px;">
