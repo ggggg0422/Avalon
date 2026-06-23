@@ -321,8 +321,8 @@
             width: 200px; 
             height: 200px; 
             padding: 15px; 
-            font-size: 26px; /* ★ 將字體從 20px 加大到 26px */
-            font-weight: 900; /* ★ 加粗字體，讓它更醒目 */
+            font-size: 26px; 
+            font-weight: 900; 
             border-radius: 15px; 
             display: flex;
             flex-direction: column; 
@@ -332,14 +332,12 @@
             line-height: 1.4;
             margin: 0; 
 
-            /* ★ 關鍵修改：黃底黑字 ★ */
             background-color: var(--warning-yellow);
-            color: #000000; /* 純黑色文字 */
-            text-shadow: none; /* 移除文字陰影以維持清晰度 */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* 增加陰影凸顯按鈕 */
+            color: #000000; 
+            text-shadow: none; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
         }
 
-        /* 滑鼠懸停時顏色稍微變深一點 */
         #reveal-all-btn:hover {
             background-color: #e6b800;
             transform: translateY(-3px);
@@ -441,7 +439,7 @@
     </div>
 
     <div id="pass-screen" class="screen">
-        <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分</span></h2>
+        <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分 🔍</span></h2>
         
         <div class="card-container" id="reveal-card">
             <div class="card-inner" id="card-inner">
@@ -461,7 +459,6 @@
     </div>
 
     <div id="game-screen" class="screen">
-        
         <div id="game-end-controls">
             <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人<br>身分</button>
         </div>
@@ -704,7 +701,8 @@
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
             
-            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分</span>`;
+            // 修改點 2：動態生成畫面時加上 🔍
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
             
             const roleNameEl = document.getElementById('player-role-name');
             roleNameEl.innerText = player.role.name;
@@ -737,7 +735,8 @@
             cardInner.classList.remove('flipped');
 
             const player = players[currentPlayerIndex];
-            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分</span>`;
+            // 修改點 3：點擊下一位、卡片蓋回去時加上 🔍
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
 
             setTimeout(() => {
                 if (currentPlayerIndex < players.length - 1) {
