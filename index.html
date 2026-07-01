@@ -78,7 +78,8 @@
             display: inline-block;
             padding: 10px 16px;
             margin: 6px 4px; 
-            font-size: 15px; 
+            font-size: 16px; /* 微微放大一點字體搭配加粗 */
+            font-weight: 900; /* ★ 套用極粗體 */
             border-radius: 25px;
             cursor: pointer;
             background: rgba(15, 23, 42, 0.6);
@@ -97,13 +98,13 @@
         /* 移除外框發光，僅保留文字變色與文字發光 */
         .role-checkbox:checked + .good { 
             color: var(--good-color); 
-            font-weight: bold; 
+            font-weight: 900; 
             text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
         }
         
         .role-checkbox:checked + .evil { 
             color: var(--evil-color); 
-            font-weight: bold; 
+            font-weight: 900; 
             text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
         }
 
