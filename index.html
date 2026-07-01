@@ -94,20 +94,17 @@
             background: rgba(22, 33, 62, 0.8);
         }
         
+        /* 移除外框發光，僅保留文字變色與文字發光 */
         .role-checkbox:checked + .good { 
             color: var(--good-color); 
             font-weight: bold; 
-            border: 1.5px solid var(--good-color);
-            text-shadow: 0 0 8px rgba(77, 166, 255, 0.6);
-            box-shadow: 0 0 12px rgba(77, 166, 255, 0.4);
+            text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
         }
         
         .role-checkbox:checked + .evil { 
             color: var(--evil-color); 
             font-weight: bold; 
-            border: 1.5px solid var(--evil-color);
-            text-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
-            box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
         }
 
         /* 文字顏色的基礎類別 */
@@ -459,6 +456,7 @@
     </div>
 
     <div id="game-screen" class="screen">
+        
         <div id="game-end-controls">
             <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人<br>身分</button>
         </div>
@@ -701,7 +699,6 @@
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
             
-            // 修改點 2：動態生成畫面時加上 🔍
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
             
             const roleNameEl = document.getElementById('player-role-name');
@@ -735,7 +732,6 @@
             cardInner.classList.remove('flipped');
 
             const player = players[currentPlayerIndex];
-            // 修改點 3：點擊下一位、卡片蓋回去時加上 🔍
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
 
             setTimeout(() => {
