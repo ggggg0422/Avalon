@@ -478,4 +478,323 @@
 
         const roleData = {
             merlin: { name: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
-            percival: { name: "派西維爾", isEvil: false, img: "https://i
+            percival: { name: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
+            lizakang: { name: "李砸康", isEvil: false, img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
+            servant: { name: "亞瑟的忠臣", isEvil: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
+            assassin: { name: "刺客", isEvil: true, img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
+            morgana: { name: "莫甘娜", isEvil: true, img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
+            mordred: { name: "莫德雷德", isEvil: true, img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
+            oberon: { name: "奧伯倫", isEvil: true, img: "https://i.postimg.cc/fLYv319B/1.jpg" },
+            minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
+        };
+
+        Object.values(roleData).forEach(role => {
+            const img = new Image();
+            img.src = role.img;
+        });
+
+        const rules = {
+            5: { good: 3, evil: 2 },
+            6: { good: 4, evil: 2 },
+            7: { good: 4, evil: 3 },
+            8: { good: 5, evil: 3 },
+            9: { good: 5, evil: 4 },
+            10: { good: 6, evil: 4 }
+        };
+
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isTransitioning = false; 
+
+        // ====== 客製化下拉選單邏輯 ======
+        document.addEventListener('DOMContentLoaded', () => {
+            const display = document.getElementById('custom-select-display');
+            const options = document.getElementById('custom-select-options');
+            const input = document.getElementById('player-count');
+
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                options.classList.toggle('show');
+            });
+
+            document.querySelectorAll('.custom-option').forEach(opt => {
+                opt.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    input.value = this.dataset.value;
+                    display.innerHTML = `<span>${this.innerHTML}</span> <span style="font-size: 12px;">▼</span>`;
+                    options.classList.remove('show');
+                    updateDefaultRoles();
+                });
+            });
+
+            document.addEventListener('click', () => {
+                options.classList.remove('show');
+            });
+        });
+
+        function updateDefaultRoles() {
+            const count = parseInt(document.getElementById('player-count').value);
+            
+            const merlin = document.getElementById('role-merlin');
+            const percival = document.getElementById('role-percival');
+            const lizakang = document.getElementById('role-lizakang');
+            const assassin = document.getElementById('role-assassin');
+            const morgana = document.getElementById('role-morgana');
+            const mordred = document.getElementById('role-mordred');
+            const oberon = document.getElementById('role-oberon');
+
+            merlin.checked = false;
+            percival.checked = false;
+            lizakang.checked = false;
+            assassin.checked = false;
+            morgana.checked = false;
+            mordred.checked = false;
+            oberon.checked = false;
+
+            switch(count) {
+                case 5:
+                    merlin.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 6:
+                    merlin.checked = true;
+                    lizakang.checked = true;
+                    mordred.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 7:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    mordred.checked = true;
+                    morgana.checked = true;
+                    oberon.checked = true;
+                    break;
+                case 8:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    mordred.checked = true;
+                    morgana.checked = true;
+                    assassin.checked = true;
+                    break;
+                case 9:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    lizakang.checked = true;
+                    assassin.checked = true;
+                    morgana.checked = true;
+                    mordred.checked = true;
+                    oberon.checked = true;
+                    break;
+                case 10:
+                    merlin.checked = true;
+                    percival.checked = true;
+                    assassin.checked = true;
+                    morgana.checked = true;
+                    mordred.checked = true;
+                    oberon.checked = true;
+                    break;
+            }
+        }
+
+        function startGame() {
+            const errorEl = document.getElementById('setup-error');
+            errorEl.innerText = "";
+            currentPlayerIndex = 0; 
+            players = [];
+
+            const playerCount = parseInt(document.getElementById('player-count').value);
+            const ratio = rules[playerCount];
+
+            let goodRoles = [];
+            let evilRoles = [];
+
+            if(document.getElementById('role-merlin').checked) goodRoles.push('merlin');
+            if(document.getElementById('role-percival').checked) goodRoles.push('percival');
+            if(document.getElementById('role-lizakang').checked) goodRoles.push('lizakang');
+            if(document.getElementById('role-assassin').checked) evilRoles.push('assassin');
+            if(document.getElementById('role-morgana').checked) evilRoles.push('morgana');
+            if(document.getElementById('role-mordred').checked) evilRoles.push('mordred');
+            if(document.getElementById('role-oberon').checked) evilRoles.push('oberon');
+
+            if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
+                errorEl.innerText = `⚠️ 無法開始：${playerCount} 人局的上限是 ${ratio.good} 名好人與 ${ratio.evil} 名壞人。請調整特殊角色數量！`;
+                return;
+            }
+
+            if(goodRoles.length === 0 && ratio.good > 0) {
+                 if(!confirm("⚠️ 警告：目前正義方沒有任何特殊角色(如梅林、李砸康)，遊戲可能變得極難。確定要開始嗎？")) {
+                     return;
+                 }
+            }
+
+            while(goodRoles.length < ratio.good) goodRoles.push('servant');
+            while(evilRoles.length < ratio.evil) evilRoles.push('minion');
+
+            let selectedRoles = goodRoles.concat(evilRoles);
+            selectedRoles = selectedRoles.sort(() => Math.random() - 0.5);
+
+            players = selectedRoles.map((roleKey, index) => {
+                return {
+                    id: index + 1,
+                    roleKey: roleKey,
+                    role: roleData[roleKey],
+                    info: ""
+                };
+            });
+
+            generateInfo();
+
+            document.getElementById('setup-screen').classList.remove('active');
+            document.getElementById('pass-screen').classList.add('active');
+            showPlayerPassScreen();
+        }
+
+        function generateInfo() {
+            const teamEvil = players.filter(p => p.role.isEvil && p.roleKey !== 'oberon').map(p => p.id + "號");
+            const seenByMerlin = players.filter(p => p.role.isEvil && p.roleKey !== 'mordred').map(p => p.id + "號");
+            const seenByPercival = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'morgana').map(p => p.id + "號");
+
+            let seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
+            seenByLiZakang = seenByLiZakang.sort(() => Math.random() - 0.5);
+
+            players.forEach(p => {
+                if (p.roleKey === 'merlin') {
+                    p.info = `你看到的壞人<br><strong class="evil">${seenByMerlin.join(' ') || '無'}</strong>`;
+                } else if (p.roleKey === 'percival') {
+                    p.info = `梅林或莫甘娜<br><strong class="purple">${seenByPercival.join(' ') || '無'}</strong>`;
+                } else if (p.roleKey === 'lizakang') {
+                    if(seenByLiZakang.length > 0) {
+                         p.info = `梅林或莫德雷德<br><strong class="purple">${seenByLiZakang.join(' ')}</strong>`;
+                    } else {
+                         p.info = "你感應到了無盡的虛空。<br>本局似乎沒有相關特殊角色。";
+                    }
+                } else if (p.role.isEvil && p.roleKey !== 'oberon') {
+                    const otherEvils = teamEvil.filter(id => id !== p.id + "號");
+                    if(otherEvils.length > 0) {
+                        p.info = `你的壞人同伴<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
+                    } else {
+                        p.info = "你是唯一的邪惡陣營<br>(或其他人是奧伯倫)。";
+                    }
+                } else if (p.roleKey === 'oberon') {
+                    p.info = "只知道自己是壞人<br>沒有其他資訊";
+                } else {
+                    p.info = "你是普通忠臣<br>沒有其他資訊";
+                }
+            });
+        }
+
+        const revealCardWrapper = document.getElementById('reveal-card');
+        const nextBtn = document.getElementById('next-player-btn');
+        const cardInner = document.getElementById('card-inner');
+
+        function flipCard() {
+            if (isTransitioning) return; 
+            if (cardInner.classList.contains('flipped')) return;
+
+            cardInner.classList.add('flipped');
+            nextBtn.style.display = 'inline-block';
+
+            const player = players[currentPlayerIndex];
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
+        }
+
+        revealCardWrapper.addEventListener('click', flipCard);
+
+        function showPlayerPassScreen() {
+            const player = players[currentPlayerIndex];
+            
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
+            
+            const roleNameEl = document.getElementById('player-role-name');
+            roleNameEl.innerText = player.role.name;
+            roleNameEl.className = player.role.isEvil ? 'evil' : 'good';
+            
+            const roleImgEl = document.getElementById('player-role-img');
+            roleImgEl.src = ""; 
+            
+            setTimeout(() => {
+                roleImgEl.src = player.role.img;
+            }, 10);
+            
+            const infoTextEl = document.getElementById('player-info-text');
+            infoTextEl.innerHTML = player.info;
+            
+            infoTextEl.className = '';
+
+            if (currentPlayerIndex === players.length - 1) {
+                nextBtn.innerText = "看完了 遊戲開始";
+            } else {
+                nextBtn.innerText = "看完了 下一位";
+            }
+        }
+
+        function nextPlayer() {
+            if (isTransitioning) return; 
+            isTransitioning = true; 
+
+            nextBtn.style.display = 'none';
+            cardInner.classList.remove('flipped');
+
+            const player = players[currentPlayerIndex];
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
+
+            setTimeout(() => {
+                if (currentPlayerIndex < players.length - 1) {
+                    currentPlayerIndex++;
+                    showPlayerPassScreen(); 
+                } else {
+                    document.getElementById('pass-screen').classList.remove('active');
+                    showGameScreen();
+                }
+                
+                isTransitioning = false; 
+            }, 600);
+        }
+
+        function showGameScreen() {
+            const gameScreen = document.getElementById('game-screen');
+            gameScreen.style.minHeight = '500px'; 
+            gameScreen.style.display = 'flex';
+            gameScreen.classList.add('active');
+        }
+
+        function revealAll() {
+            if(confirm("確定要揭曉所有人的真實身分嗎？（如果遊戲還沒結束，請按取消以免破壞體驗）")) {
+                const revealArea = document.getElementById('final-reveal-area');
+                const listEl = document.getElementById('final-reveal-list');
+                const gameEndControls = document.getElementById('game-end-controls'); 
+                const gameScreen = document.getElementById('game-screen');
+                
+                const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
+                
+                const half = Math.ceil(sortedPlayers.length / 2);
+                const col1 = sortedPlayers.slice(0, half);
+                const col2 = sortedPlayers.slice(half);
+
+                const renderItem = p => `
+                    <div class="final-reveal-item">
+                        <span style="color: #ccc; font-size: 14px;">${p.id}號</span>
+                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px; margin-top: 2px;">${p.role.name}</strong>
+                    </div>`;
+                
+                listEl.innerHTML = `
+                    <div class="final-reveal-column">
+                        ${col1.map(renderItem).join('')}
+                    </div>
+                    <div class="final-reveal-column">
+                        ${col2.map(renderItem).join('')}
+                    </div>
+                `;
+                
+                revealArea.style.display = 'block';
+                gameEndControls.style.display = 'none'; 
+                gameScreen.style.minHeight = 'auto';
+                gameScreen.style.display = 'block'; 
+                gameScreen.style.padding = '20px';
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
