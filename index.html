@@ -85,7 +85,7 @@
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
             opacity: 0.35; 
-            transition: all 0.25s ease;
+            transition: all 0.3s ease;
             user-select: none;
             -webkit-user-select: none;
         }
@@ -94,21 +94,26 @@
             opacity: 1; 
         }
         
-        /* 替選取的角色加上淡淡的陣營專屬底色 */
+        /* 正義方：選取時呈現淡淡藍色 + 不規則水滴狀 */
         .role-checkbox:checked + .good { 
             color: var(--good-color); 
             font-weight: 900; 
             text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
-            background: rgba(77, 166, 255, 0.15); /* 淡淡的正義藍底色 */
-            border: 1px solid rgba(77, 166, 255, 0.3); /* 微透的藍色邊框 */
+            background: rgba(77, 166, 255, 0.15); 
+            border: 1px solid rgba(77, 166, 255, 0.3); 
+            /* ★ 這裡設定了不規則形狀（有機圓角） */
+            border-radius: 80% 20% 85% 15% / 25% 85% 15% 75%;
         }
         
+        /* 邪惡方：選取時呈現淡淡紅色 + 不同方向的不規則水滴狀 */
         .role-checkbox:checked + .evil { 
             color: var(--evil-color); 
             font-weight: 900; 
             text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
-            background: rgba(255, 77, 77, 0.15); /* 淡淡的邪惡紅底色 */
-            border: 1px solid rgba(255, 77, 77, 0.3); /* 微透的紅色邊框 */
+            background: rgba(255, 77, 77, 0.15); 
+            border: 1px solid rgba(255, 77, 77, 0.3); 
+            /* ★ 這裡設定了另一種方向的不規則形狀 */
+            border-radius: 15% 85% 20% 80% / 80% 20% 85% 15%;
         }
 
         /* 文字顏色的基礎類別 */
