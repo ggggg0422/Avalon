@@ -64,6 +64,56 @@
         .btn-danger { background-color: transparent; border: 2px solid var(--evil-color); color: var(--evil-color); margin-top: 30px;}
         .btn-danger:hover { background-color: var(--evil-color); color: white; }
         
+        /* 文字顏色的基礎類別 */
+        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+
+        /* ====== 遊戲人數選擇網格 ====== */
+        .player-count-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3列排版 */
+            gap: 10px;
+            margin: 0 auto 20px auto;
+            width: 100%;
+        }
+        
+        .pc-radio {
+            display: none; /* 隱藏原本的單選框 */
+        }
+        
+        .pc-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1); /* 預設邊框稍調為 2px，減少跳動感 */
+            border-radius: 12px;
+            padding: 12px 5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box; /* 確保加粗邊框時不會擠壓到外層排版 */
+        }
+
+        .pc-item .desc {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* 被選中時的樣式：加粗金色邊框 + 發光效果 */
+        .pc-radio:checked + .pc-item {
+            background: rgba(212, 175, 55, 0.15); /* 金色半透明背景 */
+            border: 3px solid var(--gold); /* ★ 邊框加粗為 3px */
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6); /* ★ 增加光暈讓選取狀態更明顯 */
+            transform: scale(1.02); /* 選中時稍微放大一點點增加立體感 */
+        }
+        
         /* ====== 特殊角色選擇面板樣式 ====== */
         .role-list { 
             text-align: center; 
@@ -101,7 +151,6 @@
             text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
             background: rgba(77, 166, 255, 0.15); 
             border: 1px solid rgba(77, 166, 255, 0.3); 
-            /* ★ 這裡設定了不規則形狀（有機圓角） */
             border-radius: 80% 20% 85% 15% / 25% 85% 15% 75%;
         }
         
@@ -112,67 +161,7 @@
             text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
             background: rgba(255, 77, 77, 0.15); 
             border: 1px solid rgba(255, 77, 77, 0.3); 
-            /* ★ 這裡設定了另一種方向的不規則形狀 */
             border-radius: 15% 85% 20% 80% / 80% 20% 85% 15%;
-        }
-
-        /* 文字顏色的基礎類別 */
-        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        
-        /* ====== 客製化下拉選單 CSS ====== */
-        .custom-select-wrapper {
-            display: inline-block;
-            position: relative;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        
-        .custom-select-display {
-            padding: 10px 15px;
-            background-color: rgba(15, 23, 42, 0.8);
-            color: white;
-            border: 1px solid var(--gold);
-            border-radius: 25px; /* ★ 修改處：改成25px圓角 */
-            font-size: 16px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .custom-select-options {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            min-width: max-content;
-            background-color: rgba(15, 23, 42, 0.98);
-            border: 1px solid var(--gold);
-            border-radius: 15px; /* ★ 修改處：清單也稍微圓潤一點呼應 */
-            z-index: 100;
-            margin-top: 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            white-space: nowrap;
-        }
-
-        .custom-select-options.show {
-            display: block;
-        }
-
-        .custom-option {
-            padding: 12px 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 16px;
-        }
-
-        .custom-option:hover {
-            background-color: rgba(212, 175, 55, 0.2);
         }
 
         #setup-error { color: var(--evil-color); font-weight: bold; margin: 10px 0; min-height: 20px; }
@@ -399,20 +388,43 @@
         <div class="role-list">
             <h3>選擇遊戲人數</h3>
             
-            <div class="custom-select-wrapper">
-                <input type="hidden" id="player-count" value="10">
-                <div class="custom-select-display" id="custom-select-display">
-                    <span>10 人局 (<span class="good">6好人</span> <span class="evil">4壞人</span>)</span>
-                    <span style="font-size: 12px;">▼</span>
-                </div>
-                <div class="custom-select-options" id="custom-select-options">
-                    <div class="custom-option" data-value="5">5 人局 (<span class="good">3好人</span> <span class="evil">2壞人</span>)</div>
-                    <div class="custom-option" data-value="6">6 人局 (<span class="good">4好人</span> <span class="evil">2壞人</span>)</div>
-                    <div class="custom-option" data-value="7">7 人局 (<span class="good">4好人</span> <span class="evil">3壞人</span>)</div>
-                    <div class="custom-option" data-value="8">8 人局 (<span class="good">5好人</span> <span class="evil">3壞人</span>)</div>
-                    <div class="custom-option" data-value="9">9 人局 (<span class="good">5好人</span> <span class="evil">4壞人</span>)</div>
-                    <div class="custom-option" data-value="10">10 人局 (<span class="good">6好人</span> <span class="evil">4壞人</span>)</div>
-                </div>
+            <!-- 將下拉選單改為網格式的 Radio 按鈕群組 -->
+            <div class="player-count-grid">
+                <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
+                <label for="pc-5" class="pc-item">
+                    5 人局
+                    <span class="desc">(<span class="good">3好</span> <span class="evil">2壞</span>)</span>
+                </label>
+                
+                <input type="radio" name="player-count" id="pc-6" value="6" class="pc-radio">
+                <label for="pc-6" class="pc-item">
+                    6 人局
+                    <span class="desc">(<span class="good">4好</span> <span class="evil">2壞</span>)</span>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-7" value="7" class="pc-radio">
+                <label for="pc-7" class="pc-item">
+                    7 人局
+                    <span class="desc">(<span class="good">4好</span> <span class="evil">3壞</span>)</span>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-8" value="8" class="pc-radio">
+                <label for="pc-8" class="pc-item">
+                    8 人局
+                    <span class="desc">(<span class="good">5好</span> <span class="evil">3壞</span>)</span>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-9" value="9" class="pc-radio">
+                <label for="pc-9" class="pc-item">
+                    9 人局
+                    <span class="desc">(<span class="good">5好</span> <span class="evil">4壞</span>)</span>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-10" value="10" class="pc-radio" checked>
+                <label for="pc-10" class="pc-item">
+                    10 人局
+                    <span class="desc">(<span class="good">6好</span> <span class="evil">4壞</span>)</span>
+                </label>
             </div>
 
             <h3>選擇特殊角色</h3>
@@ -511,34 +523,19 @@
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
 
-        // ====== 客製化下拉選單邏輯 ======
+        // ====== 監聽人數選擇變化，自動更新預設角色 ======
         document.addEventListener('DOMContentLoaded', () => {
-            const display = document.getElementById('custom-select-display');
-            const options = document.getElementById('custom-select-options');
-            const input = document.getElementById('player-count');
-
-            display.addEventListener('click', (e) => {
-                e.stopPropagation();
-                options.classList.toggle('show');
-            });
-
-            document.querySelectorAll('.custom-option').forEach(opt => {
-                opt.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    input.value = this.dataset.value;
-                    display.innerHTML = `<span>${this.innerHTML}</span> <span style="font-size: 12px;">▼</span>`;
-                    options.classList.remove('show');
-                    updateDefaultRoles();
-                });
-            });
-
-            document.addEventListener('click', () => {
-                options.classList.remove('show');
+            const countRadios = document.querySelectorAll('input[name="player-count"]');
+            countRadios.forEach(radio => {
+                radio.addEventListener('change', updateDefaultRoles);
             });
         });
 
         function updateDefaultRoles() {
-            const count = parseInt(document.getElementById('player-count').value);
+            // 抓取被選中的 radio 按鈕數值
+            const checkedRadio = document.querySelector('input[name="player-count"]:checked');
+            if (!checkedRadio) return;
+            const count = parseInt(checkedRadio.value);
             
             const merlin = document.getElementById('role-merlin');
             const percival = document.getElementById('role-percival');
@@ -607,7 +604,8 @@
             currentPlayerIndex = 0; 
             players = [];
 
-            const playerCount = parseInt(document.getElementById('player-count').value);
+            // 抓取被選中的 radio 按鈕數值
+            const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
             const ratio = rules[playerCount];
 
             let goodRoles = [];
