@@ -12,7 +12,6 @@
             --evil-color: #ff4d4d;
             --gold: #d4af37;
             --purple: #b366ff;
-            /* 定義亮黃色變數供按鈕使用 */
             --warning-yellow: #ffcc00; 
         }
         body {
@@ -20,7 +19,7 @@
             color: white;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 5px 20px 20px; /* ★ 縮小了最上方的 padding，讓畫面更貼齊頂部 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,16 +34,19 @@
             width: 100%;
             max-width: 400px;
             background-color: var(--panel-bg);
-            padding: 20px;
+            padding: 15px 20px 20px; /* ★ 稍微縮小容器頂部的 padding */
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            zoom: 1.2; /* ★ 將整體畫面等比例放大 120% */
+            zoom: 1.2; 
         }
         .screen.active {
             display: block;
         }
+        
         h1, h2, h3 { color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        h1 { margin-top: 0; margin-bottom: 15px; } /* ★ 將 h1 頂部 margin 設為 0，實現貼齊最上方 */
+
         button {
             background-color: var(--text-color);
             color: white;
@@ -72,19 +74,19 @@
         /* ====== 遊戲人數選擇網格 ====== */
         .player-count-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3列排版 */
+            grid-template-columns: repeat(3, 1fr); 
             gap: 10px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 15px auto; /* ★ 稍微縮小下方的留白 */
             width: 100%;
         }
         
         .pc-radio {
-            display: none; /* 隱藏原本的單選框 */
+            display: none; 
         }
         
         .pc-item {
             background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.1); /* 預設邊框稍調為 2px，減少跳動感 */
+            border: 2px solid rgba(255, 255, 255, 0.1); 
             border-radius: 12px;
             padding: 12px 5px;
             cursor: pointer;
@@ -97,7 +99,7 @@
             justify-content: center;
             user-select: none;
             -webkit-user-select: none;
-            box-sizing: border-box; /* 確保加粗邊框時不會擠壓到外層排版 */
+            box-sizing: border-box; 
         }
 
         .pc-item .desc {
@@ -106,20 +108,24 @@
             opacity: 0.8;
         }
 
-        /* 被選中時的樣式：加粗金色邊框 + 發光效果 */
         .pc-radio:checked + .pc-item {
-            background: rgba(212, 175, 55, 0.15); /* 金色半透明背景 */
-            border: 3px solid var(--gold); /* ★ 邊框加粗為 3px */
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6); /* ★ 增加光暈讓選取狀態更明顯 */
-            transform: scale(1.02); /* 選中時稍微放大一點點增加立體感 */
+            background: rgba(212, 175, 55, 0.15); 
+            border: 3px solid var(--gold); 
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6); 
+            transform: scale(1.02); 
         }
         
         /* ====== 特殊角色選擇面板樣式 ====== */
         .role-list { 
             text-align: center; 
-            margin-bottom: 20px; 
+            margin-bottom: 5px; /* ★ 從 20px 縮小至 5px，讓按鈕更貼近選項 */
         }
         
+        h3 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
         .role-checkbox {
             display: none;
         }
@@ -144,7 +150,6 @@
             opacity: 1; 
         }
         
-        /* 正義方：選取時呈現淡淡藍色 + 不規則水滴狀 */
         .role-checkbox:checked + .good { 
             color: var(--good-color); 
             font-weight: 900; 
@@ -154,7 +159,6 @@
             border-radius: 80% 20% 85% 15% / 25% 85% 15% 75%;
         }
         
-        /* 邪惡方：選取時呈現淡淡紅色 + 不同方向的不規則水滴狀 */
         .role-checkbox:checked + .evil { 
             color: var(--evil-color); 
             font-weight: 900; 
@@ -164,7 +168,14 @@
             border-radius: 15% 85% 20% 80% / 80% 20% 85% 15%;
         }
 
-        #setup-error { color: var(--evil-color); font-weight: bold; margin: 10px 0; min-height: 20px; }
+        /* ★ 縮小預留空間的高度，讓畫面更緊湊 */
+        #setup-error { 
+            color: var(--evil-color); 
+            font-weight: bold; 
+            margin: 0; 
+            min-height: 16px; 
+            font-size: 14px;
+        }
 
         /* ====== 3D 翻牌動畫 CSS ====== */
         .card-container {
@@ -246,7 +257,6 @@
             border: 1px solid var(--gold);
         }
         
-        /* 角色名稱定位 */
         #player-role-name {
             margin: 0;
             font-size: 32px; 
@@ -258,7 +268,6 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
         }
 
-        /* 角色圖案定位 */
         .role-img {
             width: 156px; 
             height: 156px;
@@ -276,7 +285,6 @@
             margin: 0; 
         }
 
-        /* 角色資訊定位 */
         #player-info-text { 
             font-size: 16px; 
             line-height: 1.5; 
@@ -388,7 +396,6 @@
         <div class="role-list">
             <h3>選擇遊戲人數</h3>
             
-            <!-- 將下拉選單改為網格式的 Radio 按鈕群組 -->
             <div class="player-count-grid">
                 <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
                 <label for="pc-5" class="pc-item">
@@ -428,7 +435,7 @@
             </div>
 
             <h3>選擇特殊角色</h3>
-            <p style="font-size: 12px; color: #ccc;">空位自動補<span class="good">忠臣</span>或<span class="evil">爪牙</span></p>
+            <p style="font-size: 12px; color: #ccc; margin-bottom: 5px;">空位自動補<span class="good">忠臣</span>或<span class="evil">爪牙</span></p>
             
             <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
             <label for="role-merlin" class="role-item good">梅林</label>
@@ -453,7 +460,8 @@
         </div>
         
         <div id="setup-error"></div>
-        <button class="btn-gold" onclick="startGame()">開始分配角色</button>
+        <!-- ★ 將按鈕的 margin-top 調為 5px 讓它緊貼上面 -->
+        <button class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
     </div>
 
     <div id="pass-screen" class="screen">
@@ -523,7 +531,6 @@
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
 
-        // ====== 監聽人數選擇變化，自動更新預設角色 ======
         document.addEventListener('DOMContentLoaded', () => {
             const countRadios = document.querySelectorAll('input[name="player-count"]');
             countRadios.forEach(radio => {
@@ -532,7 +539,6 @@
         });
 
         function updateDefaultRoles() {
-            // 抓取被選中的 radio 按鈕數值
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
             const count = parseInt(checkedRadio.value);
@@ -604,7 +610,6 @@
             currentPlayerIndex = 0; 
             players = [];
 
-            // 抓取被選中的 radio 按鈕數值
             const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
             const ratio = rules[playerCount];
 
@@ -620,12 +625,12 @@
             if(document.getElementById('role-oberon').checked) evilRoles.push('oberon');
 
             if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
-                errorEl.innerText = `⚠️ 無法開始：${playerCount} 人局的上限是 ${ratio.good} 名好人與 ${ratio.evil} 名壞人。請調整特殊角色數量！`;
+                errorEl.innerText = `⚠️ ${ratio.good}名好人與${ratio.evil}名壞人。請調整角色！`;
                 return;
             }
 
             if(goodRoles.length === 0 && ratio.good > 0) {
-                 if(!confirm("⚠️ 警告：目前正義方沒有任何特殊角色(如梅林、李砸康)，遊戲可能變得極難。確定要開始嗎？")) {
+                 if(!confirm("⚠️ 警告：目前正義方沒有任何特殊角色，確定要開始嗎？")) {
                      return;
                  }
             }
