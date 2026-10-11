@@ -318,14 +318,18 @@
             perspective: 1000px; 
             border: none;
             padding: 0;
-            margin: 20px auto;
+            margin: 20px auto; /* 確保上下有間距，左右自動居中 */
+            display: flex; /* 新增 flex 佈局，讓子元素更容易居中 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
             position: relative;
             background-color: transparent;
             -webkit-touch-callout: none;
-            width: 280px; 
+            width: 100%; /* 寬度改為 100% 適應父容器 */
+            max-width: 280px;  /* 限制最大寬度，保持卡牌比例 */
             height: 392px; 
             border-radius: 15px;
         }
@@ -659,12 +663,12 @@
                     </label>
                 </div>
 
-                <!-- 第二排：4個壞人 -->
+                <!-- 第二排：2個壞人 -->
                 <div class="role-row">
-                    <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
-                    <label for="role-assassin" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/vmJzZGcz/4.jpg" alt="刺客">
-                        <div class="role-card-name">刺客</div>
+                    <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
+                    <label for="role-mordred" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/XvR8YnpP/2.jpg" alt="莫德雷德">
+                        <div class="role-card-name">莫德雷德</div>
                     </label>
 
                     <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
@@ -672,11 +676,14 @@
                         <img src="https://i.postimg.cc/xdwR19c5/3.jpg" alt="莫甘娜">
                         <div class="role-card-name">莫甘娜</div>
                     </label>
+                </div>
 
-                    <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
-                    <label for="role-mordred" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/XvR8YnpP/2.jpg" alt="莫德雷德">
-                        <div class="role-card-name">莫德雷德</div>
+                <!-- 第三排：2個壞人 -->
+                <div class="role-row">
+                    <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
+                    <label for="role-assassin" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/vmJzZGcz/4.jpg" alt="刺客">
+                        <div class="role-card-name">刺客</div>
                     </label>
 
                     <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
