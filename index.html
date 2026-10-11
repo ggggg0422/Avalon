@@ -6,92 +6,103 @@
     <title>阿瓦隆網頁小幫手</title>
     <style>
         :root {
-            --panel-bg: rgba(22, 33, 62, 0.9);
+            --panel-bg: rgba(18, 24, 43, 0.85); /* 更深邃的背景 */
+            --panel-border: rgba(212, 175, 55, 0.4);
             --text-color: #e94560;
             --good-color: #4da6ff;
             --evil-color: #ff4d4d;
             --gold: #d4af37;
+            --gold-light: #f3e5ab;
             --purple: #b366ff;
             --warning-yellow: #ffcc00; 
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             text-align: center;
             margin: 0;
-            padding: 5px 20px 20px; /* ★ 縮小了最上方的 padding，讓畫面更貼齊頂部 */
+            padding: 5px 20px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            background-image: linear-gradient(rgba(10, 15, 25, 0.8), rgba(10, 15, 25, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(10, 15, 25, 0.85), rgba(10, 15, 25, 0.85)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
+
         .screen {
             display: none;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px; /* 稍微放寬一點讓網格更好看 */
             background-color: var(--panel-bg);
-            padding: 15px 20px 20px; /* ★ 稍微縮小容器頂部的 padding */
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            zoom: 1.2; 
+            backdrop-filter: blur(10px); /* 加入毛玻璃效果 */
+            -webkit-backdrop-filter: blur(10px);
+            padding: 25px 25px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid var(--panel-border);
+            zoom: 1.1; 
+            box-sizing: border-box;
         }
+        
         .screen.active {
             display: block;
+            animation: fadeIn 0.4s ease-out;
         }
         
-        h1, h2, h3 { color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-        h1 { margin-top: 0; margin-bottom: 15px; } /* ★ 將 h1 頂部 margin 設為 0，實現貼齊最上方 */
-
-        button {
-            background-color: var(--text-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 10px auto; 
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        button:hover { background-color: #c8324a; transform: translateY(-2px); }
-        .btn-gold { background-color: var(--gold); color: #1a1a2e; }
-        .btn-gold:hover { background-color: #b5952f; }
-        .btn-danger { background-color: transparent; border: 2px solid var(--evil-color); color: var(--evil-color); margin-top: 30px;}
-        .btn-danger:hover { background-color: var(--evil-color); color: white; }
         
-        /* 文字顏色的基礎類別 */
-        .good { color: var(--good-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
-        .purple { color: var(--purple); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        h1, h2, h3 { 
+            color: var(--gold); 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9); 
+            letter-spacing: 1px;
+        }
+        h1 { margin-top: 0; margin-bottom: 20px; font-weight: 900; }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0 15px;
+        }
+        .section-title::before, .section-title::after {
+            content: "";
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            flex: 1;
+        }
 
-        /* ====== 遊戲人數選擇網格 ====== */
+        .good { color: var(--good-color); font-weight: bold; text-shadow: 0 0 5px rgba(77, 166, 255, 0.5);}
+        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);}
+        .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 5px rgba(179, 102, 255, 0.5);}
+
+        /* ====== 高質感遊戲人數選擇網格 ====== */
         .player-count-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            gap: 10px;
-            margin: 0 auto 15px auto; /* ★ 稍微縮小下方的留白 */
+            gap: 12px;
+            margin: 0 auto 20px auto; 
             width: 100%;
         }
         
-        .pc-radio {
-            display: none; 
-        }
+        .pc-radio { display: none; }
         
         .pc-item {
-            background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 12px;
-            padding: 12px 5px;
+            background: linear-gradient(145deg, rgba(30, 40, 60, 0.6), rgba(15, 20, 35, 0.8));
+            border: 1px solid var(--glass-border); 
+            border-radius: 14px;
+            padding: 15px 8px;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             color: white;
             display: flex;
             flex-direction: column;
@@ -100,84 +111,160 @@
             user-select: none;
             -webkit-user-select: none;
             box-sizing: border-box; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
+        /* 懸停效果 */
+        .pc-item:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, rgba(40, 50, 75, 0.7), rgba(20, 25, 45, 0.9));
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        /* 數字樣式 */
+        .pc-item .pc-number {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ddd;
+            margin-bottom: 6px;
+            transition: color 0.3s;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* 描述樣式 */
         .pc-item .desc {
-            font-size: 11px;
-            margin-top: 5px;
-            opacity: 0.8;
+            font-size: 12px;
+            opacity: 0.9;
+            background: rgba(0,0,0,0.4);
+            padding: 3px 8px;
+            border-radius: 10px;
         }
 
+        /* 選中狀態 (大改造) */
         .pc-radio:checked + .pc-item {
-            background: rgba(212, 175, 55, 0.15); 
-            border: 3px solid var(--gold); 
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6); 
-            transform: scale(1.02); 
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(40, 20, 10, 0.6)); 
+            border: 2px solid var(--gold); 
+            box-shadow: 
+                0 0 15px rgba(212, 175, 55, 0.4), /* 外發光 */
+                inset 0 0 15px rgba(212, 175, 55, 0.1); /* 內發光 */
+            transform: translateY(-4px) scale(1.03); 
         }
-        
+
+        .pc-radio:checked + .pc-item .pc-number {
+            color: var(--gold-light);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+        }
+
+        /* 選中時的裝飾小光點 */
+        .pc-radio:checked + .pc-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(45deg);
+            animation: shine 3s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
         /* ====== 特殊角色選擇面板樣式 ====== */
         .role-list { 
             text-align: center; 
-            margin-bottom: 5px; /* ★ 從 20px 縮小至 5px，讓按鈕更貼近選項 */
-        }
-        
-        h3 {
-            margin-top: 10px;
             margin-bottom: 10px;
         }
-
-        .role-checkbox {
-            display: none;
-        }
+        
+        .role-checkbox { display: none; }
 
         .role-item { 
             display: inline-block;
             padding: 10px 16px;
-            margin: 6px 4px; 
-            font-size: 16px; 
-            font-weight: 900; 
-            border-radius: 25px;
+            margin: 6px 5px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            border-radius: 20px;
             cursor: pointer;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.35; 
-            transition: all 0.3s ease;
+            background: rgba(20, 30, 50, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #888;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             -webkit-user-select: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
         
-        .role-checkbox:checked + .role-item {
-            opacity: 1; 
+        .role-item:hover {
+            background: rgba(30, 45, 75, 0.8);
+            color: #ccc;
         }
         
         .role-checkbox:checked + .good { 
-            color: var(--good-color); 
+            color: white; 
             font-weight: 900; 
-            text-shadow: 0 0 10px rgba(77, 166, 255, 0.8);
-            background: rgba(77, 166, 255, 0.15); 
-            border: 1px solid rgba(77, 166, 255, 0.3); 
-            border-radius: 80% 20% 85% 15% / 25% 85% 15% 75%;
+            background: linear-gradient(135deg, rgba(77, 166, 255, 0.3), rgba(20, 80, 150, 0.8)); 
+            border: 1px solid rgba(77, 166, 255, 0.6); 
+            box-shadow: 0 4px 10px rgba(77, 166, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
         
         .role-checkbox:checked + .evil { 
-            color: var(--evil-color); 
+            color: white; 
             font-weight: 900; 
-            text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
-            background: rgba(255, 77, 77, 0.15); 
-            border: 1px solid rgba(255, 77, 77, 0.3); 
-            border-radius: 15% 85% 20% 80% / 80% 20% 85% 15%;
+            background: linear-gradient(135deg, rgba(255, 77, 77, 0.3), rgba(150, 20, 20, 0.8)); 
+            border: 1px solid rgba(255, 77, 77, 0.6); 
+            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
-        /* ★ 縮小預留空間的高度，讓畫面更緊湊 */
         #setup-error { 
-            color: var(--evil-color); 
+            color: var(--warning-yellow); 
             font-weight: bold; 
-            margin: 0; 
-            min-height: 16px; 
+            margin: 15px 0 10px; 
+            min-height: 20px; 
             font-size: 14px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
 
-        /* ====== 3D 翻牌動畫 CSS ====== */
+        button {
+            border: none;
+            padding: 14px 28px;
+            margin: 10px auto; 
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 900;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+        
+        .btn-gold { 
+            background: linear-gradient(to bottom, #ebd197, #b5952f);
+            color: #1a1a2e; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.6);
+            border: 1px solid #7a631c;
+            width: 100%;
+        }
+        .btn-gold:hover { 
+            background: linear-gradient(to bottom, #f5dfa8, #c9a738);
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        .btn-gold:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* ====== 3D 翻牌動畫 CSS (維持原樣) ====== */
         .card-container {
             perspective: 1000px; 
             border: none;
@@ -202,9 +289,7 @@
             position: relative;
         }
 
-        .card-inner.flipped {
-            transform: rotateY(180deg);
-        }
+        .card-inner.flipped { transform: rotateY(180deg); }
 
         .card-face {
             width: 100%;
@@ -214,7 +299,7 @@
             display: flex;
             flex-direction: column;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
         }
 
         .card-back {
@@ -229,7 +314,7 @@
             background-position: center;
             transform: rotateY(180deg);
             box-sizing: border-box;
-            border: none; 
+            border: 2px solid var(--panel-border); 
             display: block; 
             position: relative; 
             padding: 0; 
@@ -255,6 +340,7 @@
             padding: 8px 15px;
             border-radius: 20px;
             border: 1px solid var(--gold);
+            backdrop-filter: blur(4px);
         }
         
         #player-role-name {
@@ -265,18 +351,18 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
         }
 
         .role-img {
             width: 156px; 
             height: 156px;
             border-radius: 50%;
-            border: 3px solid var(--gold);
+            border: 4px solid var(--gold);
             object-fit: contain; 
             display: block;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            background-color: #222;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+            background-color: #111;
             pointer-events: none; 
             position: absolute; 
             top: 50%; 
@@ -300,6 +386,14 @@
             margin: 0; 
             width: 85%; 
         }
+        
+        #next-player-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+        #next-player-btn:hover { background: rgba(255,255,255,0.2); }
 
         /* ====== 遊戲結束樣式 ====== */
         
@@ -320,13 +414,25 @@
             box-sizing: border-box;
         }
 
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0.7); }
+            70% { box-shadow: 0 0 0 25px rgba(220, 20, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0); }
+        }
+
+        @keyframes pulse-fast-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9); }
+            50% { box-shadow: 0 0 0 35px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+
         #reveal-all-btn {
-            width: 200px; 
-            height: 200px; 
+            width: 220px; 
+            height: 220px; 
             padding: 15px; 
-            font-size: 26px; 
+            font-size: 24px; 
             font-weight: 900; 
-            border-radius: 15px; 
+            border-radius: 50%; 
             display: flex;
             flex-direction: column; 
             justify-content: center;
@@ -335,46 +441,79 @@
             line-height: 1.4;
             margin: 0; 
 
-            background-color: var(--warning-yellow);
-            color: #000000; 
-            text-shadow: none; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            background: radial-gradient(circle, #b30000 0%, #500000 100%);
+            color: #ffffff; 
+            border: 4px solid #ff4d4d;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,0,0.3); 
+            
+            animation: pulse-red 2s infinite; 
+            transition: all 0.3s ease;
         }
 
         #reveal-all-btn:hover {
-            background-color: #e6b800;
-            transform: translateY(-3px);
+            transform: scale(1.05); 
+            background: radial-gradient(circle, #d60000 0%, #700000 100%);
+            border-color: #ff6666;
+            cursor: pointer;
         }
 
         #final-reveal-list {
             display: flex;
-            gap: 15px; 
+            gap: 12px; 
             margin-top: 15px;
         }
 
         .final-reveal-column {
             flex: 1;
-            background: transparent; 
-            border: 4px solid var(--gold); 
-            border-radius: 10px;
-            padding: 10px; 
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             gap: 10px; 
-            box-sizing: border-box;
         }
         
+        /* 揭曉畫面：單個玩家項目卡片 */
         .final-reveal-item {
-            background: rgba(34, 34, 34, 0.95); 
-            border: 1px solid #444; 
-            border-radius: 8px;
+            background: rgba(20, 25, 40, 0.9); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px;
             margin: 0; 
-            padding: 12px 5px;
+            padding: 10px;
             display: flex;
-            flex-direction: column; 
+            flex-direction: row; 
             align-items: center;
-            justify-content: center;
-            gap: 5px;
+            justify-content: flex-start;
+            gap: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .final-reveal-item:hover {
+            transform: translateX(3px);
+            border-color: var(--panel-border);
+            background: rgba(30, 35, 50, 0.95);
+        }
+
+        /* 揭曉畫面：玩家角色小頭像 */
+        .reveal-role-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #111;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            flex-shrink: 0; 
+        }
+        
+        .reveal-role-img.good-img { border: 2px solid var(--good-color); }
+        .reveal-role-img.evil-img { border: 2px solid var(--evil-color); }
+
+        /* 揭曉畫面：文字區塊 */
+        .reveal-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.3;
         }
 
         .player-number-text {
@@ -391,51 +530,51 @@
 <body>
 
     <div id="setup-screen" class="screen active">
-        <h1 style="color: #B58252;">阿瓦隆小幫手</h1>
+        <h1 style="color: #e8c37d; text-transform: uppercase; letter-spacing: 2px;">阿瓦隆小幫手</h1>
         
         <div class="role-list">
-            <h3>選擇遊戲人數</h3>
+            <h3 class="section-title">選擇遊戲人數</h3>
             
             <div class="player-count-grid">
                 <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
                 <label for="pc-5" class="pc-item">
-                    5 人局
-                    <span class="desc">(<span class="good">3好</span> <span class="evil">2壞</span>)</span>
+                    <div class="pc-number">5 人</div>
+                    <div class="desc"><span class="good">3好</span> <span class="evil">2壞</span></div>
                 </label>
                 
                 <input type="radio" name="player-count" id="pc-6" value="6" class="pc-radio">
                 <label for="pc-6" class="pc-item">
-                    6 人局
-                    <span class="desc">(<span class="good">4好</span> <span class="evil">2壞</span>)</span>
+                    <div class="pc-number">6 人</div>
+                    <div class="desc"><span class="good">4好</span> <span class="evil">2壞</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-7" value="7" class="pc-radio">
                 <label for="pc-7" class="pc-item">
-                    7 人局
-                    <span class="desc">(<span class="good">4好</span> <span class="evil">3壞</span>)</span>
+                    <div class="pc-number">7 人</div>
+                    <div class="desc"><span class="good">4好</span> <span class="evil">3壞</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-8" value="8" class="pc-radio">
                 <label for="pc-8" class="pc-item">
-                    8 人局
-                    <span class="desc">(<span class="good">5好</span> <span class="evil">3壞</span>)</span>
+                    <div class="pc-number">8 人</div>
+                    <div class="desc"><span class="good">5好</span> <span class="evil">3壞</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-9" value="9" class="pc-radio">
                 <label for="pc-9" class="pc-item">
-                    9 人局
-                    <span class="desc">(<span class="good">5好</span> <span class="evil">4壞</span>)</span>
+                    <div class="pc-number">9 人</div>
+                    <div class="desc"><span class="good">5好</span> <span class="evil">4壞</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-10" value="10" class="pc-radio" checked>
                 <label for="pc-10" class="pc-item">
-                    10 人局
-                    <span class="desc">(<span class="good">6好</span> <span class="evil">4壞</span>)</span>
+                    <div class="pc-number">10 人</div>
+                    <div class="desc"><span class="good">6好</span> <span class="evil">4壞</span></div>
                 </label>
             </div>
 
-            <h3>選擇特殊角色</h3>
-            <p style="font-size: 12px; color: #ccc; margin-bottom: 5px;">空位自動補<span class="good">忠臣</span>或<span class="evil">爪牙</span></p>
+            <h3 class="section-title">選擇特殊角色</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 12px;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
             
             <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
             <label for="role-merlin" class="role-item good">梅林</label>
@@ -460,8 +599,7 @@
         </div>
         
         <div id="setup-error"></div>
-        <!-- ★ 將按鈕的 margin-top 調為 5px 讓它緊貼上面 -->
-        <button class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
+        <button class="btn-gold" style="margin-top: 10px;" onclick="startGame()">開始分配角色</button>
     </div>
 
     <div id="pass-screen" class="screen">
@@ -481,19 +619,19 @@
             </div>
         </div>
         
-        <button id="next-player-btn" onclick="nextPlayer()" style="display:none;">看完了 下一位</button>
+        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width:100%;">看完了 下一位</button>
     </div>
 
     <div id="game-screen" class="screen">
         
         <div id="game-end-controls">
-            <button id="reveal-all-btn" onclick="revealAll()">遊戲結束<br>查看所有人<br>身分</button>
+            <button id="reveal-all-btn" onclick="revealAll()">結束遊戲<br>查看所有人<br>身分</button>
         </div>
 
-        <div id="final-reveal-area" style="display: none; margin-top: 30px;">
-            <h3 style="margin-bottom: 20px;">真實身分揭曉</h3>
+        <div id="final-reveal-area" style="display: none; margin-top: 10px;">
+            <h3 class="section-title">真實身分揭曉</h3>
             <div id="final-reveal-list"></div>
-            <button class="btn-gold" onclick="location.reload()" style="margin-top: 30px; padding: 15px 30px; font-size: 18px;">重新一局</button>
+            <button class="btn-gold" onclick="location.reload()" style="margin-top: 25px; padding: 15px 30px; font-size: 18px;">重新一局</button>
         </div>
     </div>
 
@@ -513,6 +651,7 @@
             minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
 
+        // 預先載入圖片
         Object.values(roleData).forEach(role => {
             const img = new Image();
             img.src = role.img;
@@ -551,6 +690,7 @@
             const mordred = document.getElementById('role-mordred');
             const oberon = document.getElementById('role-oberon');
 
+            // 先全部取消
             merlin.checked = false;
             percival.checked = false;
             lizakang.checked = false;
@@ -559,6 +699,7 @@
             mordred.checked = false;
             oberon.checked = false;
 
+            // 依人數勾選預設
             switch(count) {
                 case 5:
                     merlin.checked = true;
@@ -604,6 +745,8 @@
             }
         }
 
+        let forceStartWithoutGood = false; 
+
         function startGame() {
             const errorEl = document.getElementById('setup-error');
             errorEl.innerText = "";
@@ -626,19 +769,24 @@
 
             if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
                 errorEl.innerText = `⚠️ ${ratio.good}名好人與${ratio.evil}名壞人。請調整角色！`;
+                forceStartWithoutGood = false; 
                 return;
             }
 
             if(goodRoles.length === 0 && ratio.good > 0) {
-                 if(!confirm("⚠️ 警告：目前正義方沒有任何特殊角色，確定要開始嗎？")) {
+                 if(!forceStartWithoutGood) {
+                     errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊「開始」以確認執行。</strong>";
+                     forceStartWithoutGood = true;
                      return;
                  }
             }
 
+            // 補齊平民與爪牙
             while(goodRoles.length < ratio.good) goodRoles.push('servant');
             while(evilRoles.length < ratio.evil) evilRoles.push('minion');
 
             let selectedRoles = goodRoles.concat(evilRoles);
+            // 洗牌
             selectedRoles = selectedRoles.sort(() => Math.random() - 0.5);
 
             players = selectedRoles.map((roleKey, index) => {
@@ -700,7 +848,7 @@
             if (cardInner.classList.contains('flipped')) return;
 
             cardInner.classList.add('flipped');
-            nextBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'block'; // 改為 block 使其滿版
 
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
@@ -766,42 +914,65 @@
             gameScreen.classList.add('active');
         }
 
+        let confirmRevealActive = false;
+        let revealTimeout;
+
         function revealAll() {
-            if(confirm("確定要揭曉所有人的真實身分嗎？（如果遊戲還沒結束，請按取消以免破壞體驗）")) {
-                const revealArea = document.getElementById('final-reveal-area');
-                const listEl = document.getElementById('final-reveal-list');
-                const gameEndControls = document.getElementById('game-end-controls'); 
-                const gameScreen = document.getElementById('game-screen');
-                
-                const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
-                
-                const half = Math.ceil(sortedPlayers.length / 2);
-                const col1 = sortedPlayers.slice(0, half);
-                const col2 = sortedPlayers.slice(half);
+            const btn = document.getElementById('reveal-all-btn');
 
-                const renderItem = p => `
-                    <div class="final-reveal-item">
-                        <span style="color: #ccc; font-size: 14px;">${p.id}號</span>
-                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 18px; margin-top: 2px;">${p.role.name}</strong>
-                    </div>`;
+            if (!confirmRevealActive) {
+                confirmRevealActive = true;
+                btn.innerHTML = "⚠️ 確定揭曉？<br><span style='font-size:16px; font-weight:normal;'>(再次點擊確認，不可逆)</span>";
+                btn.style.animation = "pulse-fast-red 0.5s infinite";
+                btn.style.border = "4px solid white";
                 
-                listEl.innerHTML = `
-                    <div class="final-reveal-column">
-                        ${col1.map(renderItem).join('')}
-                    </div>
-                    <div class="final-reveal-column">
-                        ${col2.map(renderItem).join('')}
-                    </div>
-                `;
-                
-                revealArea.style.display = 'block';
-                gameEndControls.style.display = 'none'; 
-                gameScreen.style.minHeight = 'auto';
-                gameScreen.style.display = 'block'; 
-                gameScreen.style.padding = '20px';
-
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                revealTimeout = setTimeout(() => {
+                    confirmRevealActive = false;
+                    btn.innerHTML = "結束遊戲<br>查看所有人<br>身分";
+                    btn.style.animation = "pulse-red 2s infinite";
+                    btn.style.border = "4px solid #ff4d4d";
+                }, 3500);
+                return;
             }
+
+            clearTimeout(revealTimeout);
+            
+            const revealArea = document.getElementById('final-reveal-area');
+            const listEl = document.getElementById('final-reveal-list');
+            const gameEndControls = document.getElementById('game-end-controls'); 
+            const gameScreen = document.getElementById('game-screen');
+            
+            const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
+            
+            const half = Math.ceil(sortedPlayers.length / 2);
+            const col1 = sortedPlayers.slice(0, half);
+            const col2 = sortedPlayers.slice(half);
+
+            const renderItem = p => `
+                <div class="final-reveal-item">
+                    <img src="${p.role.img}" class="reveal-role-img ${p.role.isEvil ? 'evil-img' : 'good-img'}" alt="${p.role.name}">
+                    <div class="reveal-info">
+                        <span style="color: #999; font-size: 13px;">${p.id}號玩家</span>
+                        <strong class="${p.role.isEvil ? 'evil' : 'good'}" style="font-size: 16px; margin-top: 2px;">${p.role.name}</strong>
+                    </div>
+                </div>`;
+            
+            listEl.innerHTML = `
+                <div class="final-reveal-column">
+                    ${col1.map(renderItem).join('')}
+                </div>
+                <div class="final-reveal-column">
+                    ${col2.map(renderItem).join('')}
+                </div>
+            `;
+            
+            revealArea.style.display = 'block';
+            gameEndControls.style.display = 'none'; 
+            gameScreen.style.minHeight = 'auto';
+            gameScreen.style.display = 'block'; 
+            gameScreen.style.padding = '25px';
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
     </script>
 </body>
