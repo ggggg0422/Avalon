@@ -6,7 +6,7 @@
     <title>阿瓦隆網頁小幫手</title>
     <style>
         :root {
-            --panel-bg: rgba(18, 24, 43, 0.85); /* 更深邃的背景 */
+            --panel-bg: rgba(18, 24, 43, 0.85);
             --panel-border: rgba(212, 175, 55, 0.4);
             --text-color: #e94560;
             --good-color: #4da6ff;
@@ -72,7 +72,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin: 25px 0 15px;
+            margin: 20px 0 12px;
         }
         .section-title::before, .section-title::after {
             content: "";
@@ -85,12 +85,12 @@
         .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);}
         .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 5px rgba(179, 102, 255, 0.5);}
 
-        /* ====== 高質感遊戲人數選擇網格 ====== */
+        /* ====== 再次縮小遊戲人數選項 ====== */
         .player-count-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            gap: 12px;
-            margin: 0 auto 20px auto; 
+            gap: 6px; /* 減少間距 */
+            margin: 0 auto 15px auto; 
             width: 100%;
         }
         
@@ -99,8 +99,8 @@
         .pc-item {
             background: linear-gradient(145deg, rgba(30, 40, 60, 0.6), rgba(15, 20, 35, 0.8));
             border: 1px solid var(--glass-border); 
-            border-radius: 14px;
-            padding: 15px 8px;
+            border-radius: 6px; /* 圓角變小 */
+            padding: 5px 2px; /* 內邊距大幅減少，讓它更小且呈長方形 */
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             color: white;
@@ -111,47 +111,48 @@
             user-select: none;
             -webkit-user-select: none;
             box-sizing: border-box; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
+            min-height: 48px; /* 設定最小高度確保一致性 */
         }
 
         .pc-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             background: linear-gradient(145deg, rgba(40, 50, 75, 0.7), rgba(20, 25, 45, 0.9));
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
 
         .pc-item .pc-number {
-            font-size: 20px;
+            font-size: 14px; /* 字體進一步縮小 */
             font-weight: 900;
             color: #ddd;
-            margin-bottom: 6px;
+            margin-bottom: 2px;
             transition: color 0.3s;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
         .pc-item .desc {
-            font-size: 12px;
+            font-size: 10px; /* 說明文字字體縮小 */
             opacity: 0.9;
             background: rgba(0,0,0,0.4);
-            padding: 3px 8px;
-            border-radius: 10px;
+            padding: 1px 4px;
+            border-radius: 4px;
         }
 
         .pc-radio:checked + .pc-item {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(40, 20, 10, 0.6)); 
             border: 2px solid var(--gold); 
             box-shadow: 
-                0 0 15px rgba(212, 175, 55, 0.4), 
-                inset 0 0 15px rgba(212, 175, 55, 0.1); 
-            transform: translateY(-4px) scale(1.03); 
+                0 0 10px rgba(212, 175, 55, 0.4), 
+                inset 0 0 10px rgba(212, 175, 55, 0.1); 
+            transform: translateY(-2px) scale(1.02); 
         }
 
         .pc-radio:checked + .pc-item .pc-number {
             color: var(--gold-light);
-            text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.8);
         }
 
         .pc-radio:checked + .pc-item::before {
@@ -167,12 +168,7 @@
             pointer-events: none;
         }
 
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        /* ====== 特殊角色選擇面板樣式 ====== */
+        /* ====== 特殊角色卡牌樣式 ====== */
         .role-list { 
             text-align: center; 
             margin-bottom: 10px;
@@ -180,44 +176,102 @@
         
         .role-checkbox { display: none; }
 
-        .role-item { 
-            display: inline-block;
-            padding: 10px 16px;
-            margin: 6px 5px; 
-            font-size: 15px; 
-            font-weight: bold; 
-            border-radius: 20px;
+        .role-cards-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 行距 */
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .role-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* 卡牌間距 */
+        }
+
+        .role-card-label {
+            position: relative;
+            width: 75px; 
+            height: 105px;
+            border-radius: 8px;
             cursor: pointer;
-            background: rgba(20, 30, 50, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #888;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: #111; 
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
             user-select: none;
             -webkit-user-select: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .role-item:hover {
-            background: rgba(30, 45, 75, 0.8);
-            color: #ccc;
+
+        .role-card-label img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            opacity: 0.4;
+            filter: grayscale(90%);
+            transition: all 0.3s ease-in-out;
         }
-        
-        .role-checkbox:checked + .good { 
-            color: white; 
-            font-weight: 900; 
-            background: linear-gradient(135deg, rgba(77, 166, 255, 0.3), rgba(20, 80, 150, 0.8)); 
-            border: 1px solid rgba(77, 166, 255, 0.6); 
-            box-shadow: 0 4px 10px rgba(77, 166, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); 
+
+        .role-card-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            color: #888;
+            font-size: 11px;
+            padding: 4px 0;
+            text-align: center;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            transition: all 0.3s ease-in-out;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            backdrop-filter: blur(2px);
+        }
+
+        .role-card-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        }
+
+        /* 勾選時的樣式 */
+        .role-checkbox:checked + .role-card-label.good {
+            border-color: var(--good-color);
+            box-shadow: 0 0 12px rgba(77, 166, 255, 0.6), inset 0 0 10px rgba(77, 166, 255, 0.2);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .role-checkbox:checked + .role-card-label.evil {
+            border-color: var(--evil-color);
+            box-shadow: 0 0 12px rgba(255, 77, 77, 0.6), inset 0 0 10px rgba(255, 77, 77, 0.2);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .role-checkbox:checked + .role-card-label img {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .role-checkbox:checked + .role-card-label.good .role-card-name {
+            color: white;
+            background: rgba(20, 80, 150, 0.85);
+            font-weight: bold;
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            border-top: 1px solid rgba(77, 166, 255, 0.5);
         }
-        
-        .role-checkbox:checked + .evil { 
-            color: white; 
-            font-weight: 900; 
-            background: linear-gradient(135deg, rgba(255, 77, 77, 0.3), rgba(150, 20, 20, 0.8)); 
-            border: 1px solid rgba(255, 77, 77, 0.6); 
-            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); 
+
+        .role-checkbox:checked + .role-card-label.evil .role-card-name {
+            color: white;
+            background: rgba(150, 20, 20, 0.85);
+            font-weight: bold;
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            border-top: 1px solid rgba(255, 77, 77, 0.5);
         }
 
         #setup-error { 
@@ -276,7 +330,6 @@
             border-radius: 15px;
         }
 
-        /* 點擊卡片時：按鈕發光回饋 (移除卡片本體下壓) */
         .card-container:active .instruction {
             transform: translateX(-50%) scale(0.95);
             background: rgba(212, 175, 55, 0.8);
@@ -305,7 +358,6 @@
             flex-direction: column;
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.8);
-            /* 加入陰影的平滑過渡 */
             transition: box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -334,7 +386,6 @@
             border-radius: 15px;
         }
 
-        /* 按鈕呼吸燈動畫 */
         @keyframes instruction-glow {
             0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
             50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
@@ -355,7 +406,6 @@
             border-radius: 20px;
             border: 1px solid var(--gold);
             backdrop-filter: blur(4px);
-            /* 過渡效果與呼吸動畫 */
             transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
             animation: instruction-glow 2s infinite;
         }
@@ -413,7 +463,6 @@
         #next-player-btn:hover { background: rgba(255,255,255,0.2); }
 
         /* ====== 遊戲結束樣式 ====== */
-        
         #game-screen.active {
             display: flex;
             flex-direction: column;
@@ -457,13 +506,11 @@
             text-align: center;
             line-height: 1.4;
             margin: 0; 
-
             background: radial-gradient(circle, #b30000 0%, #500000 100%);
             color: #ffffff; 
             border: 4px solid #ff4d4d;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.8); 
             box-shadow: 0 15px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,0,0.3); 
-            
             animation: pulse-red 2s infinite; 
             transition: all 0.3s ease;
         }
@@ -590,36 +637,64 @@
             <h3 class="section-title">選擇特殊角色</h3>
             <p style="font-size: 13px; color: #aaa; margin-bottom: 12px;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
             
-            <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
-            <label for="role-merlin" class="role-item good">梅林</label>
+            <div class="role-cards-wrapper">
+                <!-- 第一排：3個好人 -->
+                <div class="role-row">
+                    <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
+                    <label for="role-merlin" class="role-card-label good">
+                        <img src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="梅林">
+                        <div class="role-card-name">梅林</div>
+                    </label>
 
-            <input type="checkbox" id="role-percival" class="role-checkbox" checked>
-            <label for="role-percival" class="role-item good">派西維爾</label>
+                    <input type="checkbox" id="role-percival" class="role-checkbox" checked>
+                    <label for="role-percival" class="role-card-label good">
+                        <img src="https://i.postimg.cc/pLhXMqBs/010.jpg" alt="派西維爾">
+                        <div class="role-card-name">派西維爾</div>
+                    </label>
 
-            <input type="checkbox" id="role-lizakang" class="role-checkbox">
-            <label for="role-lizakang" class="role-item good">李砸康</label>
+                    <input type="checkbox" id="role-lizakang" class="role-checkbox">
+                    <label for="role-lizakang" class="role-card-label good">
+                        <img src="https://i.postimg.cc/vHSHKp5q/020.jpg" alt="李砸康">
+                        <div class="role-card-name">李砸康</div>
+                    </label>
+                </div>
 
-            <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
-            <label for="role-assassin" class="role-item evil">刺客</label>
+                <!-- 第二排：4個壞人 -->
+                <div class="role-row">
+                    <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
+                    <label for="role-assassin" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/vmJzZGcz/4.jpg" alt="刺客">
+                        <div class="role-card-name">刺客</div>
+                    </label>
 
-            <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
-            <label for="role-morgana" class="role-item evil">莫甘娜</label>
+                    <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
+                    <label for="role-morgana" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/xdwR19c5/3.jpg" alt="莫甘娜">
+                        <div class="role-card-name">莫甘娜</div>
+                    </label>
 
-            <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
-            <label for="role-mordred" class="role-item evil">莫德雷德</label>
+                    <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
+                    <label for="role-mordred" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/XvR8YnpP/2.jpg" alt="莫德雷德">
+                        <div class="role-card-name">莫德雷德</div>
+                    </label>
 
-            <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
-            <label for="role-oberon" class="role-item evil">奧伯倫</label>
+                    <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
+                    <label for="role-oberon" class="role-card-label evil">
+                        <img src="https://i.postimg.cc/fLYv319B/1.jpg" alt="奧伯倫">
+                        <div class="role-card-name">奧伯倫</div>
+                    </label>
+                </div>
+            </div>
         </div>
         
         <div id="setup-error"></div>
-        <button class="btn-gold" style="margin-top: 10px;" onclick="startGame()">開始分配角色</button>
+        <button class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
     </div>
 
     <div id="pass-screen" class="screen">
         <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分 🔍</span></h2>
         
-        <!-- 加入 ontouchstart 確保在手機(尤其是iOS)點擊時能立刻觸發 :active 壓下特效 -->
         <div class="card-container" id="reveal-card" ontouchstart="">
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
@@ -638,7 +713,6 @@
     </div>
 
     <div id="game-screen" class="screen">
-        
         <div id="game-end-controls">
             <button id="reveal-all-btn" onclick="revealAll()">結束遊戲<br>查看所有人<br>身分</button>
         </div>
