@@ -38,9 +38,9 @@
         .screen {
             display: none;
             width: 100%;
-            max-width: 420px; /* 稍微放寬一點讓網格更好看 */
+            max-width: 420px;
             background-color: var(--panel-bg);
-            backdrop-filter: blur(10px); /* 加入毛玻璃效果 */
+            backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
             padding: 25px 25px 30px;
             border-radius: 20px;
@@ -116,7 +116,6 @@
             overflow: hidden;
         }
 
-        /* 懸停效果 */
         .pc-item:hover {
             transform: translateY(-2px);
             background: linear-gradient(145deg, rgba(40, 50, 75, 0.7), rgba(20, 25, 45, 0.9));
@@ -124,7 +123,6 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
         }
 
-        /* 數字樣式 */
         .pc-item .pc-number {
             font-size: 20px;
             font-weight: 900;
@@ -134,7 +132,6 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* 描述樣式 */
         .pc-item .desc {
             font-size: 12px;
             opacity: 0.9;
@@ -143,13 +140,12 @@
             border-radius: 10px;
         }
 
-        /* 選中狀態 (大改造) */
         .pc-radio:checked + .pc-item {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(40, 20, 10, 0.6)); 
             border: 2px solid var(--gold); 
             box-shadow: 
-                0 0 15px rgba(212, 175, 55, 0.4), /* 外發光 */
-                inset 0 0 15px rgba(212, 175, 55, 0.1); /* 內發光 */
+                0 0 15px rgba(212, 175, 55, 0.4), 
+                inset 0 0 15px rgba(212, 175, 55, 0.1); 
             transform: translateY(-4px) scale(1.03); 
         }
 
@@ -158,7 +154,6 @@
             text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
         }
 
-        /* 選中時的裝飾小光點 */
         .pc-radio:checked + .pc-item::before {
             content: '';
             position: absolute;
@@ -264,7 +259,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* ====== 3D 翻牌動畫 CSS (維持原樣) ====== */
+        /* ====== 3D 翻牌動畫與點擊特效 ====== */
         .card-container {
             perspective: 1000px; 
             border: none;
@@ -279,6 +274,16 @@
             width: 280px; 
             height: 392px; 
             border-radius: 15px;
+        }
+
+        /* 點擊卡片時：按鈕發光回饋 (移除卡片本體下壓) */
+        .card-container:active .instruction {
+            transform: translateX(-50%) scale(0.95);
+            background: rgba(212, 175, 55, 0.8);
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
 
         .card-inner {
@@ -300,6 +305,8 @@
             flex-direction: column;
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            /* 加入陰影的平滑過渡 */
+            transition: box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card-back {
@@ -327,6 +334,13 @@
             border-radius: 15px;
         }
 
+        /* 按鈕呼吸燈動畫 */
+        @keyframes instruction-glow {
+            0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+        }
+
         .card-back .instruction {
             position: absolute;
             bottom: 55px; 
@@ -341,6 +355,9 @@
             border-radius: 20px;
             border: 1px solid var(--gold);
             backdrop-filter: blur(4px);
+            /* 過渡效果與呼吸動畫 */
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: instruction-glow 2s infinite;
         }
         
         #player-role-name {
@@ -472,7 +489,6 @@
             gap: 10px; 
         }
         
-        /* 揭曉畫面：單個玩家項目卡片 */
         .final-reveal-item {
             background: rgba(20, 25, 40, 0.9); 
             border: 1px solid rgba(255,255,255,0.1); 
@@ -494,7 +510,6 @@
             background: rgba(30, 35, 50, 0.95);
         }
 
-        /* 揭曉畫面：玩家角色小頭像 */
         .reveal-role-img {
             width: 50px;
             height: 50px;
@@ -508,7 +523,6 @@
         .reveal-role-img.good-img { border: 2px solid var(--good-color); }
         .reveal-role-img.evil-img { border: 2px solid var(--evil-color); }
 
-        /* 揭曉畫面：文字區塊 */
         .reveal-info {
             display: flex;
             flex-direction: column;
@@ -605,7 +619,8 @@
     <div id="pass-screen" class="screen">
         <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分 🔍</span></h2>
         
-        <div class="card-container" id="reveal-card">
+        <!-- 加入 ontouchstart 確保在手機(尤其是iOS)點擊時能立刻觸發 :active 壓下特效 -->
+        <div class="card-container" id="reveal-card" ontouchstart="">
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
                     <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
@@ -651,7 +666,6 @@
             minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
 
-        // 預先載入圖片
         Object.values(roleData).forEach(role => {
             const img = new Image();
             img.src = role.img;
@@ -690,7 +704,6 @@
             const mordred = document.getElementById('role-mordred');
             const oberon = document.getElementById('role-oberon');
 
-            // 先全部取消
             merlin.checked = false;
             percival.checked = false;
             lizakang.checked = false;
@@ -699,7 +712,6 @@
             mordred.checked = false;
             oberon.checked = false;
 
-            // 依人數勾選預設
             switch(count) {
                 case 5:
                     merlin.checked = true;
@@ -781,12 +793,10 @@
                  }
             }
 
-            // 補齊平民與爪牙
             while(goodRoles.length < ratio.good) goodRoles.push('servant');
             while(evilRoles.length < ratio.evil) evilRoles.push('minion');
 
             let selectedRoles = goodRoles.concat(evilRoles);
-            // 洗牌
             selectedRoles = selectedRoles.sort(() => Math.random() - 0.5);
 
             players = selectedRoles.map((roleKey, index) => {
@@ -848,7 +858,7 @@
             if (cardInner.classList.contains('flipped')) return;
 
             cardInner.classList.add('flipped');
-            nextBtn.style.display = 'block'; // 改為 block 使其滿版
+            nextBtn.style.display = 'block'; 
 
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
