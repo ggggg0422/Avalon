@@ -332,15 +332,7 @@
             max-width: 280px;  /* 限制最大寬度，保持卡牌比例 */
             height: 392px; 
             border-radius: 15px;
-        }
-
-        .card-container:active .instruction {
-            transform: translateX(-50%) scale(0.95);
-            background: rgba(212, 175, 55, 0.8);
-            border-color: #fff;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
-            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+            -webkit-tap-highlight-color: transparent; /* 移除手機端點擊預設的反白塊 */
         }
 
         .card-inner {
@@ -390,12 +382,6 @@
             border-radius: 15px;
         }
 
-        @keyframes instruction-glow {
-            0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
-            50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
-            100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
-        }
-
         .card-back .instruction {
             position: absolute;
             bottom: 55px; 
@@ -405,13 +391,16 @@
             font-size: 16px;
             pointer-events: none;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85); /* 改為單純加深背景顏色，不用耗效能的模糊 */
             padding: 8px 15px;
             border-radius: 20px;
             border: 1px solid var(--gold);
-            backdrop-filter: blur(4px);
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: instruction-glow 2s infinite;
+            transition: opacity 0.2s; /* 淡出效果 */
+        }
+        
+        /* 當卡牌翻開時，讓文字徹底透明，防止透穿到正面 */
+        .card-inner.flipped .instruction {
+            opacity: 0;
         }
         
         #player-role-name {
