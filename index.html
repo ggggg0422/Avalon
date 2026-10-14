@@ -19,6 +19,17 @@
             --glass-border: rgba(255, 255, 255, 0.08);
         }
 
+        /* 隱藏全域滾動條，但保留滾動功能 (針對 Webkit 瀏覽器如 Chrome, Safari) */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            /* 針對 Firefox, IE 隱藏滾動條 */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
@@ -28,7 +39,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            /* 替換為 100dvh 修復 iOS Safari 底部導覽列問題 */
+            min-height: 100dvh;
             background-image: linear-gradient(rgba(10, 15, 25, 0.85), rgba(10, 15, 25, 0.85)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -40,7 +52,8 @@
         .screen {
             display: none;
             width: 100%;
-            max-width: 420px;
+            /* 稍微放大 max-width 以彌補移除 zoom 的大小 */
+            max-width: 440px;
             background-color: var(--panel-bg);
             backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
@@ -48,7 +61,7 @@
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
             border: 1px solid var(--panel-border);
-            zoom: 1.1; 
+            /* 移除了危險的 zoom: 1.1; 屬性 */
             box-sizing: border-box;
         }
         
@@ -101,7 +114,7 @@
             background: linear-gradient(145deg, rgba(30, 40, 60, 0.6), rgba(15, 20, 35, 0.8));
             border: 1px solid var(--glass-border); 
             border-radius: 6px; 
-            padding: 5px 2px; 
+            padding: 6px 2px; 
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             color: white;
@@ -115,7 +128,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
-            min-height: 48px; 
+            /* 調整高度以彌補 zoom */
+            min-height: 52px; 
         }
 
         .pc-item:hover {
@@ -126,7 +140,7 @@
         }
 
         .pc-item .pc-number {
-            font-size: 14px; 
+            font-size: 15px; 
             font-weight: 900;
             color: #ddd;
             margin-bottom: 2px;
@@ -135,7 +149,7 @@
         }
 
         .pc-item .desc {
-            font-size: 10px; 
+            font-size: 11px; 
             opacity: 0.9;
             background: rgba(0,0,0,0.4);
             padding: 1px 4px;
@@ -192,8 +206,9 @@
 
         .role-card-label {
             position: relative;
-            width: 75px; 
-            height: 105px;
+            /* 調整寬高以彌補 zoom */
+            width: 82px; 
+            height: 115px;
             border-radius: 8px;
             cursor: pointer;
             box-sizing: border-box;
@@ -223,7 +238,7 @@
             width: 100%;
             background: rgba(0, 0, 0, 0.75);
             color: #888;
-            font-size: 11px;
+            font-size: 12px;
             padding: 4px 0;
             text-align: center;
             border-bottom-left-radius: 4px;
@@ -284,9 +299,9 @@
 
         button {
             border: none;
-            padding: 14px 28px;
+            padding: 15px 30px;
             margin: 10px auto; 
-            font-size: 18px;
+            font-size: 20px;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
@@ -326,9 +341,12 @@
             position: relative;
             background-color: transparent;
             -webkit-touch-callout: none;
+            /* 關閉預設滑動手勢，避免與系統或網頁上下滑動衝突 */
+            touch-action: none;
             width: 100%; 
-            max-width: 280px;  
-            height: 392px; 
+            /* 稍微放大以彌補 zoom */
+            max-width: 310px;  
+            height: 430px; 
             border-radius: 15px;
             -webkit-tap-highlight-color: transparent; 
         }
@@ -336,7 +354,7 @@
         .card-inner {
             width: 100%;
             height: 100%;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* 添加更生動的回彈效果 */
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-style: preserve-3d;
             position: relative;
             will-change: transform;
@@ -355,7 +373,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.8);
             transition: box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none; /* 避免干擾父元素的滑動偵測 */
+            pointer-events: none; 
         }
 
         .card-back {
@@ -392,60 +410,58 @@
             font-size: 16px;
             font-weight: bold;
             pointer-events: none;
-            /* 加強文字陰影，確保在沒有黑底的情況下依然清晰可見 */
             text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
             transition: opacity 0.2s;
         }
 
-        /* 當卡牌翻開時，讓文字徹底透明，防止透穿到正面 */
         .card-inner.flipped .instruction {
             opacity: 0;
         }
         
         #player-role-name {
             margin: 0;
-            font-size: 36px; /* 加大字體讓立體效果更明顯 */
+            /* 調整字體大小彌補 zoom */
+            font-size: 40px; 
             font-weight: 900;
             letter-spacing: 2px;
             position: absolute;
-            top: 45px; /* 稍微往上移一點點騰出空間給陰影 */
+            top: 50px; 
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
             z-index: 10;
         }
 
-        /* 針對好人的立體文字效果 */
         #player-role-name.good {
-            color: #d1e8ff; /* 字體表面用較亮的淡藍色 */
+            color: #d1e8ff; 
             text-shadow: 
                 0 1px 0 var(--good-color), 
                 0 2px 0 #2a7fcc, 
                 0 3px 0 #1d66a6, 
                 0 4px 0 #145082, 
                 0 5px 0 #0d385e, 
-                0 6px 0 #07223b, /* 製造向下的厚度 */
-                0 8px 12px rgba(0, 0, 0, 0.9), /* 底部陰影 */
-                0 0 20px rgba(77, 166, 255, 0.5); /* 保留一點好人的藍色光暈 */
+                0 6px 0 #07223b, 
+                0 8px 12px rgba(0, 0, 0, 0.9), 
+                0 0 20px rgba(77, 166, 255, 0.5); 
         }
 
-        /* 針對壞人的立體文字效果 */
         #player-role-name.evil {
-            color: #ffcccc; /* 字體表面用較亮的淡紅色 */
+            color: #ffcccc; 
             text-shadow: 
                 0 1px 0 var(--evil-color), 
                 0 2px 0 #cc2929, 
                 0 3px 0 #a61a1a, 
                 0 4px 0 #821010, 
                 0 5px 0 #5e0808, 
-                0 6px 0 #3a0303, /* 製造向下的厚度 */
-                0 8px 12px rgba(0, 0, 0, 0.9), /* 底部陰影 */
-                0 0 20px rgba(255, 77, 77, 0.5); /* 保留一點壞人的紅色光暈 */
+                0 6px 0 #3a0303, 
+                0 8px 12px rgba(0, 0, 0, 0.9), 
+                0 0 20px rgba(255, 77, 77, 0.5); 
         }
 
         .role-img {
-            width: 156px; 
-            height: 156px;
+            /* 調整大小彌補 zoom */
+            width: 170px; 
+            height: 170px;
             border-radius: 50%;
             border: 4px solid var(--gold);
             object-fit: contain; 
@@ -461,7 +477,8 @@
         }
 
         #player-info-text { 
-            font-size: 16px; 
+            /* 調整大小彌補 zoom */
+            font-size: 18px; 
             line-height: 1.5; 
             background: transparent; 
             text-shadow: 2px 2px 4px rgba(0,0,0,0.9); 
@@ -469,7 +486,7 @@
             border-radius: 8px; 
             box-sizing: border-box;
             position: absolute; 
-            bottom: 45px; 
+            bottom: 50px; 
             left: 50%; 
             transform: translateX(-50%); 
             margin: 0; 
@@ -514,10 +531,11 @@
         }
 
         #reveal-all-btn {
-            width: 220px; 
-            height: 220px; 
+            /* 調整大小彌補 zoom */
+            width: 240px; 
+            height: 240px; 
             padding: 15px; 
-            font-size: 24px; 
+            font-size: 26px; 
             font-weight: 900; 
             border-radius: 50%; 
             display: flex;
@@ -553,8 +571,9 @@
 
         .reveal-card {
             position: relative;
-            width: 85px; 
-            height: 120px; 
+            /* 調整大小彌補 zoom */
+            width: 92px; 
+            height: 130px; 
             border-radius: 8px;
             box-sizing: border-box;
             background-color: #111;
@@ -596,7 +615,7 @@
             width: 100%;
             background: rgba(0, 0, 0, 0.7);
             color: var(--gold);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 900;
             padding: 3px 0;
             text-align: center;
@@ -610,7 +629,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            font-size: 12px;
+            font-size: 13px;
             padding: 5px 0;
             text-align: center;
             z-index: 2;
@@ -986,7 +1005,6 @@
         const nextBtn = document.getElementById('next-player-btn');
         const cardInner = document.getElementById('card-inner');
 
-        // 呼叫硬體震動回饋輔助函數
         function triggerVibration(pattern) {
             if ('vibrate' in navigator) {
                 try { navigator.vibrate(pattern); } catch(e) {}
@@ -996,35 +1014,30 @@
         let touchStartX = 0;
         let touchStartY = 0;
         
-        // 處理手指按下卡牌 (微微縮小，營造實體按壓感)
         function handleCardPress() {
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
             cardInner.style.transform = 'scale(0.95)';
             cardInner.style.transition = 'transform 0.1s ease';
-            triggerVibration(15); // 手指碰到時給予輕微回饋
+            triggerVibration(15); 
         }
 
-        // 處理手指放開卡牌 (回彈並決定是否翻開)
         function handleCardRelease(isAction = false) {
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
             
-            // 移除行內樣式，讓 CSS 類別接手翻轉與回彈動畫
             cardInner.style.transform = '';
-            cardInner.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Q彈曲線
+            cardInner.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; 
             
             if (isAction) {
                 flipCard();
             }
         }
 
-        // 桌面端滑鼠支援
         revealCardWrapper.addEventListener('mousedown', handleCardPress);
         revealCardWrapper.addEventListener('mouseleave', () => {
              if (!cardInner.classList.contains('flipped')) handleCardRelease(false);
         });
         revealCardWrapper.addEventListener('mouseup', () => handleCardRelease(true));
 
-        // 行動端觸控與滑動 (Swipe) 支援
         revealCardWrapper.addEventListener('touchstart', (e) => {
             if(isTransitioning) return;
             touchStartX = e.changedTouches[0].screenX;
@@ -1032,7 +1045,6 @@
             handleCardPress();
         }, {passive: true});
 
-        // 偵測滑動，給予卡牌隨手指微微傾斜的物理回饋
         revealCardWrapper.addEventListener('touchmove', (e) => {
             if (cardInner.classList.contains('flipped') || isTransitioning) return;
             
@@ -1041,18 +1053,14 @@
             const deltaX = touchX - touchStartX;
             const deltaY = touchY - touchStartY;
 
-            // 計算 3D 傾斜角度 (限制最大傾斜角度為 12 度)
             const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
             const rotateY = Math.max(-12, Math.min(12, deltaX / 6));
 
-            // 套用微微縮小與傾斜效果
             cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         }, {passive: true});
 
         revealCardWrapper.addEventListener('touchend', (e) => {
             if (cardInner.classList.contains('flipped') || isTransitioning) return;
-            
-            // 只要觸控結束(不管是點擊還是滑動完成)，都觸發翻牌
             handleCardRelease(true);
         });
 
@@ -1063,7 +1071,6 @@
             cardInner.classList.add('flipped');
             nextBtn.style.display = 'block'; 
 
-            // 卡牌翻開瞬間的重震動，營造儀式感 (先重後輕)
             triggerVibration([40, 50, 30]);
 
             const player = players[currentPlayerIndex];
@@ -1135,7 +1142,7 @@
             const btn = document.getElementById('reveal-all-btn');
 
             if (!confirmRevealActive) {
-                triggerVibration([50]); // 警告震動
+                triggerVibration([50]); 
                 confirmRevealActive = true;
                 btn.innerHTML = "⚠️ 確定揭曉？<br><span style='font-size:16px; font-weight:normal;'>(再次點擊確認，不可逆)</span>";
                 btn.style.animation = "pulse-fast-red 0.5s infinite";
@@ -1151,7 +1158,7 @@
             }
 
             clearTimeout(revealTimeout);
-            triggerVibration([100, 50, 100]); // 遊戲結束大震動
+            triggerVibration([100, 50, 100]); 
             
             const revealArea = document.getElementById('final-reveal-area');
             const listEl = document.getElementById('final-reveal-list');
