@@ -54,15 +54,25 @@
             width: 100%;
             /* 稍微放大 max-width 以彌補移除 zoom 的大小 */
             max-width: 440px;
-            background-color: var(--panel-bg);
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px);
+            /* 效能優化：預設給予較不透明的底色，作為毛玻璃的 fallback */
+            background-color: rgba(18, 24, 43, 0.98); 
             padding: 25px 25px 30px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
             border: 1px solid var(--panel-border);
             /* 移除了危險的 zoom: 1.1; 屬性 */
             box-sizing: border-box;
+        }
+
+        /* 只有在支援毛玻璃的裝置上才開啟，並加入硬體加速 (translateZ) */
+        @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+            .screen {
+                background-color: var(--panel-bg);
+                backdrop-filter: blur(10px); 
+                -webkit-backdrop-filter: blur(10px);
+                transform: translateZ(0); 
+                will-change: transform, opacity;
+            }
         }
         
         .screen.active {
@@ -236,7 +246,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.85); /* 效能優化：加深無毛玻璃時的底色 */
             color: #888;
             font-size: 12px;
             padding: 4px 0;
@@ -247,7 +257,14 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            backdrop-filter: blur(2px);
+        }
+
+        @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
+            .role-card-name {
+                background: rgba(0, 0, 0, 0.75);
+                backdrop-filter: blur(2px);
+                -webkit-backdrop-filter: blur(2px);
+            }
         }
 
         .role-card-label:hover {
@@ -494,11 +511,20 @@
         }
         
         #next-player-btn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(30, 40, 60, 0.95); /* 效能優化：無毛玻璃的備用底色 */
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            backdrop-filter: blur(5px);
         }
+
+        @supports (backdrop-filter: blur(5px)) or (-webkit-backdrop-filter: blur(5px)) {
+            #next-player-btn {
+                background: rgba(255,255,255,0.1);
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+                transform: translateZ(0);
+            }
+        }
+
         #next-player-btn:hover { background: rgba(255,255,255,0.2); }
 
         #game-screen.active {
@@ -613,14 +639,13 @@
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85); /* 效能優化 */
             color: var(--gold);
             font-size: 14px;
             font-weight: 900;
             padding: 3px 0;
             text-align: center;
             z-index: 2;
-            backdrop-filter: blur(2px);
             border-bottom: 1px solid rgba(212, 175, 55, 0.3);
         }
 
@@ -636,7 +661,15 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.85); /* 效能優化 */
+        }
+
+        @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
+            .reveal-card-id, .reveal-card-name {
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(2px);
+                -webkit-backdrop-filter: blur(2px);
+            }
         }
 
         .reveal-card.good .reveal-card-name {
@@ -806,6 +839,17 @@
         const preloadedBg = new Image();
         preloadedBg.src = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
 
+        // 優化圖片預載：建立全域陣列保存 Image 物件，防止瀏覽器太早進行垃圾回收(GC)
+        const imageCache = []; 
+        function preloadImage(url) {
+            const img = new Image();
+            img.src = url;
+            imageCache.push(img);
+        }
+
+        // 預載共用的卡背圖片
+        preloadImage("https://i.postimg.cc/QdHBXdPk/card0back.png");
+
         const roleData = {
             merlin: { name: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
             percival: { name: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
@@ -818,9 +862,9 @@
             minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
 
+        // 網頁載入時先初步載入所有角色圖片進入快取
         Object.values(roleData).forEach(role => {
-            const img = new Image();
-            img.src = role.img;
+            preloadImage(role.img);
         });
 
         const rules = {
@@ -961,6 +1005,9 @@
             });
 
             generateInfo();
+
+            // 效能優化：在切換畫面之前，針對這局確定「有出場」的角色，再次強制觸發請求，確保圖片已完全就緒
+            players.forEach(p => preloadImage(p.role.img));
 
             document.getElementById('setup-screen').classList.remove('active');
             document.getElementById('pass-screen').classList.add('active');
