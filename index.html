@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>阿瓦隆網頁小幫手</title>
     <style>
         :root {
@@ -33,6 +33,8 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            /* 防止下滑重新整理 */
+            overscroll-behavior-y: contain; 
         }
 
         .screen {
@@ -85,11 +87,10 @@
         .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);}
         .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 5px rgba(179, 102, 255, 0.5);}
 
-        /* ====== 再次縮小遊戲人數選項 ====== */
         .player-count-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            gap: 6px; /* 減少間距 */
+            gap: 6px; 
             margin: 0 auto 15px auto; 
             width: 100%;
         }
@@ -99,8 +100,8 @@
         .pc-item {
             background: linear-gradient(145deg, rgba(30, 40, 60, 0.6), rgba(15, 20, 35, 0.8));
             border: 1px solid var(--glass-border); 
-            border-radius: 6px; /* 圓角變小 */
-            padding: 5px 2px; /* 內邊距大幅減少，讓它更小且呈長方形 */
+            border-radius: 6px; 
+            padding: 5px 2px; 
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             color: white;
@@ -114,7 +115,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
-            min-height: 48px; /* 設定最小高度確保一致性 */
+            min-height: 48px; 
         }
 
         .pc-item:hover {
@@ -125,7 +126,7 @@
         }
 
         .pc-item .pc-number {
-            font-size: 14px; /* 字體進一步縮小 */
+            font-size: 14px; 
             font-weight: 900;
             color: #ddd;
             margin-bottom: 2px;
@@ -134,7 +135,7 @@
         }
 
         .pc-item .desc {
-            font-size: 10px; /* 說明文字字體縮小 */
+            font-size: 10px; 
             opacity: 0.9;
             background: rgba(0,0,0,0.4);
             padding: 1px 4px;
@@ -168,7 +169,6 @@
             pointer-events: none;
         }
 
-        /* ====== 特殊角色卡牌樣式 ====== */
         .role-list { 
             text-align: center; 
             margin-bottom: 10px;
@@ -179,7 +179,7 @@
         .role-cards-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* 行距 */
+            gap: 10px; 
             align-items: center;
             margin-bottom: 15px;
         }
@@ -187,7 +187,7 @@
         .role-row {
             display: flex;
             justify-content: center;
-            gap: 10px; /* 卡牌間距 */
+            gap: 10px; 
         }
 
         .role-card-label {
@@ -240,7 +240,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
 
-        /* 勾選時的樣式 */
         .role-checkbox:checked + .role-card-label.good {
             border-color: var(--good-color);
             box-shadow: 0 0 12px rgba(77, 166, 255, 0.6), inset 0 0 10px rgba(77, 166, 255, 0.2);
@@ -313,36 +312,37 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* ====== 3D 翻牌動畫與點擊特效 ====== */
         .card-container {
             perspective: 1000px; 
             border: none;
             padding: 0;
-            margin: 20px auto; /* 確保上下有間距，左右自動居中 */
-            display: flex; /* 新增 flex 佈局，讓子元素更容易居中 */
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
+            margin: 20px auto; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
             position: relative;
             background-color: transparent;
             -webkit-touch-callout: none;
-            width: 100%; /* 寬度改為 100% 適應父容器 */
-            max-width: 280px;  /* 限制最大寬度，保持卡牌比例 */
+            width: 100%; 
+            max-width: 280px;  
             height: 392px; 
             border-radius: 15px;
-            -webkit-tap-highlight-color: transparent; /* 移除手機端點擊預設的反白塊 */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         .card-inner {
             width: 100%;
             height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* 添加更生動的回彈效果 */
             transform-style: preserve-3d;
             position: relative;
+            will-change: transform;
         }
 
+        /* Flipped state */
         .card-inner.flipped { transform: rotateY(180deg); }
 
         .card-face {
@@ -355,6 +355,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.8);
             transition: box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none; /* 避免干擾父元素的滑動偵測 */
         }
 
         .card-back {
@@ -391,14 +392,14 @@
             font-size: 16px;
             pointer-events: none;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0, 0, 0, 0.85); /* 改為單純加深背景顏色，不用耗效能的模糊 */
+            background: rgba(0, 0, 0, 0.85); 
             padding: 8px 15px;
             border-radius: 20px;
             border: 1px solid var(--gold);
-            transition: opacity 0.2s; /* 淡出效果 */
+            transition: opacity 0.2s; 
+            white-space: nowrap;
         }
         
-        /* 當卡牌翻開時，讓文字徹底透明，防止透穿到正面 */
         .card-inner.flipped .instruction {
             opacity: 0;
         }
@@ -455,7 +456,6 @@
         }
         #next-player-btn:hover { background: rgba(255,255,255,0.2); }
 
-        /* ====== 遊戲結束樣式 ====== */
         #game-screen.active {
             display: flex;
             flex-direction: column;
@@ -534,23 +534,23 @@
             border: 1px solid rgba(255,255,255,0.1); 
             border-radius: 12px;
             margin: 0; 
-            padding: 10px 5px; /* 縮小左右內邊距以容納更長的名字 */
+            padding: 10px 5px; 
             display: flex;
-            flex-direction: column; /* 改為垂直排列 */
-            align-items: center; /* 水平置中 */
-            justify-content: center; /* 垂直置中 */
-            gap: 6px; /* 元素之間的間距 */
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             transition: transform 0.2s, border-color 0.2s;
-            height: 120px; /* 增加高度以容納垂直排列的三個元素 */
+            height: 120px; 
             box-sizing: border-box;
             width: 100%;
-            overflow: hidden; /* 防止內容溢出 */
+            overflow: hidden; 
             text-align: center;
         }
         
         .final-reveal-item:hover {
-            transform: translateY(-3px); /* 卡片改為往上浮動比較自然 */
+            transform: translateY(-3px); 
             border-color: var(--panel-border);
             background: rgba(30, 35, 50, 0.95);
         }
@@ -575,7 +575,6 @@
             line-height: 1;
         }
 
-        /* 確保太長的名字(如莫德雷德的爪牙)不會把框框撐破 */
         .reveal-role-name {
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -648,7 +647,6 @@
             <p style="font-size: 13px; color: #aaa; margin-bottom: 12px;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
             
             <div class="role-cards-wrapper">
-                <!-- 第一排：3個好人 -->
                 <div class="role-row">
                     <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
                     <label for="role-merlin" class="role-card-label good">
@@ -669,7 +667,6 @@
                     </label>
                 </div>
 
-                <!-- 第二排：2個壞人 -->
                 <div class="role-row">
                     <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
                     <label for="role-mordred" class="role-card-label evil">
@@ -684,7 +681,6 @@
                     </label>
                 </div>
 
-                <!-- 第三排：2個壞人 -->
                 <div class="role-row">
                     <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
                     <label for="role-assassin" class="role-card-label evil">
@@ -708,11 +704,11 @@
     <div id="pass-screen" class="screen">
         <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分 🔍</span></h2>
         
-        <div class="card-container" id="reveal-card" ontouchstart="">
+        <div class="card-container" id="reveal-card">
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
                     <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
-                    <div class="instruction">👆 點擊翻開</div>
+                    <div class="instruction">👆 點擊或滑動翻開</div>
                 </div>
                 <div class="card-face card-front" id="card-content">
                     <h2 id="player-role-name">角色名稱</h2>
@@ -940,6 +936,76 @@
         const nextBtn = document.getElementById('next-player-btn');
         const cardInner = document.getElementById('card-inner');
 
+        // 呼叫硬體震動回饋輔助函數
+        function triggerVibration(pattern) {
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate(pattern); } catch(e) {}
+            }
+        }
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        // 處理手指按下卡牌 (微微縮小，營造實體按壓感)
+        function handleCardPress() {
+            if (isTransitioning || cardInner.classList.contains('flipped')) return;
+            cardInner.style.transform = 'scale(0.95)';
+            cardInner.style.transition = 'transform 0.1s ease';
+            triggerVibration(15); // 手指碰到時給予輕微回饋
+        }
+
+        // 處理手指放開卡牌 (回彈並決定是否翻開)
+        function handleCardRelease(isAction = false) {
+            if (isTransitioning || cardInner.classList.contains('flipped')) return;
+            
+            // 移除行內樣式，讓 CSS 類別接手翻轉與回彈動畫
+            cardInner.style.transform = '';
+            cardInner.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Q彈曲線
+            
+            if (isAction) {
+                flipCard();
+            }
+        }
+
+        // 桌面端滑鼠支援
+        revealCardWrapper.addEventListener('mousedown', handleCardPress);
+        revealCardWrapper.addEventListener('mouseleave', () => {
+             if (!cardInner.classList.contains('flipped')) handleCardRelease(false);
+        });
+        revealCardWrapper.addEventListener('mouseup', () => handleCardRelease(true));
+
+        // 行動端觸控與滑動 (Swipe) 支援
+        revealCardWrapper.addEventListener('touchstart', (e) => {
+            if(isTransitioning) return;
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            handleCardPress();
+        }, {passive: true});
+
+        // 偵測滑動，給予卡牌隨手指微微傾斜的物理回饋
+        revealCardWrapper.addEventListener('touchmove', (e) => {
+            if (cardInner.classList.contains('flipped') || isTransitioning) return;
+            
+            const touchX = e.changedTouches[0].screenX;
+            const touchY = e.changedTouches[0].screenY;
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+
+            // 計算 3D 傾斜角度 (限制最大傾斜角度為 12 度)
+            const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
+            const rotateY = Math.max(-12, Math.min(12, deltaX / 6));
+
+            // 套用微微縮小與傾斜效果
+            cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }, {passive: true});
+
+        revealCardWrapper.addEventListener('touchend', (e) => {
+            if (cardInner.classList.contains('flipped') || isTransitioning) return;
+            
+            // 只要觸控結束(不管是點擊還是滑動完成)，都觸發翻牌
+            handleCardRelease(true);
+        });
+
         function flipCard() {
             if (isTransitioning) return; 
             if (cardInner.classList.contains('flipped')) return;
@@ -947,11 +1013,12 @@
             cardInner.classList.add('flipped');
             nextBtn.style.display = 'block'; 
 
+            // 卡牌翻開瞬間的重震動，營造儀式感 (先重後輕)
+            triggerVibration([40, 50, 30]);
+
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
         }
-
-        revealCardWrapper.addEventListener('click', flipCard);
 
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
@@ -1018,6 +1085,7 @@
             const btn = document.getElementById('reveal-all-btn');
 
             if (!confirmRevealActive) {
+                triggerVibration([50]); // 警告震動
                 confirmRevealActive = true;
                 btn.innerHTML = "⚠️ 確定揭曉？<br><span style='font-size:16px; font-weight:normal;'>(再次點擊確認，不可逆)</span>";
                 btn.style.animation = "pulse-fast-red 0.5s infinite";
@@ -1033,6 +1101,7 @@
             }
 
             clearTimeout(revealTimeout);
+            triggerVibration([100, 50, 100]); // 遊戲結束大震動
             
             const revealArea = document.getElementById('final-reveal-area');
             const listEl = document.getElementById('final-reveal-list');
