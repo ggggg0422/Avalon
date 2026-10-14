@@ -390,29 +390,57 @@
             transform: translateX(-50%);
             color: white;
             font-size: 16px;
+            font-weight: bold;
             pointer-events: none;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0, 0, 0, 0.85); 
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--gold);
-            transition: opacity 0.2s; 
-            white-space: nowrap;
+            /* 加強文字陰影，確保在沒有黑底的情況下依然清晰可見 */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
+            transition: opacity 0.2s;
         }
-        
+
+        /* 當卡牌翻開時，讓文字徹底透明，防止透穿到正面 */
         .card-inner.flipped .instruction {
             opacity: 0;
         }
         
         #player-role-name {
             margin: 0;
-            font-size: 32px; 
+            font-size: 36px; /* 加大字體讓立體效果更明顯 */
+            font-weight: 900;
+            letter-spacing: 2px;
             position: absolute;
-            top: 55px; 
+            top: 45px; /* 稍微往上移一點點騰出空間給陰影 */
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+
+        /* 針對好人的立體文字效果 */
+        #player-role-name.good {
+            color: #d1e8ff; /* 字體表面用較亮的淡藍色 */
+            text-shadow: 
+                0 1px 0 var(--good-color), 
+                0 2px 0 #2a7fcc, 
+                0 3px 0 #1d66a6, 
+                0 4px 0 #145082, 
+                0 5px 0 #0d385e, 
+                0 6px 0 #07223b, /* 製造向下的厚度 */
+                0 8px 12px rgba(0, 0, 0, 0.9), /* 底部陰影 */
+                0 0 20px rgba(77, 166, 255, 0.5); /* 保留一點好人的藍色光暈 */
+        }
+
+        /* 針對壞人的立體文字效果 */
+        #player-role-name.evil {
+            color: #ffcccc; /* 字體表面用較亮的淡紅色 */
+            text-shadow: 
+                0 1px 0 var(--evil-color), 
+                0 2px 0 #cc2929, 
+                0 3px 0 #a61a1a, 
+                0 4px 0 #821010, 
+                0 5px 0 #5e0808, 
+                0 6px 0 #3a0303, /* 製造向下的厚度 */
+                0 8px 12px rgba(0, 0, 0, 0.9), /* 底部陰影 */
+                0 0 20px rgba(255, 77, 77, 0.5); /* 保留一點壞人的紅色光暈 */
         }
 
         .role-img {
