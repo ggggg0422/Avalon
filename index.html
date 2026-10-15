@@ -195,6 +195,31 @@
             text-shadow: 0 0 8px rgba(220, 179, 99, 0.8);
         }
 
+        .pc-item.active-other {
+            background: linear-gradient(135deg, rgba(140, 106, 43, 0.2), rgba(20, 15, 10, 0.8)); 
+            border: 1px solid var(--gold); 
+            box-shadow: 0 0 15px rgba(220, 179, 99, 0.3), inset 0 0 10px rgba(220, 179, 99, 0.1); 
+            transform: translateY(-2px); 
+        }
+
+        .pc-item.active-other .pc-number {
+            color: var(--gold-light);
+            text-shadow: 0 0 8px rgba(220, 179, 99, 0.8);
+        }
+
+        .other-counts-grid {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: -5px auto 15px auto;
+            width: 100%;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .other-counts-grid.show {
+            display: grid;
+        }
+
         .role-list { text-align: center; margin-bottom: 10px; }
         .role-checkbox { display: none; }
 
@@ -785,40 +810,47 @@
             <h3 class="section-title">選擇遊戲人數</h3>
             
             <div class="player-count-grid">
-                <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
-                <label for="pc-5" class="pc-item">
-                    <div class="pc-number">5 人</div>
-                    <div class="desc"><span class="good">3忠</span> <span class="evil">2邪</span></div>
-                </label>
-                
-                <input type="radio" name="player-count" id="pc-6" value="6" class="pc-radio">
-                <label for="pc-6" class="pc-item">
-                    <div class="pc-number">6 人</div>
-                    <div class="desc"><span class="good">4忠</span> <span class="evil">2邪</span></div>
-                </label>
-
-                <input type="radio" name="player-count" id="pc-7" value="7" class="pc-radio">
-                <label for="pc-7" class="pc-item">
-                    <div class="pc-number">7 人</div>
-                    <div class="desc"><span class="good">4忠</span> <span class="evil">3邪</span></div>
-                </label>
-
                 <input type="radio" name="player-count" id="pc-8" value="8" class="pc-radio">
                 <label for="pc-8" class="pc-item">
                     <div class="pc-number">8 人</div>
-                    <div class="desc"><span class="good">5忠</span> <span class="evil">3邪</span></div>
-                </label>
-
-                <input type="radio" name="player-count" id="pc-9" value="9" class="pc-radio">
-                <label for="pc-9" class="pc-item">
-                    <div class="pc-number">9 人</div>
-                    <div class="desc"><span class="good">5忠</span> <span class="evil">4邪</span></div>
+                    <div class="desc"><span class="good">5好</span> <span class="evil">3壞</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-10" value="10" class="pc-radio" checked>
                 <label for="pc-10" class="pc-item">
                     <div class="pc-number">10 人</div>
-                    <div class="desc"><span class="good">6忠</span> <span class="evil">4邪</span></div>
+                    <div class="desc"><span class="good">6好</span> <span class="evil">4壞</span></div>
+                </label>
+
+                <div id="pc-other-btn" class="pc-item" onclick="toggleOtherCounts()">
+                    <div class="pc-number">其他</div>
+                    <div class="desc" id="other-desc">5 / 6 / 7 / 9人</div>
+                </div>
+            </div>
+
+            <div id="other-counts-container" class="other-counts-grid">
+                <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
+                <label for="pc-5" class="pc-item">
+                    <div class="pc-number">5 人</div>
+                    <div class="desc"><span class="good">3好</span> <span class="evil">2壞</span></div>
+                </label>
+                
+                <input type="radio" name="player-count" id="pc-6" value="6" class="pc-radio">
+                <label for="pc-6" class="pc-item">
+                    <div class="pc-number">6 人</div>
+                    <div class="desc"><span class="good">4好</span> <span class="evil">2壞</span></div>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-7" value="7" class="pc-radio">
+                <label for="pc-7" class="pc-item">
+                    <div class="pc-number">7 人</div>
+                    <div class="desc"><span class="good">4好</span> <span class="evil">3壞</span></div>
+                </label>
+
+                <input type="radio" name="player-count" id="pc-9" value="9" class="pc-radio">
+                <label for="pc-9" class="pc-item">
+                    <div class="pc-number">9 人</div>
+                    <div class="desc"><span class="good">5好</span> <span class="evil">4壞</span></div>
                 </label>
             </div>
 
@@ -970,9 +1002,47 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const countRadios = document.querySelectorAll('input[name="player-count"]');
-            countRadios.forEach(radio => radio.addEventListener('change', updateDefaultRoles));
+            countRadios.forEach(radio => radio.addEventListener('change', (e) => {
+                updateDefaultRoles();
+                handlePlayerCountUI(parseInt(e.target.value));
+            }));
             setupHoldButton();
         });
+
+        function toggleOtherCounts() {
+            const container = document.getElementById('other-counts-container');
+            const otherBtn = document.getElementById('pc-other-btn');
+            const isShowing = container.classList.toggle('show');
+            
+            if (isShowing) {
+                otherBtn.classList.add('active-other');
+                const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
+                if (currentCount === 8 || currentCount === 10) {
+                    const pc9 = document.getElementById('pc-9');
+                    pc9.checked = true;
+                    updateDefaultRoles();
+                }
+            } else {
+                const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
+                if ([5, 6, 7, 9].includes(currentCount)) {
+                    otherBtn.classList.add('active-other');
+                } else {
+                    otherBtn.classList.remove('active-other');
+                }
+            }
+        }
+
+        function handlePlayerCountUI(count) {
+            const container = document.getElementById('other-counts-container');
+            const otherBtn = document.getElementById('pc-other-btn');
+            
+            if (count === 8 || count === 10) {
+                container.classList.remove('show');
+                otherBtn.classList.remove('active-other');
+            } else {
+                otherBtn.classList.add('active-other');
+            }
+        }
 
         function updateDefaultRoles() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
