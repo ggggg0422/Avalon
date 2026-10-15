@@ -589,8 +589,8 @@
         #reveal-hold-btn {
             width: 100%;
             height: 70px;
-            background: rgba(20, 10, 10, 0.8);
-            border: 2px solid var(--evil-color);
+            background: rgba(25, 20, 12, 0.85);
+            border: 2px solid var(--gold);
             border-radius: 35px;
             position: relative;
             overflow: hidden;
@@ -598,7 +598,7 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(179, 57, 57, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 12px rgba(220, 179, 99, 0.35);
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
@@ -608,7 +608,7 @@
             position: absolute;
             top: 0; left: 0;
             height: 100%; width: 0%;
-            background: linear-gradient(90deg, #6b1515, #b33939);
+            background: linear-gradient(90deg, #8c6a2b, #dcb363, #fdf5d3);
             z-index: 1;
             transition: width 0.1s linear;
         }
@@ -616,11 +616,11 @@
         .hold-btn-text {
             position: relative;
             z-index: 2;
-            color: #fff;
+            color: var(--gold-light);
             font-size: 18px;
             font-weight: 700;
             letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
             pointer-events: none;
         }
 
