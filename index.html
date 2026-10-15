@@ -4,72 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>阿瓦隆網頁小幫手</title>
+    <!-- 導入 Google Fonts 的中世紀/奇幻感襯線字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --panel-bg: rgba(18, 24, 43, 0.85);
-            --panel-border: rgba(212, 175, 55, 0.4);
-            --text-color: #e94560;
-            --good-color: #4da6ff;
-            --evil-color: #ff4d4d;
-            --gold: #d4af37;
-            --gold-light: #f3e5ab;
-            --purple: #b366ff;
-            --warning-yellow: #ffcc00; 
+            /* 色彩計畫收斂：皇家深藍與酒紅，取代原本的亮色 */
+            --panel-bg: rgba(15, 18, 25, 0.88);
+            --panel-border: rgba(197, 160, 89, 0.5);
+            --text-color: #e8dcc4;
+            --good-color: #5c88b5; 
+            --good-shadow: rgba(92, 136, 181, 0.6);
+            --evil-color: #b33939; 
+            --evil-shadow: rgba(179, 57, 57, 0.6);
+            --gold: #dcb363;
+            --gold-light: #fdf5d3;
+            --gold-dark: #8c6a2b;
+            --purple: #9c6cce;
+            --warning-yellow: #e8b923; 
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
         }
 
-        /* 隱藏全域滾動條，但保留滾動功能 (針對 Webkit 瀏覽器如 Chrome, Safari) */
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        * {
-            /* 針對 Firefox, IE 隱藏滾動條 */
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
+            /* 全面套用襯線字體 */
+            font-family: 'Noto Serif TC', serif;
+            color: var(--text-color);
             text-align: center;
             margin: 0;
             padding: 5px 20px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* 替換為 100dvh 修復 iOS Safari 底部導覽列問題 */
             min-height: 100dvh;
-            background-image: linear-gradient(rgba(10, 15, 25, 0.85), rgba(10, 15, 25, 0.85)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
+            background-color: #080a0e;
+            background-image: linear-gradient(rgba(8, 10, 14, 0.8), rgba(8, 10, 14, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            /* 防止下滑重新整理 */
             overscroll-behavior-y: contain; 
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 疊加雜訊/羊皮紙質感 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .screen {
             display: none;
             width: 100%;
-            /* 稍微放大 max-width 以彌補移除 zoom 的大小 */
             max-width: 440px;
-            /* 效能優化：預設給予較不透明的底色，作為毛玻璃的 fallback */
-            background-color: rgba(18, 24, 43, 0.98); 
+            background-color: rgba(15, 18, 25, 0.95); 
             padding: 25px 25px 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
+            border-radius: 12px; /* 降低圓角，增加復古感 */
+            box-shadow: 0 20px 45px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05);
             border: 1px solid var(--panel-border);
-            /* 移除了危險的 zoom: 1.1; 屬性 */
             box-sizing: border-box;
         }
 
-        /* 只有在支援毛玻璃的裝置上才開啟，並加入硬體加速 (translateZ) */
         @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
             .screen {
                 background-color: var(--panel-bg);
-                backdrop-filter: blur(10px); 
-                -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(12px); 
+                -webkit-backdrop-filter: blur(12px);
                 transform: translateZ(0); 
                 will-change: transform, opacity;
             }
@@ -77,43 +87,46 @@
         
         .screen.active {
             display: block;
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.5s ease-out;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
         h1, h2, h3 { 
             color: var(--gold); 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9); 
-            letter-spacing: 1px;
+            text-shadow: 2px 3px 5px rgba(0,0,0,0.9); 
+            letter-spacing: 2px;
+            font-weight: 900;
         }
-        h1 { margin-top: 0; margin-bottom: 20px; font-weight: 900; }
+        h1 { margin-top: 0; margin-bottom: 20px; }
         
         .section-title {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             margin: 20px 0 12px;
+            font-size: 1.1em;
         }
         .section-title::before, .section-title::after {
             content: "";
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             flex: 1;
+            opacity: 0.5;
         }
 
-        .good { color: var(--good-color); font-weight: bold; text-shadow: 0 0 5px rgba(77, 166, 255, 0.5);}
-        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);}
-        .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 5px rgba(179, 102, 255, 0.5);}
+        .good { color: var(--good-color); font-weight: bold; text-shadow: 0 0 8px var(--good-shadow);}
+        .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 8px var(--evil-shadow);}
+        .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 8px rgba(156, 108, 206, 0.5);}
 
         .player-count-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            gap: 6px; 
+            gap: 8px; 
             margin: 0 auto 15px auto; 
             width: 100%;
         }
@@ -121,13 +134,13 @@
         .pc-radio { display: none; }
         
         .pc-item {
-            background: linear-gradient(145deg, rgba(30, 40, 60, 0.6), rgba(15, 20, 35, 0.8));
+            background: linear-gradient(145deg, rgba(25, 30, 40, 0.6), rgba(10, 12, 18, 0.8));
             border: 1px solid var(--glass-border); 
             border-radius: 6px; 
-            padding: 6px 2px; 
+            padding: 8px 2px; 
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            color: white;
+            color: #d1c9b8;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -135,98 +148,69 @@
             user-select: none;
             -webkit-user-select: none;
             box-sizing: border-box; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 5px rgba(0,0,0,0.5);
             position: relative;
             overflow: hidden;
-            /* 調整高度以彌補 zoom */
-            min-height: 52px; 
+            min-height: 55px; 
         }
 
         .pc-item:hover {
             transform: translateY(-1px);
-            background: linear-gradient(145deg, rgba(40, 50, 75, 0.7), rgba(20, 25, 45, 0.9));
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            background: linear-gradient(145deg, rgba(35, 40, 50, 0.7), rgba(15, 18, 25, 0.9));
         }
 
         .pc-item .pc-number {
-            font-size: 15px; 
-            font-weight: 900;
-            color: #ddd;
-            margin-bottom: 2px;
+            font-size: 16px; 
+            font-weight: 700;
+            margin-bottom: 3px;
             transition: color 0.3s;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
         .pc-item .desc {
             font-size: 11px; 
-            opacity: 0.9;
-            background: rgba(0,0,0,0.4);
-            padding: 1px 4px;
-            border-radius: 4px;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: sans-serif; /* 數字與標籤保持清晰 */
         }
 
         .pc-radio:checked + .pc-item {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(40, 20, 10, 0.6)); 
-            border: 2px solid var(--gold); 
-            box-shadow: 
-                0 0 10px rgba(212, 175, 55, 0.4), 
-                inset 0 0 10px rgba(212, 175, 55, 0.1); 
-            transform: translateY(-2px) scale(1.02); 
+            background: linear-gradient(135deg, rgba(140, 106, 43, 0.2), rgba(20, 15, 10, 0.8)); 
+            border: 1px solid var(--gold); 
+            box-shadow: 0 0 15px rgba(220, 179, 99, 0.3), inset 0 0 10px rgba(220, 179, 99, 0.1); 
+            transform: translateY(-2px); 
         }
 
         .pc-radio:checked + .pc-item .pc-number {
             color: var(--gold-light);
-            text-shadow: 0 0 5px rgba(212, 175, 55, 0.8);
+            text-shadow: 0 0 8px rgba(220, 179, 99, 0.8);
         }
 
-        .pc-radio:checked + .pc-item::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            transform: rotate(45deg);
-            animation: shine 3s infinite linear;
-            pointer-events: none;
-        }
-
-        .role-list { 
-            text-align: center; 
-            margin-bottom: 10px;
-        }
-        
+        .role-list { text-align: center; margin-bottom: 10px; }
         .role-checkbox { display: none; }
 
         .role-cards-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 10px; 
+            gap: 12px; 
             align-items: center;
             margin-bottom: 15px;
         }
-
-        .role-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px; 
-        }
+        .role-row { display: flex; justify-content: center; gap: 12px; }
 
         .role-card-label {
             position: relative;
-            /* 調整寬高以彌補 zoom */
             width: 82px; 
             height: 115px;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             box-sizing: border-box;
-            border: 2px solid transparent;
+            border: 1px solid #333;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            background-color: #111; 
+            background-color: #0a0a0a; 
             overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             user-select: none;
             -webkit-user-select: none;
         }
@@ -235,74 +219,45 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 4px;
-            opacity: 0.4;
-            filter: grayscale(90%);
+            opacity: 0.3;
+            filter: grayscale(100%) contrast(1.2);
             transition: all 0.3s ease-in-out;
         }
 
         .role-card-name {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.85); /* 效能優化：加深無毛玻璃時的底色 */
-            color: #888;
+            bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.7) 70%, transparent);
+            color: #777;
             font-size: 12px;
-            padding: 4px 0;
+            padding: 10px 0 5px;
             text-align: center;
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
             transition: all 0.3s ease-in-out;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
-            .role-card-name {
-                background: rgba(0, 0, 0, 0.75);
-                backdrop-filter: blur(2px);
-                -webkit-backdrop-filter: blur(2px);
-            }
-        }
-
-        .role-card-label:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
 
         .role-checkbox:checked + .role-card-label.good {
             border-color: var(--good-color);
-            box-shadow: 0 0 12px rgba(77, 166, 255, 0.6), inset 0 0 10px rgba(77, 166, 255, 0.2);
-            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 15px var(--good-shadow), inset 0 0 10px var(--good-shadow);
+            transform: translateY(-2px);
         }
 
         .role-checkbox:checked + .role-card-label.evil {
             border-color: var(--evil-color);
-            box-shadow: 0 0 12px rgba(255, 77, 77, 0.6), inset 0 0 10px rgba(255, 77, 77, 0.2);
-            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 15px var(--evil-shadow), inset 0 0 10px var(--evil-shadow);
+            transform: translateY(-2px);
         }
 
         .role-checkbox:checked + .role-card-label img {
-            opacity: 1;
-            filter: grayscale(0%);
+            opacity: 0.85;
+            filter: grayscale(0%) contrast(1.1);
         }
 
-        .role-checkbox:checked + .role-card-label.good .role-card-name {
-            color: white;
-            background: rgba(20, 80, 150, 0.85);
+        .role-checkbox:checked + .role-card-label .role-card-name {
+            color: #fff;
             font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            border-top: 1px solid rgba(77, 166, 255, 0.5);
-        }
-
-        .role-checkbox:checked + .role-card-label.evil .role-card-name {
-            color: white;
-            background: rgba(150, 20, 20, 0.85);
-            font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            border-top: 1px solid rgba(255, 77, 77, 0.5);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            font-size: 13px;
         }
 
         #setup-error { 
@@ -314,38 +269,60 @@
             text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
 
+        /* 按鈕質感升級：金屬銘牌風格 */
         button {
             border: none;
-            padding: 15px 30px;
+            padding: 16px 30px;
             margin: 10px auto; 
-            font-size: 20px;
-            border-radius: 12px;
+            font-size: 18px;
+            border-radius: 8px; /* 方正一點帶有古典感 */
             cursor: pointer;
             transition: 0.3s;
             font-weight: 900;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
         }
         
         .btn-gold { 
-            background: linear-gradient(to bottom, #ebd197, #b5952f);
-            color: #1a1a2e; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.6);
-            border: 1px solid #7a631c;
+            background: linear-gradient(to bottom, #deb96e, #a67c27);
+            color: #1a1205; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.6), inset 0 2px 3px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.2);
+            border: 1px solid #ffd88a;
             width: 100%;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
         }
-        .btn-gold:hover { 
-            background: linear-gradient(to bottom, #f5dfa8, #c9a738);
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.8);
+        
+        /* 按鈕流光特效 */
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: button-shine 4s infinite;
         }
-        .btn-gold:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        
+        @keyframes button-shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
         }
 
+        .btn-gold:hover { 
+            background: linear-gradient(to bottom, #efcd87, #b88d32);
+            transform: translateY(-1px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 0 2px 3px rgba(255,255,255,0.5);
+        }
+        .btn-gold:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* 3D 卡牌擬物化升級 */
         .card-container {
-            perspective: 1000px; 
+            perspective: 1200px; 
             border: none;
             padding: 0;
             margin: 20px auto; 
@@ -357,27 +334,23 @@
             -webkit-user-select: none;
             position: relative;
             background-color: transparent;
-            -webkit-touch-callout: none;
-            /* 關閉預設滑動手勢，避免與系統或網頁上下滑動衝突 */
             touch-action: none;
             width: 100%; 
-            /* 稍微放大以彌補 zoom */
             max-width: 310px;  
-            height: 430px; 
-            border-radius: 15px;
+            height: 440px; 
+            border-radius: 12px;
             -webkit-tap-highlight-color: transparent; 
         }
 
         .card-inner {
             width: 100%;
             height: 100%;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
             transform-style: preserve-3d;
             position: relative;
             will-change: transform;
         }
 
-        /* Flipped state */
         .card-inner.flipped { transform: rotateY(180deg); }
 
         .card-face {
@@ -387,145 +360,122 @@
             backface-visibility: hidden;
             display: flex;
             flex-direction: column;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
-            transition: box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); /* 更深的實體陰影 */
             pointer-events: none; 
+            background-color: #0c0e14;
         }
 
         .card-back {
-            background-color: transparent;
             justify-content: center;
             align-items: center;
+            border: 2px solid rgba(150, 150, 150, 0.1);
         }
 
         .card-front {
-            background-image: url('https://i.postimg.cc/Kz4pwxC0/66666.jpg');
-            background-size: cover;
-            background-position: center;
+            background-image: radial-gradient(circle at center, #1c212e 0%, #080a0e 100%);
             transform: rotateY(180deg);
             box-sizing: border-box;
-            border: 2px solid var(--panel-border); 
-            display: block; 
+            border: 2px solid var(--gold-dark); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
             position: relative; 
             padding: 0; 
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 15px 35px rgba(0,0,0,0.9); /* 內陰影增強立體感 */
+        }
+        
+        /* 實體卡牌的內細線金框 */
+        .card-front::after {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px solid rgba(220, 179, 99, 0.4);
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 20;
         }
 
         #card-back-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 15px;
+            border-radius: 12px;
+            opacity: 0.9;
         }
 
         .card-back .instruction {
             position: absolute;
-            bottom: 55px; 
+            bottom: 40px; 
             left: 50%;
             transform: translateX(-50%);
-            color: white;
+            color: #d1c9b8;
             font-size: 16px;
-            font-weight: bold;
-            pointer-events: none;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.8);
             transition: opacity 0.2s;
+            background: rgba(0,0,0,0.6);
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .card-inner.flipped .instruction {
-            opacity: 0;
-        }
+        .card-inner.flipped .instruction { opacity: 0; }
         
         #player-role-name {
             margin: 0;
-            /* 調整字體大小彌補 zoom */
-            font-size: 40px; 
+            font-size: 38px; 
             font-weight: 900;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             position: absolute;
-            top: 50px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
+            top: 40px; 
             z-index: 10;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
         }
 
-        #player-role-name.good {
-            color: #d1e8ff; 
-            text-shadow: 
-                0 1px 0 var(--good-color), 
-                0 2px 0 #2a7fcc, 
-                0 3px 0 #1d66a6, 
-                0 4px 0 #145082, 
-                0 5px 0 #0d385e, 
-                0 6px 0 #07223b, 
-                0 8px 12px rgba(0, 0, 0, 0.9), 
-                0 0 20px rgba(77, 166, 255, 0.5); 
-        }
-
-        #player-role-name.evil {
-            color: #ffcccc; 
-            text-shadow: 
-                0 1px 0 var(--evil-color), 
-                0 2px 0 #cc2929, 
-                0 3px 0 #a61a1a, 
-                0 4px 0 #821010, 
-                0 5px 0 #5e0808, 
-                0 6px 0 #3a0303, 
-                0 8px 12px rgba(0, 0, 0, 0.9), 
-                0 0 20px rgba(255, 77, 77, 0.5); 
-        }
-
+        /* 角色圖片漸層融合遮罩 */
         .role-img {
-            /* 調整大小彌補 zoom */
-            width: 170px; 
-            height: 170px;
-            border-radius: 50%;
-            border: 4px solid var(--gold);
-            object-fit: contain; 
+            width: 240px; 
+            height: 240px;
+            object-fit: cover; 
             display: block;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
-            background-color: #111;
             pointer-events: none; 
             position: absolute; 
-            top: 50%; 
+            top: 48%; 
             left: 50%; 
             transform: translate(-50%, -50%); 
             margin: 0; 
+            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 72%);
+            mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 72%);
+            opacity: 0.9;
+            filter: contrast(1.1);
         }
 
         #player-info-text { 
-            /* 調整大小彌補 zoom */
-            font-size: 18px; 
-            line-height: 1.5; 
-            background: transparent; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9); 
-            padding: 8px 10px; 
-            border-radius: 8px; 
+            font-size: 17px; 
+            line-height: 1.6; 
+            background: rgba(0, 0, 0, 0.4); 
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.9); 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             box-sizing: border-box;
             position: absolute; 
-            bottom: 50px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            margin: 0; 
+            bottom: 35px; 
             width: 85%; 
+            z-index: 10;
         }
         
         #next-player-btn {
-            background: rgba(30, 40, 60, 0.95); /* 效能優化：無毛玻璃的備用底色 */
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
+            background: rgba(30, 35, 45, 0.9);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ccc;
+            font-family: sans-serif;
+            font-weight: normal;
         }
 
-        @supports (backdrop-filter: blur(5px)) or (-webkit-backdrop-filter: blur(5px)) {
-            #next-player-btn {
-                background: rgba(255,255,255,0.1);
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(5px);
-                transform: translateZ(0);
-            }
-        }
-
-        #next-player-btn:hover { background: rgba(255,255,255,0.2); }
+        #next-player-btn:hover { background: rgba(50, 55, 65, 0.9); color: #fff;}
 
         #game-screen.active {
             display: flex;
@@ -544,47 +494,54 @@
             box-sizing: border-box;
         }
 
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0.7); }
-            70% { box-shadow: 0 0 0 25px rgba(220, 20, 60, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 20, 60, 0); }
+        /* 結束按鈕優化：長按解鎖 */
+        .hold-btn-container {
+            width: 90%;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
-        @keyframes pulse-fast-red {
-            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9); }
-            50% { box-shadow: 0 0 0 35px rgba(255, 0, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
-        }
-
-        #reveal-all-btn {
-            /* 調整大小彌補 zoom */
-            width: 240px; 
-            height: 240px; 
-            padding: 15px; 
-            font-size: 26px; 
-            font-weight: 900; 
-            border-radius: 50%; 
+        #reveal-hold-btn {
+            width: 100%;
+            height: 70px;
+            background: rgba(20, 10, 10, 0.8);
+            border: 2px solid var(--evil-color);
+            border-radius: 35px;
+            position: relative;
+            overflow: hidden;
             display: flex;
-            flex-direction: column; 
             justify-content: center;
             align-items: center;
-            text-align: center;
-            line-height: 1.4;
-            margin: 0; 
-            background: radial-gradient(circle, #b30000 0%, #500000 100%);
-            color: #ffffff; 
-            border: 4px solid #ff4d4d;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.8); 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,0,0.3); 
-            animation: pulse-red 2s infinite; 
-            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(179, 57, 57, 0.3);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
         }
 
-        #reveal-all-btn:hover {
-            transform: scale(1.05); 
-            background: radial-gradient(circle, #d60000 0%, #700000 100%);
-            border-color: #ff6666;
-            cursor: pointer;
+        .progress-bg {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #6b1515, #b33939);
+            z-index: 1;
+            transition: width 0.1s linear;
+        }
+
+        .hold-btn-text {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            pointer-events: none;
+        }
+
+        #reveal-hold-btn:active, #reveal-hold-btn.holding {
+            transform: scale(0.96);
+            transition: transform 0.2s;
         }
 
         #final-reveal-list {
@@ -597,112 +554,81 @@
 
         .reveal-card {
             position: relative;
-            /* 調整大小彌補 zoom */
             width: 92px; 
             height: 130px; 
-            border-radius: 8px;
+            border-radius: 6px;
             box-sizing: border-box;
-            background-color: #111;
+            background-color: #0c0e14;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-            border: 2px solid transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+            border: 1px solid transparent;
             transition: transform 0.2s;
         }
 
         .reveal-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.8);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.9);
         }
 
         .reveal-card.good {
             border-color: var(--good-color);
-            box-shadow: 0 0 12px rgba(77, 166, 255, 0.6), inset 0 0 10px rgba(77, 166, 255, 0.2);
+            box-shadow: 0 0 10px var(--good-shadow);
         }
 
         .reveal-card.evil {
             border-color: var(--evil-color);
-            box-shadow: 0 0 12px rgba(255, 77, 77, 0.6), inset 0 0 10px rgba(255, 77, 77, 0.2);
+            box-shadow: 0 0 10px var(--evil-shadow);
         }
 
         .reveal-card img {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
-            border-radius: 4px;
+            opacity: 0.8;
         }
 
         .reveal-card-id {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.85); /* 效能優化 */
+            top: 0; left: 0; width: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
             color: var(--gold);
             font-size: 14px;
             font-weight: 900;
-            padding: 3px 0;
+            padding: 5px 0;
             text-align: center;
             z-index: 2;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
         }
 
         .reveal-card-name {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             font-size: 13px;
-            padding: 5px 0;
+            padding: 6px 0;
             text-align: center;
             z-index: 2;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            background: rgba(0, 0, 0, 0.85); /* 效能優化 */
-        }
-
-        @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
-            .reveal-card-id, .reveal-card-name {
-                background: rgba(0, 0, 0, 0.7);
-                backdrop-filter: blur(2px);
-                -webkit-backdrop-filter: blur(2px);
-            }
-        }
-
-        .reveal-card.good .reveal-card-name {
-            color: white;
-            background: rgba(20, 80, 150, 0.85);
+            background: rgba(10, 12, 18, 0.9);
+            border-top: 1px solid rgba(255,255,255,0.1);
             font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            border-top: 1px solid rgba(77, 166, 255, 0.5);
         }
 
-        .reveal-card.evil .reveal-card-name {
-            color: white;
-            background: rgba(150, 20, 20, 0.85);
-            font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            border-top: 1px solid rgba(255, 77, 77, 0.5);
-        }
+        .reveal-card.good .reveal-card-name { color: #8cb4db; }
+        .reveal-card.evil .reveal-card-name { color: #d67c7c; }
 
         .player-number-text {
             color: var(--gold);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
         .action-white-text {
-            color: white; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            color: #d1c9b8; 
+            font-size: 0.85em;
         }
     </style>
 </head>
 <body>
 
     <div id="setup-screen" class="screen active">
-        <h1 style="color: #e8c37d; text-transform: uppercase; letter-spacing: 2px;">阿瓦隆小幫手</h1>
+        <h1 style="color: #dcb363; text-transform: uppercase; letter-spacing: 3px;">阿瓦隆小幫手</h1>
         
         <div class="role-list">
             <h3 class="section-title">選擇遊戲人數</h3>
@@ -711,42 +637,42 @@
                 <input type="radio" name="player-count" id="pc-5" value="5" class="pc-radio">
                 <label for="pc-5" class="pc-item">
                     <div class="pc-number">5 人</div>
-                    <div class="desc"><span class="good">3好</span> <span class="evil">2壞</span></div>
+                    <div class="desc"><span class="good">3忠</span> <span class="evil">2邪</span></div>
                 </label>
                 
                 <input type="radio" name="player-count" id="pc-6" value="6" class="pc-radio">
                 <label for="pc-6" class="pc-item">
                     <div class="pc-number">6 人</div>
-                    <div class="desc"><span class="good">4好</span> <span class="evil">2壞</span></div>
+                    <div class="desc"><span class="good">4忠</span> <span class="evil">2邪</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-7" value="7" class="pc-radio">
                 <label for="pc-7" class="pc-item">
                     <div class="pc-number">7 人</div>
-                    <div class="desc"><span class="good">4好</span> <span class="evil">3壞</span></div>
+                    <div class="desc"><span class="good">4忠</span> <span class="evil">3邪</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-8" value="8" class="pc-radio">
                 <label for="pc-8" class="pc-item">
                     <div class="pc-number">8 人</div>
-                    <div class="desc"><span class="good">5好</span> <span class="evil">3壞</span></div>
+                    <div class="desc"><span class="good">5忠</span> <span class="evil">3邪</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-9" value="9" class="pc-radio">
                 <label for="pc-9" class="pc-item">
                     <div class="pc-number">9 人</div>
-                    <div class="desc"><span class="good">5好</span> <span class="evil">4壞</span></div>
+                    <div class="desc"><span class="good">5忠</span> <span class="evil">4邪</span></div>
                 </label>
 
                 <input type="radio" name="player-count" id="pc-10" value="10" class="pc-radio" checked>
                 <label for="pc-10" class="pc-item">
                     <div class="pc-number">10 人</div>
-                    <div class="desc"><span class="good">6好</span> <span class="evil">4壞</span></div>
+                    <div class="desc"><span class="good">6忠</span> <span class="evil">4邪</span></div>
                 </label>
             </div>
 
             <h3 class="section-title">選擇特殊角色</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 12px;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
+            <p style="font-size: 13px; color: #888; margin-bottom: 12px; font-family: sans-serif;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
             
             <div class="role-cards-wrapper">
                 <div class="role-row">
@@ -810,7 +736,7 @@
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
                     <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
-                    <div class="instruction">👆 點擊或滑動翻開</div>
+                    <div class="instruction">點擊或滑動翻開</div>
                 </div>
                 <div class="card-face card-front" id="card-content">
                     <h2 id="player-role-name">角色名稱</h2>
@@ -820,16 +746,22 @@
             </div>
         </div>
         
-        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width:100%;">看完了 下一位</button>
+        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width:100%;">封印卡牌並交接</button>
     </div>
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
-            <button id="reveal-all-btn" onclick="revealAll()">結束遊戲<br>查看所有人<br>身分</button>
+            <!-- 改為長按解鎖機制 -->
+            <div class="hold-btn-container">
+                <div id="reveal-hold-btn">
+                    <div class="progress-bg"></div>
+                    <span class="hold-btn-text">長按以揭曉真實身分</span>
+                </div>
+            </div>
         </div>
 
         <div id="final-reveal-area" style="display: none; margin-top: 10px;">
-            <h3 class="section-title">真實身分揭曉</h3>
+            <h3 class="section-title">真相大白</h3>
             <div id="final-reveal-list"></div>
             <button class="btn-gold" onclick="location.reload()" style="margin-top: 25px; padding: 15px 30px; font-size: 18px;">重新一局</button>
         </div>
@@ -839,7 +771,6 @@
         const preloadedBg = new Image();
         preloadedBg.src = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
 
-        // 優化圖片預載：建立全域陣列保存 Image 物件，防止瀏覽器太早進行垃圾回收(GC)
         const imageCache = []; 
         function preloadImage(url) {
             const img = new Image();
@@ -847,7 +778,6 @@
             imageCache.push(img);
         }
 
-        // 預載共用的卡背圖片
         preloadImage("https://i.postimg.cc/QdHBXdPk/card0back.png");
 
         const roleData = {
@@ -862,10 +792,7 @@
             minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
 
-        // 網頁載入時先初步載入所有角色圖片進入快取
-        Object.values(roleData).forEach(role => {
-            preloadImage(role.img);
-        });
+        Object.values(roleData).forEach(role => preloadImage(role.img));
 
         const rules = {
             5: { good: 3, evil: 2 },
@@ -882,9 +809,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const countRadios = document.querySelectorAll('input[name="player-count"]');
-            countRadios.forEach(radio => {
-                radio.addEventListener('change', updateDefaultRoles);
-            });
+            countRadios.forEach(radio => radio.addEventListener('change', updateDefaultRoles));
+            setupHoldButton();
         });
 
         function updateDefaultRoles() {
@@ -892,64 +818,22 @@
             if (!checkedRadio) return;
             const count = parseInt(checkedRadio.value);
             
-            const merlin = document.getElementById('role-merlin');
-            const percival = document.getElementById('role-percival');
-            const lizakang = document.getElementById('role-lizakang');
-            const assassin = document.getElementById('role-assassin');
-            const morgana = document.getElementById('role-morgana');
-            const mordred = document.getElementById('role-mordred');
-            const oberon = document.getElementById('role-oberon');
-
-            merlin.checked = false;
-            percival.checked = false;
-            lizakang.checked = false;
-            assassin.checked = false;
-            morgana.checked = false;
-            mordred.checked = false;
-            oberon.checked = false;
+            const roles = ['merlin', 'percival', 'lizakang', 'assassin', 'morgana', 'mordred', 'oberon'];
+            roles.forEach(r => document.getElementById('role-' + r).checked = false);
 
             switch(count) {
                 case 5:
-                    merlin.checked = true;
-                    assassin.checked = true;
-                    break;
+                    ['merlin', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
                 case 6:
-                    merlin.checked = true;
-                    lizakang.checked = true;
-                    mordred.checked = true;
-                    assassin.checked = true;
-                    break;
+                    ['merlin', 'lizakang', 'mordred', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
                 case 7:
-                    merlin.checked = true;
-                    percival.checked = true;
-                    mordred.checked = true;
-                    morgana.checked = true;
-                    oberon.checked = true;
-                    break;
+                    ['merlin', 'percival', 'mordred', 'morgana', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
                 case 8:
-                    merlin.checked = true;
-                    percival.checked = true;
-                    mordred.checked = true;
-                    morgana.checked = true;
-                    assassin.checked = true;
-                    break;
+                    ['merlin', 'percival', 'mordred', 'morgana', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
                 case 9:
-                    merlin.checked = true;
-                    percival.checked = true;
-                    lizakang.checked = true;
-                    assassin.checked = true;
-                    morgana.checked = true;
-                    mordred.checked = true;
-                    oberon.checked = true;
-                    break;
+                    ['merlin', 'percival', 'lizakang', 'assassin', 'morgana', 'mordred', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
                 case 10:
-                    merlin.checked = true;
-                    percival.checked = true;
-                    assassin.checked = true;
-                    morgana.checked = true;
-                    mordred.checked = true;
-                    oberon.checked = true;
-                    break;
+                    ['merlin', 'percival', 'assassin', 'morgana', 'mordred', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
             }
         }
 
@@ -983,7 +867,7 @@
 
             if(goodRoles.length === 0 && ratio.good > 0) {
                  if(!forceStartWithoutGood) {
-                     errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊「開始」以確認執行。</strong>";
+                     errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊以確認。</strong>";
                      forceStartWithoutGood = true;
                      return;
                  }
@@ -1005,8 +889,6 @@
             });
 
             generateInfo();
-
-            // 效能優化：在切換畫面之前，針對這局確定「有出場」的角色，再次強制觸發請求，確保圖片已完全就緒
             players.forEach(p => preloadImage(p.role.img));
 
             document.getElementById('setup-screen').classList.remove('active');
@@ -1036,14 +918,14 @@
                 } else if (p.role.isEvil && p.roleKey !== 'oberon') {
                     const otherEvils = teamEvil.filter(id => id !== p.id + "號");
                     if(otherEvils.length > 0) {
-                        p.info = `你的壞人同伴<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
+                        p.info = `邪惡同伴<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
                     } else {
                         p.info = "你是唯一的邪惡陣營<br>(或其他人是奧伯倫)。";
                     }
                 } else if (p.roleKey === 'oberon') {
-                    p.info = "只知道自己是壞人<br>沒有其他資訊";
+                    p.info = "你只知道自己是壞人<br>沒有其他資訊。";
                 } else {
-                    p.info = "你是普通忠臣<br>沒有其他資訊";
+                    p.info = "你是普通的亞瑟忠臣<br>沒有其他資訊。";
                 }
             });
         }
@@ -1070,13 +952,9 @@
 
         function handleCardRelease(isAction = false) {
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
-            
             cardInner.style.transform = '';
-            cardInner.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; 
-            
-            if (isAction) {
-                flipCard();
-            }
+            cardInner.style.transition = 'transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1)'; 
+            if (isAction) flipCard();
         }
 
         revealCardWrapper.addEventListener('mousedown', handleCardPress);
@@ -1094,15 +972,10 @@
 
         revealCardWrapper.addEventListener('touchmove', (e) => {
             if (cardInner.classList.contains('flipped') || isTransitioning) return;
-            
-            const touchX = e.changedTouches[0].screenX;
-            const touchY = e.changedTouches[0].screenY;
-            const deltaX = touchX - touchStartX;
-            const deltaY = touchY - touchStartY;
-
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            const deltaY = e.changedTouches[0].screenY - touchStartY;
             const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
             const rotateY = Math.max(-12, Math.min(12, deltaX / 6));
-
             cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         }, {passive: true});
 
@@ -1112,21 +985,18 @@
         });
 
         function flipCard() {
-            if (isTransitioning) return; 
-            if (cardInner.classList.contains('flipped')) return;
+            if (isTransitioning || cardInner.classList.contains('flipped')) return;
 
             cardInner.classList.add('flipped');
             nextBtn.style.display = 'block'; 
-
             triggerVibration([40, 50, 30]);
 
             const player = players[currentPlayerIndex];
-            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的身分是 ⬇️</span>`;
+            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的真實身分是</span>`;
         }
 
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
-            
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
             
             const roleNameEl = document.getElementById('player-role-name');
@@ -1135,30 +1005,23 @@
             
             const roleImgEl = document.getElementById('player-role-img');
             roleImgEl.src = ""; 
-            
-            setTimeout(() => {
-                roleImgEl.src = player.role.img;
-            }, 10);
+            setTimeout(() => { roleImgEl.src = player.role.img; }, 10);
             
             const infoTextEl = document.getElementById('player-info-text');
             infoTextEl.innerHTML = player.info;
             
-            infoTextEl.className = '';
-
             if (currentPlayerIndex === players.length - 1) {
-                nextBtn.innerText = "看完了 遊戲開始";
+                nextBtn.innerText = "確認完畢 遊戲開始";
             } else {
-                nextBtn.innerText = "看完了 下一位";
+                nextBtn.innerText = "封印卡牌並交接";
             }
         }
 
         function nextPlayer() {
             if (isTransitioning) return; 
             isTransitioning = true; 
-
             nextBtn.style.display = 'none';
             cardInner.classList.remove('flipped');
-
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
 
@@ -1170,9 +1033,8 @@
                     document.getElementById('pass-screen').classList.remove('active');
                     showGameScreen();
                 }
-                
                 isTransitioning = false; 
-            }, 600);
+            }, 700);
         }
 
         function showGameScreen() {
@@ -1182,29 +1044,55 @@
             gameScreen.classList.add('active');
         }
 
-        let confirmRevealActive = false;
-        let revealTimeout;
+        /* ---------------- 長按解鎖邏輯 ---------------- */
+        function setupHoldButton() {
+            const holdBtn = document.getElementById('reveal-hold-btn');
+            const progressBg = document.querySelector('.progress-bg');
+            let holdTimer;
+            let progress = 0;
+            let isHolding = false;
 
-        function revealAll() {
-            const btn = document.getElementById('reveal-all-btn');
-
-            if (!confirmRevealActive) {
-                triggerVibration([50]); 
-                confirmRevealActive = true;
-                btn.innerHTML = "⚠️ 確定揭曉？<br><span style='font-size:16px; font-weight:normal;'>(再次點擊確認，不可逆)</span>";
-                btn.style.animation = "pulse-fast-red 0.5s infinite";
-                btn.style.border = "4px solid white";
-                
-                revealTimeout = setTimeout(() => {
-                    confirmRevealActive = false;
-                    btn.innerHTML = "結束遊戲<br>查看所有人<br>身分";
-                    btn.style.animation = "pulse-red 2s infinite";
-                    btn.style.border = "4px solid #ff4d4d";
-                }, 3500);
-                return;
+            function startHold(e) {
+                if (e.cancelable) e.preventDefault();
+                isHolding = true;
+                progress = 0;
+                holdBtn.classList.add('holding');
+                triggerVibration([20]);
+                updateProgress();
             }
 
-            clearTimeout(revealTimeout);
+            function endHold() {
+                if (!isHolding) return;
+                isHolding = false;
+                progress = 0;
+                progressBg.style.width = '0%';
+                holdBtn.classList.remove('holding');
+                cancelAnimationFrame(holdTimer);
+            }
+
+            function updateProgress() {
+                if (!isHolding) return;
+                
+                progress += 1.2; // 調整這個數值可以改變長按所需時間 (越小越久)
+                progressBg.style.width = Math.min(progress, 100) + '%';
+                
+                if (progress >= 100) {
+                    isHolding = false;
+                    holdBtn.classList.remove('holding');
+                    revealAll(); 
+                } else {
+                    holdTimer = requestAnimationFrame(updateProgress);
+                }
+            }
+            
+            holdBtn.addEventListener('mousedown', startHold);
+            holdBtn.addEventListener('touchstart', startHold, {passive: false});
+            window.addEventListener('mouseup', endHold);
+            window.addEventListener('touchend', endHold);
+            holdBtn.addEventListener('mouseleave', endHold);
+        }
+
+        function revealAll() {
             triggerVibration([100, 50, 100]); 
             
             const revealArea = document.getElementById('final-reveal-area');
