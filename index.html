@@ -623,6 +623,64 @@
             color: #d1c9b8; 
             font-size: 0.85em;
         }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-15px); }
+        }
+        
+        .screen.fade-out {
+            animation: fadeOut 0.35s ease-in forwards;
+            pointer-events: none;
+            display: block;
+        }
+        
+        #game-screen.fade-out { display: flex; }
+
+        @keyframes cardFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .card-container.floating {
+            animation: cardFloat 3.5s ease-in-out infinite;
+        }
+
+        .info-box {
+            display: flex; flex-direction: column; gap: 8px; align-items: center;
+        }
+        .info-label {
+            font-size: 13px; color: #aaa; margin-bottom: 2px; letter-spacing: 1px;
+        }
+        .info-tags {
+            display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+        }
+        .info-tag {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .info-tag.evil { border-color: rgba(179, 57, 57, 0.6); color: #d67c7c; box-shadow: 0 0 8px rgba(179,57,57,0.3); }
+        .info-tag.purple { border-color: rgba(156, 108, 206, 0.6); color: #b894e6; box-shadow: 0 0 8px rgba(156,108,206,0.3); }
+        .info-tag.neutral { border-color: rgba(150, 150, 150, 0.4); color: #ccc; }
+        
+        #next-player-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+        
+        #next-player-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
@@ -729,10 +787,20 @@
         <button class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
     </div>
 
+    <div id="buffer-screen" class="screen">
+        <h3 class="section-title">傳遞裝置</h3>
+        <h2 style="font-size: 24px; margin: 40px 0; color: #d1c9b8; line-height: 1.6;">
+            請將裝置交給<br><br>
+            <span id="buffer-player-id" style="font-size: 52px; color: var(--gold); text-shadow: 0 0 20px rgba(220, 179, 99, 0.5); font-weight: 900;">X號</span>
+        </h2>
+        <p style="color: #888; font-size: 14px; margin-bottom: 30px;">拿到裝置後，請確認四周無人偷看</p>
+        <button class="btn-gold" onclick="confirmBuffer()">我是 <span id="buffer-player-id-btn">X</span> 號，我已拿好裝置</button>
+    </div>
+
     <div id="pass-screen" class="screen">
         <h2 id="current-player-title"><span class="player-number-text">1號</span> <span class="action-white-text">請查驗身分 🔍</span></h2>
         
-        <div class="card-container" id="reveal-card">
+        <div class="card-container floating" id="reveal-card">
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
                     <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
@@ -746,7 +814,7 @@
             </div>
         </div>
         
-        <button id="next-player-btn" onclick="nextPlayer()" style="display:none; width:100%;">封印卡牌並交接</button>
+        <button id="next-player-btn" onclick="nextPlayer()" style="width:100%;">封印卡牌並交接</button>
     </div>
 
     <div id="game-screen" class="screen">
@@ -891,9 +959,31 @@
             generateInfo();
             players.forEach(p => preloadImage(p.role.img));
 
-            document.getElementById('setup-screen').classList.remove('active');
-            document.getElementById('pass-screen').classList.add('active');
-            showPlayerPassScreen();
+            switchScreen('setup-screen', 'buffer-screen', showBufferScreen);
+        }
+
+        function switchScreen(hideId, showId, callback) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            
+            hideEl.classList.add('fade-out');
+            hideEl.classList.remove('active');
+            
+            setTimeout(() => {
+                hideEl.classList.remove('fade-out');
+                if (callback) callback();
+                showEl.classList.add('active');
+            }, 350); 
+        }
+
+        function showBufferScreen() {
+            const player = players[currentPlayerIndex];
+            document.getElementById('buffer-player-id').innerText = player.id + "號";
+            document.getElementById('buffer-player-id-btn').innerText = player.id;
+        }
+
+        function confirmBuffer() {
+            switchScreen('buffer-screen', 'pass-screen', showPlayerPassScreen);
         }
 
         function generateInfo() {
@@ -904,28 +994,33 @@
             let seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
             seenByLiZakang = seenByLiZakang.sort(() => Math.random() - 0.5);
 
+            function createTags(arr, colorClass) {
+                if (arr.length === 0) return `<span class="info-tag neutral">無</span>`;
+                return arr.map(id => `<span class="info-tag ${colorClass}">${id}</span>`).join('');
+            }
+
             players.forEach(p => {
                 if (p.roleKey === 'merlin') {
-                    p.info = `你看到的壞人<br><strong class="evil">${seenByMerlin.join(' ') || '無'}</strong>`;
+                    p.info = `<div class="info-box"><div class="info-label">你感應到的邪惡勢力</div><div class="info-tags">${createTags(seenByMerlin, 'evil')}</div></div>`;
                 } else if (p.roleKey === 'percival') {
-                    p.info = `梅林或莫甘娜<br><strong class="purple">${seenByPercival.join(' ') || '無'}</strong>`;
+                    p.info = `<div class="info-box"><div class="info-label">梅林或莫甘娜</div><div class="info-tags">${createTags(seenByPercival, 'purple')}</div></div>`;
                 } else if (p.roleKey === 'lizakang') {
                     if(seenByLiZakang.length > 0) {
-                         p.info = `梅林或莫德雷德<br><strong class="purple">${seenByLiZakang.join(' ')}</strong>`;
+                         p.info = `<div class="info-box"><div class="info-label">梅林或莫德雷德</div><div class="info-tags">${createTags(seenByLiZakang, 'purple')}</div></div>`;
                     } else {
-                         p.info = "你感應到了無盡的虛空。<br>本局似乎沒有相關特殊角色。";
+                         p.info = `<div class="info-box"><div class="info-label">感應結果</div><div class="info-tags"><span class="info-tag neutral">無盡的虛空</span></div></div>`;
                     }
                 } else if (p.role.isEvil && p.roleKey !== 'oberon') {
                     const otherEvils = teamEvil.filter(id => id !== p.id + "號");
                     if(otherEvils.length > 0) {
-                        p.info = `邪惡同伴<br><strong class="evil">${otherEvils.join(' ')}</strong>`;
+                        p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags">${createTags(otherEvils, 'evil')}</div></div>`;
                     } else {
-                        p.info = "你是唯一的邪惡陣營<br>(或其他人是奧伯倫)。";
+                        p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags"><span class="info-tag neutral">僅有你一人</span></div></div>`;
                     }
                 } else if (p.roleKey === 'oberon') {
-                    p.info = "你只知道自己是壞人<br>沒有其他資訊。";
+                    p.info = `<div class="info-box"><div class="info-label">特殊狀態</div><div class="info-tags"><span class="info-tag neutral">無法得知其他同伴</span></div></div>`;
                 } else {
-                    p.info = "你是普通的亞瑟忠臣<br>沒有其他資訊。";
+                    p.info = `<div class="info-box"><div class="info-label">陣營提示</div><div class="info-tags"><span class="info-tag neutral">無特殊資訊</span></div></div>`;
                 }
             });
         }
@@ -988,7 +1083,8 @@
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
 
             cardInner.classList.add('flipped');
-            nextBtn.style.display = 'block'; 
+            revealCardWrapper.classList.remove('floating'); /* 停止懸浮動畫 */
+            nextBtn.classList.add('visible'); /* 平滑顯示按鈕 */
             triggerVibration([40, 50, 30]);
 
             const player = players[currentPlayerIndex];
@@ -998,6 +1094,8 @@
         function showPlayerPassScreen() {
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
+            
+            revealCardWrapper.classList.add('floating'); /* 恢復懸浮動畫 */
             
             const roleNameEl = document.getElementById('player-role-name');
             roleNameEl.innerText = player.role.name;
@@ -1020,7 +1118,7 @@
         function nextPlayer() {
             if (isTransitioning) return; 
             isTransitioning = true; 
-            nextBtn.style.display = 'none';
+            nextBtn.classList.remove('visible'); /* 平滑隱藏按鈕 */
             cardInner.classList.remove('flipped');
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
@@ -1028,10 +1126,9 @@
             setTimeout(() => {
                 if (currentPlayerIndex < players.length - 1) {
                     currentPlayerIndex++;
-                    showPlayerPassScreen(); 
+                    switchScreen('pass-screen', 'buffer-screen', showBufferScreen);
                 } else {
-                    document.getElementById('pass-screen').classList.remove('active');
-                    showGameScreen();
+                    switchScreen('pass-screen', 'game-screen', showGameScreen);
                 }
                 isTransitioning = false; 
             }, 700);
