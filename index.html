@@ -89,6 +89,12 @@
             display: block;
             animation: fadeIn 0.5s ease-out;
         }
+
+        /* 移除傳遞裝置與查驗身分畫面的切換過場動畫 */
+        #buffer-screen.active,
+        #pass-screen.active {
+            animation: none;
+        }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
@@ -320,12 +326,27 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.4);
         }
 
-        /* 3D 卡牌擬物化升級 */
+        /* 針對查驗身分畫面縮小邊距，讓卡牌最大化 */
+        #pass-screen.active {
+            padding: 10px; /* 極小化邊距 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        #current-player-title {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+            width: 100%;
+        }
+
+        /* 3D 卡牌擬物化升級 (最大化空間) */
         .card-container {
             perspective: 1200px; 
             border: none;
             padding: 0;
-            margin: 20px auto; 
+            margin: 0 auto 10px auto; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -335,9 +356,13 @@
             position: relative;
             background-color: transparent;
             touch-action: none;
-            width: 100%; 
-            max-width: 310px;  
-            height: 440px; 
+            
+            /* 新增：動態最大化大小，並保持長寬比 63:88 (標準卡牌比例) */
+            width: 100%;
+            max-width: calc(72vh * 63 / 88); /* 確保高度不會超出畫面 */
+            aspect-ratio: 63 / 88;
+            height: auto;
+            
             border-radius: 12px;
             -webkit-tap-highlight-color: transparent; 
         }
@@ -369,31 +394,34 @@
         .card-back {
             justify-content: center;
             align-items: center;
-            border: 2px solid rgba(150, 150, 150, 0.1);
         }
 
         .card-front {
-            background-image: radial-gradient(circle at center, #1c212e 0%, #080a0e 100%);
+            background-image: url('https://i.postimg.cc/Kz4pwxC0/66666.jpg');
+            background-size: cover;
+            background-position: center;
             transform: rotateY(180deg);
             box-sizing: border-box;
-            border: 2px solid var(--gold-dark); 
             display: flex; 
             flex-direction: column;
             align-items: center;
             position: relative; 
             padding: 0; 
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 15px 35px rgba(0,0,0,0.9); /* 內陰影增強立體感 */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
         }
-        
-        /* 實體卡牌的內細線金框 */
-        .card-front::after {
-            content: '';
+
+        /* 遮蔽卡牌底圖中間原有的圖案與下方 AVALON 字樣，僅保留四周邊框 */
+        .card-front::before {
+            content: "";
             position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 1px solid rgba(220, 179, 99, 0.4);
-            border-radius: 6px;
+            top: 6%;
+            bottom: 5.5%;
+            left: 7.5%;
+            right: 7.5%;
+            background: radial-gradient(ellipse at center, #0a0c12 80%, rgba(10, 12, 18, 0.98) 92%, rgba(10, 12, 18, 0) 100%);
+            border-radius: 8px;
+            z-index: 1;
             pointer-events: none;
-            z-index: 20;
         }
 
         #card-back-img {
@@ -401,78 +429,89 @@
             height: 100%;
             object-fit: cover;
             border-radius: 12px;
-            opacity: 0.9;
         }
 
         .card-back .instruction {
             position: absolute;
-            bottom: 40px; 
+            bottom: 11%; /* 配合牌背邊框調整位置 */
             left: 50%;
             transform: translateX(-50%);
             color: #d1c9b8;
-            font-size: 16px;
+            font-size: 15px;
             letter-spacing: 1px;
             text-shadow: 0 2px 5px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.8);
             transition: opacity 0.2s;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.65);
             padding: 6px 15px;
             border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(220, 179, 99, 0.3);
+            white-space: nowrap;
         }
 
         .card-inner.flipped .instruction { opacity: 0; }
         
         #player-role-name {
             margin: 0;
-            font-size: 38px; 
+            font-size: clamp(26px, 7.5vw, 38px); /* 自適應字體大小 */
             font-weight: 900;
             letter-spacing: 3px;
             position: absolute;
-            top: 40px; 
+            top: 9%; /* 維持在圓形角色圖案正上方 */
             z-index: 10;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.8);
         }
 
-        /* 角色圖片漸層融合遮罩 */
+        /* 角色圖片維持圓形樣式並最大化 */
         .role-img {
-            width: 240px; 
-            height: 240px;
+            width: 74%;
+            aspect-ratio: 1 / 1;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
             object-fit: cover; 
             display: block;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9), 0 0 15px rgba(220, 179, 99, 0.25);
+            background-color: #0c0e14;
             pointer-events: none; 
             position: absolute; 
-            top: 48%; 
+            top: 46.5%; 
             left: 50%; 
             transform: translate(-50%, -50%); 
             margin: 0; 
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 72%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 72%);
-            opacity: 0.9;
-            filter: contrast(1.1);
+            filter: contrast(1.08);
+            z-index: 2;
         }
 
         #player-info-text { 
-            font-size: 17px; 
-            line-height: 1.6; 
-            background: rgba(0, 0, 0, 0.4); 
+            font-size: clamp(13px, 3.8vw, 16px); /* 自適應字體大小 */
+            line-height: 1.4; 
+            background: rgba(8, 10, 15, 0.95); 
             text-shadow: 1px 2px 4px rgba(0,0,0,0.9); 
-            padding: 12px 15px; 
-            border-radius: 6px; 
-            border-top: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 10px; 
+            border-radius: 8px; 
+            border-top: 1px solid rgba(220, 179, 99, 0.4);
+            border-bottom: 1px solid rgba(220, 179, 99, 0.4);
             box-sizing: border-box;
             position: absolute; 
-            bottom: 35px; 
-            width: 85%; 
+            bottom: 6.5%; /* 放置於原本下方 AVALON 字樣的位置 */
+            width: 82%;
             z-index: 10;
         }
         
+        /* 縮小下方交接按鈕，讓出空間給卡牌 */
         #next-player-btn {
             background: rgba(30, 35, 45, 0.9);
             border: 1px solid rgba(255,255,255,0.2);
             color: #ccc;
             font-family: sans-serif;
             font-weight: normal;
+            padding: 8px 24px; /* 縮小按鈕內距 */
+            font-size: 14px;  /* 縮小字體 */
+            margin: 0 auto;
+            border-radius: 20px; /* 改為圓角膠囊狀，看起來更精緻小巧 */
+            width: auto;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
         #next-player-btn:hover { background: rgba(50, 55, 65, 0.9); color: #fff;}
@@ -648,10 +687,10 @@
         }
 
         .info-box {
-            display: flex; flex-direction: column; gap: 8px; align-items: center;
+            display: flex; flex-direction: column; gap: 4px; align-items: center;
         }
         .info-label {
-            font-size: 13px; color: #aaa; margin-bottom: 2px; letter-spacing: 1px;
+            font-size: 12px; color: #bbb; margin-bottom: 0; letter-spacing: 1px;
         }
         .info-tags {
             display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
@@ -814,7 +853,7 @@
             </div>
         </div>
         
-        <button id="next-player-btn" onclick="nextPlayer()" style="width:100%;">封印卡牌並交接</button>
+        <button id="next-player-btn" onclick="nextPlayer()">封印卡牌並交接</button>
     </div>
 
     <div id="game-screen" class="screen">
@@ -966,14 +1005,9 @@
             const hideEl = document.getElementById(hideId);
             const showEl = document.getElementById(showId);
             
-            hideEl.classList.add('fade-out');
-            hideEl.classList.remove('active');
-            
-            setTimeout(() => {
-                hideEl.classList.remove('fade-out');
-                if (callback) callback();
-                showEl.classList.add('active');
-            }, 350); 
+            hideEl.classList.remove('active', 'fade-out');
+            if (callback) callback();
+            showEl.classList.add('active');
         }
 
         function showBufferScreen() {
@@ -1120,8 +1154,6 @@
             isTransitioning = true; 
             nextBtn.classList.remove('visible'); /* 平滑隱藏按鈕 */
             cardInner.classList.remove('flipped');
-            const player = players[currentPlayerIndex];
-            document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
 
             setTimeout(() => {
                 if (currentPlayerIndex < players.length - 1) {
