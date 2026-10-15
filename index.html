@@ -37,11 +37,13 @@
             color: var(--text-color);
             text-align: center;
             margin: 0;
-            padding: 5px 20px 20px;
+            padding: env(safe-area-inset-top, 12px) 14px env(safe-area-inset-bottom, 12px);
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100dvh;
+            box-sizing: border-box;
             background-color: #080a0e;
             background-image: linear-gradient(rgba(8, 10, 14, 0.8), rgba(8, 10, 14, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
@@ -326,19 +328,32 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.4);
         }
 
-        /* 針對查驗身分畫面縮小邊距，讓卡牌最大化 */
-        #pass-screen.active {
-            padding: 10px; /* 極小化邊距 */
+        /* 讓傳遞裝置與查驗身分畫面填滿整個手機螢幕並垂直置中 */
+        #buffer-screen.active {
+            min-height: calc(100dvh - 24px);
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* 針對查驗身分畫面填滿手機高度，讓卡牌置中且最大化 */
+        #pass-screen.active {
+            padding: 18px 12px;
+            min-height: calc(100dvh - 24px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
         }
 
         #current-player-title {
-            margin: 0 0 8px 0;
+            margin: 4px 0 0 0;
             font-size: 22px;
             width: 100%;
+            flex-shrink: 0;
         }
 
         /* 3D 卡牌擬物化升級 (最大化空間) */
@@ -346,7 +361,7 @@
             perspective: 1200px; 
             border: none;
             padding: 0;
-            margin: 0 auto 10px auto; 
+            margin: auto; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -357,9 +372,9 @@
             background-color: transparent;
             touch-action: none;
             
-            /* 新增：動態最大化大小，並保持長寬比 63:88 (標準卡牌比例) */
+            /* 動態最大化大小，並保持長寬比 63:88 (標準卡牌比例) */
             width: 100%;
-            max-width: calc(72vh * 63 / 88); /* 確保高度不會超出畫面 */
+            max-width: calc(75dvh * 63 / 88); /* 配合全螢幕延伸高度上限 */
             aspect-ratio: 63 / 88;
             height: auto;
             
@@ -506,13 +521,14 @@
             color: #ccc;
             font-family: sans-serif;
             font-weight: normal;
-            padding: 8px 24px; /* 縮小按鈕內距 */
-            font-size: 14px;  /* 縮小字體 */
-            margin: 0 auto;
+            padding: 10px 28px;
+            font-size: 15px;
+            margin: 0 auto 4px auto;
             border-radius: 20px; /* 改為圓角膠囊狀，看起來更精緻小巧 */
             width: auto;
             min-width: 180px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            flex-shrink: 0;
         }
 
         #next-player-btn:hover { background: rgba(50, 55, 65, 0.9); color: #fff;}
@@ -520,7 +536,8 @@
         #game-screen.active {
             display: flex;
             flex-direction: column;
-            min-height: 500px; 
+            justify-content: center;
+            min-height: calc(100dvh - 24px); 
             padding: 0; 
         }
         
