@@ -651,11 +651,139 @@
         #game-end-controls {
             flex: 1; 
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 28px;
             width: 100%;
-            padding: 20px;
+            padding: 24px 20px;
             box-sizing: border-box;
+        }
+
+        /* ---------------- 本局陣營配置看板樣式 ---------------- */
+        .config-board {
+            width: 100%;
+            background: linear-gradient(145deg, rgba(20, 24, 34, 0.85), rgba(10, 12, 18, 0.92));
+            border: 1px solid rgba(220, 179, 99, 0.35);
+            border-radius: 10px;
+            padding: 16px 14px 18px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .config-board .section-title {
+            margin: 0 0 10px 0;
+            font-size: 1.05em;
+        }
+
+        .config-summary-pill {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid var(--glass-border);
+            padding: 4px 14px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-family: sans-serif;
+            color: #d1c9b8;
+            margin-bottom: 14px;
+        }
+
+        .config-faction-group {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+            padding: 10px 10px 12px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+        }
+
+        .config-faction-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-faction-group.good-group {
+            border-color: rgba(92, 136, 181, 0.3);
+            box-shadow: inset 0 0 15px rgba(92, 136, 181, 0.08);
+        }
+
+        .config-faction-group.evil-group {
+            border-color: rgba(179, 57, 57, 0.3);
+            box-shadow: inset 0 0 15px rgba(179, 57, 57, 0.08);
+        }
+
+        .config-faction-header {
+            font-size: 13px;
+            font-family: sans-serif;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .config-roles-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .config-role-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 58px;
+            position: relative;
+        }
+
+        .config-role-avatar-wrap {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 5px;
+        }
+
+        .config-role-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            box-sizing: border-box;
+            background-color: #0c0e14;
+        }
+
+        .config-role-item.good .config-role-avatar {
+            border: 2px solid var(--good-color);
+            box-shadow: 0 0 10px var(--good-shadow);
+        }
+
+        .config-role-item.evil .config-role-avatar {
+            border: 2px solid var(--evil-color);
+            box-shadow: 0 0 10px var(--evil-shadow);
+        }
+
+        .config-role-count {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background: linear-gradient(135deg, #efcd87, #a67c27);
+            color: #1a1205;
+            font-family: sans-serif;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 10px;
+            border: 1px solid #fff3d1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            line-height: 1.2;
+        }
+
+        .config-role-label {
+            font-size: 12px;
+            color: #e8dcc4;
+            white-space: nowrap;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
 
         /* 結束按鈕優化：長按解鎖 + iOS 蓄力視覺震動 */
@@ -1031,7 +1159,10 @@
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
-            <!-- 改為長按解鎖機制 -->
+            <!-- 本局陣營配置看板 -->
+            <div id="game-config-board" class="config-board"></div>
+
+            <!-- 長按解鎖機制 -->
             <div class="hold-btn-container">
                 <div id="reveal-hold-btn">
                     <div class="progress-bg"></div>
@@ -1061,15 +1192,15 @@
         preloadImage("https://i.postimg.cc/QdHBXdPk/card0back.png");
 
         const roleData = {
-            merlin: { name: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
-            percival: { name: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
-            lizakang: { name: "李砸康", isEvil: false, img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
-            servant: { name: "亞瑟的忠臣", isEvil: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
-            assassin: { name: "刺客", isEvil: true, img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
-            morgana: { name: "莫甘娜", isEvil: true, img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
-            mordred: { name: "莫德雷德", isEvil: true, img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
-            oberon: { name: "奧伯倫", isEvil: true, img: "https://i.postimg.cc/fLYv319B/1.jpg" },
-            minion: { name: "莫德雷德的爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
+            merlin: { name: "梅林", shortName: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
+            percival: { name: "派西維爾", shortName: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
+            lizakang: { name: "李砸康", shortName: "李砸康", isEvil: false, img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
+            servant: { name: "亞瑟的忠臣", shortName: "忠臣", isEvil: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
+            assassin: { name: "刺客", shortName: "刺客", isEvil: true, img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
+            morgana: { name: "莫甘娜", shortName: "莫甘娜", isEvil: true, img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
+            mordred: { name: "莫德雷德", shortName: "莫德雷德", isEvil: true, img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
+            oberon: { name: "奧伯倫", shortName: "奧伯倫", isEvil: true, img: "https://i.postimg.cc/fLYv319B/1.jpg" },
+            minion: { name: "莫德雷德的爪牙", shortName: "爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
 
         Object.values(roleData).forEach(role => preloadImage(role.img));
@@ -1455,7 +1586,61 @@
             }, 700);
         }
 
+        /* 渲染「本局陣營配置」看板 */
+        function renderGameConfigBoard() {
+            const boardEl = document.getElementById('game-config-board');
+            const totalCount = players.length;
+            const ratio = rules[totalCount];
+
+            const roleCounts = {};
+            players.forEach(p => {
+                roleCounts[p.roleKey] = (roleCounts[p.roleKey] || 0) + 1;
+            });
+
+            const goodOrder = ['merlin', 'percival', 'lizakang', 'servant'];
+            const evilOrder = ['mordred', 'morgana', 'assassin', 'oberon', 'minion'];
+
+            const renderRoleItems = (orderArr, factionClass) => {
+                return orderArr
+                    .filter(key => roleCounts[key] > 0)
+                    .map(key => {
+                        const r = roleData[key];
+                        const count = roleCounts[key];
+                        const countBadge = count > 1 ? `<span class="config-role-count">×${count}</span>` : '';
+                        return `
+                            <div class="config-role-item ${factionClass}">
+                                <div class="config-role-avatar-wrap">
+                                    <img class="config-role-avatar" src="${r.img}" alt="${r.shortName}">
+                                    ${countBadge}
+                                </div>
+                                <div class="config-role-label">${r.shortName}</div>
+                            </div>
+                        `;
+                    }).join('');
+            };
+
+            boardEl.innerHTML = `
+                <h3 class="section-title">本局陣營配置</h3>
+                <div class="config-summary-pill">
+                    <strong>${totalCount} 人局</strong> ｜ <span class="good">${ratio.good} 好人</span> vs <span class="evil">${ratio.evil} 壞人</span>
+                </div>
+                <div class="config-faction-group good-group">
+                    <div class="config-faction-header"><span class="good">🛡️ 正義方陣營（${ratio.good}人）</span></div>
+                    <div class="config-roles-row">
+                        ${renderRoleItems(goodOrder, 'good')}
+                    </div>
+                </div>
+                <div class="config-faction-group evil-group">
+                    <div class="config-faction-header"><span class="evil">⚔️ 邪惡方陣營（${ratio.evil}人）</span></div>
+                    <div class="config-roles-row">
+                        ${renderRoleItems(evilOrder, 'evil')}
+                    </div>
+                </div>
+            `;
+        }
+
         function showGameScreen() {
+            renderGameConfigBoard();
             const gameScreen = document.getElementById('game-screen');
             gameScreen.style.minHeight = '500px'; 
             gameScreen.style.display = 'flex';
