@@ -26,6 +26,7 @@
             --warning-yellow: #e8b923; 
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
+            --card-front-bg: url('https://i.postimg.cc/Kz4pwxC0/66666.jpg');
         }
 
         ::-webkit-scrollbar { display: none; }
@@ -493,7 +494,7 @@
         }
 
         .card-front {
-            background-image: url('https://i.postimg.cc/Kz4pwxC0/66666.jpg');
+            background-image: var(--card-front-bg);
             background-size: cover;
             background-position: center;
             transform: rotateY(180deg);
@@ -504,6 +505,7 @@
             position: relative; 
             padding: 0; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            overflow: hidden;
         }
 
         /* 移除整塊黑底，僅在底部 AVALON 字樣處做柔和的暗部漸層過渡，讓元素自然融合在原圖上 */
@@ -1201,8 +1203,8 @@
     </div>
 
     <script>
-        const preloadedBg = new Image();
-        preloadedBg.src = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
+        const CARD_FRONT_RAW_URL = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
+        const CARD_BACK_RAW_URL = "https://i.postimg.cc/QdHBXdPk/card0back.png";
 
         const imageCache = []; 
         function preloadImage(url) {
@@ -1211,7 +1213,216 @@
             imageCache.push(img);
         }
 
-        preloadImage("https://i.postimg.cc/QdHBXdPk/card0back.png");
+        preloadImage(CARD_FRONT_RAW_URL);
+        preloadImage(CARD_BACK_RAW_URL);
+
+        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（不影響周圍背景） ---------------- */
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h = 0, s = 0, l = (max + min) / 2;
+            if (max !== min) {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+                    case g: h = ((b - r) / d + 2); break;
+                    case b: h = ((r - g) / d + 4); break;
+                }
+                h *= 60;
+            }
+            return [h, s, l];
+        }
+
+        function hslToRgb(h, s, l) {
+            h = ((h % 360) + 360) % 360;
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+            const m = l - c / 2;
+            let r1 = 0, g1 = 0, b1 = 0;
+            if (h < 60) { r1 = c; g1 = x; b1 = 0; }
+            else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+            else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+            else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+            else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+            else { r1 = c; g1 = 0; b1 = x; }
+            return [
+                Math.round((r1 + m) * 255),
+                Math.round((g1 + m) * 255),
+                Math.round((b1 + m) * 255)
+            ];
+        }
+
+        /* 判斷是否為寶石內部的明亮藍色像素 */
+        function isGemCoreBlue(r, g, b) {
+            return (b - r > 26 && b > 55 && b >= g - 15);
+        }
+
+        /* 由卡牌外緣往內掃描，僅鎖定金屬鑲框內的第一顆邊框寶石，完全避開內側背景 */
+        function findEdgeGemCircle(data, W, H, direction) {
+            let sumX = 0, sumY = 0, sumWeight = 0;
+            const points = [];
+            let started = false;
+            let activeSlices = 0;
+            const maxGemSpan = Math.ceil(Math.min(W, H) * 0.035);
+
+            if (direction === 'top' || direction === 'bottom') {
+                const xStart = Math.floor(W * 0.465);
+                const xEnd = Math.ceil(W * 0.535);
+                const yLimit = Math.ceil(H * 0.12);
+
+                for (let step = 0; step < yLimit; step++) {
+                    const y = direction === 'top' ? step : (H - 1 - step);
+                    let rowBlueCount = 0;
+
+                    for (let x = xStart; x <= xEnd; x++) {
+                        const idx = (y * W + x) * 4;
+                        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+                        if (isGemCoreBlue(r, g, b)) {
+                            const w = (b - r);
+                            sumX += x * w;
+                            sumY += y * w;
+                            sumWeight += w;
+                            points.push({ x, y });
+                            rowBlueCount++;
+                        }
+                    }
+
+                    if (rowBlueCount > 0) {
+                        started = true;
+                        activeSlices++;
+                        if (activeSlices > maxGemSpan) break;
+                    } else if (started && activeSlices >= 3) {
+                        /* 碰到寶石內側的金色金屬邊框，立即停止，不進入卡牌內部背景 */
+                        break;
+                    }
+                }
+            } else {
+                const yStart = Math.floor(H * 0.465);
+                const yEnd = Math.ceil(H * 0.535);
+                const xLimit = Math.ceil(W * 0.13);
+
+                for (let step = 0; step < xLimit; step++) {
+                    const x = direction === 'left' ? step : (W - 1 - step);
+                    let colBlueCount = 0;
+
+                    for (let y = yStart; y <= yEnd; y++) {
+                        const idx = (y * W + x) * 4;
+                        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+                        if (isGemCoreBlue(r, g, b)) {
+                            const w = (b - r);
+                            sumX += x * w;
+                            sumY += y * w;
+                            sumWeight += w;
+                            points.push({ x, y });
+                            colBlueCount++;
+                        }
+                    }
+
+                    if (colBlueCount > 0) {
+                        started = true;
+                        activeSlices++;
+                        if (activeSlices > maxGemSpan) break;
+                    } else if (started && activeSlices >= 3) {
+                        /* 碰到寶石內側的金色金屬邊框，立即停止，不進入卡牌內部背景 */
+                        break;
+                    }
+                }
+            }
+
+            if (sumWeight === 0 || points.length < 4) return null;
+
+            const cx = sumX / sumWeight;
+            const cy = sumY / sumWeight;
+
+            /* 計算寶石半徑，並設定嚴格的金屬框內上限（最大不超過短邊的 1.9%） */
+            const hardMaxRadius = Math.min(W, H) * 0.019;
+            let maxDist = 0;
+            for (const pt of points) {
+                const d = Math.hypot(pt.x - cx, pt.y - cy);
+                if (d <= hardMaxRadius && d > maxDist) {
+                    maxDist = d;
+                }
+            }
+
+            const radius = Math.min(Math.max(maxDist * 1.15, Math.min(W, H) * 0.011), hardMaxRadius);
+            return { cx, cy, radius };
+        }
+
+        /* 將指定圖片的上中、下中、左中、右中 4 顆寶石轉為紅寶石 */
+        function recolorCardMiddleGems(rawUrl, format, onSuccess) {
+            const tryUrls = [
+                rawUrl + "?cors=1",
+                "https://wsrv.nl/?url=" + encodeURIComponent(rawUrl)
+            ];
+
+            function attemptLoad(index) {
+                if (index >= tryUrls.length) return;
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => {
+                    try {
+                        const W = img.naturalWidth;
+                        const H = img.naturalHeight;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = W;
+                        canvas.height = H;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        const imgData = ctx.getImageData(0, 0, W, H);
+                        const data = imgData.data;
+
+                        ['top', 'bottom', 'left', 'right'].forEach(dir => {
+                            const gem = findEdgeGemCircle(data, W, H, dir);
+                            if (!gem) return;
+
+                            const { cx, cy, radius } = gem;
+                            const rSq = radius * radius;
+                            const x0 = Math.max(0, Math.floor(cx - radius));
+                            const x1 = Math.min(W - 1, Math.ceil(cx + radius));
+                            const y0 = Math.max(0, Math.floor(cy - radius));
+                            const y1 = Math.min(H - 1, Math.ceil(cy + radius));
+
+                            for (let y = y0; y <= y1; y++) {
+                                for (let x = x0; x <= x1; x++) {
+                                    const dSq = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+                                    if (dSq > rSq) continue;
+
+                                    const idx = (y * W + x) * 4;
+                                    const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+
+                                    /* 僅轉換寶石圓圈內的藍色與青色光澤，不影響外圍金色鑲框 */
+                                    if (b > r + 6 && b >= g - 18) {
+                                        const [h, s, l] = rgbToHsl(r, g, b);
+                                        if (h >= 165 && h <= 275 && s >= 0.14) {
+                                            const newH = (358 + (h - 215) * 0.22 + 360) % 360;
+                                            const newS = Math.min(1, s * 1.2);
+                                            const [nr, ng, nb] = hslToRgb(newH, newS, l);
+                                            data[idx] = nr;
+                                            data[idx + 1] = ng;
+                                            data[idx + 2] = nb;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        ctx.putImageData(imgData, 0, 0);
+                        const dataUrl = format === 'png'
+                            ? canvas.toDataURL('image/png')
+                            : canvas.toDataURL('image/jpeg', 0.95);
+                        onSuccess(dataUrl);
+                    } catch (err) {
+                        attemptLoad(index + 1);
+                    }
+                };
+                img.onerror = () => attemptLoad(index + 1);
+                img.src = tryUrls[index];
+            }
+
+            attemptLoad(0);
+        }
 
         const roleData = {
             merlin: { name: "梅林", shortName: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
@@ -1252,6 +1463,17 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石 */
+            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'jpeg', (dataUrl) => {
+                document.documentElement.style.setProperty('--card-front-bg', `url("${dataUrl}")`);
+            });
+
+            /* 2. 轉換牌背的上中、下中、左中、右中 4 顆寶石為紅寶石 */
+            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'png', (dataUrl) => {
+                const backImgEl = document.getElementById('card-back-img');
+                if (backImgEl) backImgEl.src = dataUrl;
+            });
+
             const countRadios = document.querySelectorAll('input[name="player-count"]');
             countRadios.forEach(radio => radio.addEventListener('change', (e) => {
                 updateDefaultRoles();
