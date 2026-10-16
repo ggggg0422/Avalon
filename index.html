@@ -45,13 +45,22 @@
             min-height: 100dvh;
             box-sizing: border-box;
             background-color: #080a0e;
-            background-image: linear-gradient(rgba(8, 10, 14, 0.8), rgba(8, 10, 14, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
             overscroll-behavior-y: contain; 
             position: relative;
             z-index: 1;
+        }
+
+        /* 獨立固定背景層：解決 iOS Safari background-attachment: fixed 放大與掉幀問題 */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(8, 10, 14, 0.8), rgba(8, 10, 14, 0.8)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+            z-index: -2;
+            transform: translateZ(0);
         }
 
         /* 疊加雜訊/羊皮紙質感 */
@@ -222,6 +231,51 @@
 
         .role-list { text-align: center; margin-bottom: 10px; }
         .role-checkbox { display: none; }
+
+        /* 即時名額顯示狀態列 */
+        .role-quota-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 14px auto;
+            font-family: sans-serif;
+            flex-wrap: wrap;
+        }
+
+        .quota-badge {
+            font-size: 12px;
+            padding: 5px 11px;
+            border-radius: 6px;
+            background: rgba(10, 12, 18, 0.75);
+            border: 1px solid var(--glass-border);
+            color: #d1c9b8;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .quota-badge.good-badge {
+            border-color: rgba(92, 136, 181, 0.45);
+        }
+
+        .quota-badge.evil-badge {
+            border-color: rgba(179, 57, 57, 0.45);
+        }
+
+        .quota-badge.over-limit {
+            border-color: var(--warning-yellow);
+            background: rgba(232, 185, 35, 0.15);
+            color: var(--warning-yellow);
+            box-shadow: 0 0 12px rgba(232, 185, 35, 0.35);
+            animation: quotaPulse 0.4s ease;
+        }
+
+        @keyframes quotaPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
         .role-cards-wrapper {
             display: flex;
@@ -604,7 +658,7 @@
             box-sizing: border-box;
         }
 
-        /* 結束按鈕優化：長按解鎖 */
+        /* 結束按鈕優化：長按解鎖 + iOS 蓄力視覺震動 */
         .hold-btn-container {
             width: 90%;
             max-width: 300px;
@@ -627,6 +681,7 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .progress-bg {
@@ -635,7 +690,11 @@
             height: 100%; width: 0%;
             background: linear-gradient(90deg, #8c6a2b, #dcb363, #fdf5d3);
             z-index: 1;
-            transition: width 0.1s linear;
+            transition: width 0.2s ease-out;
+        }
+
+        #reveal-hold-btn.holding .progress-bg {
+            transition: none; /* 按住時由 requestAnimationFrame 即時精準控制 */
         }
 
         .hold-btn-text {
@@ -649,9 +708,16 @@
             pointer-events: none;
         }
 
-        #reveal-hold-btn:active, #reveal-hold-btn.holding {
-            transform: scale(0.96);
-            transition: transform 0.2s;
+        @keyframes holdShake {
+            0%, 100% { transform: scale(0.96) translate(0px, 0px); }
+            20% { transform: scale(0.96) translate(-1.5px, 1px); }
+            40% { transform: scale(0.96) translate(1.5px, -1px); }
+            60% { transform: scale(0.96) translate(-1.5px, -1px); }
+            80% { transform: scale(0.96) translate(1.5px, 1px); }
+        }
+
+        #reveal-hold-btn.holding {
+            animation: holdShake 0.11s infinite;
         }
 
         #final-reveal-list {
@@ -660,6 +726,23 @@
             justify-content: center; 
             gap: 12px; 
             margin-top: 15px;
+            perspective: 800px;
+        }
+
+        /* 真相大白：交錯翻牌登場動畫 */
+        @keyframes revealCardIn {
+            0% {
+                opacity: 0;
+                transform: translateY(22px) rotateY(85deg) scale(0.85);
+            }
+            65% {
+                opacity: 1;
+                transform: translateY(-3px) rotateY(-6deg) scale(1.03);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateY(0deg) scale(1);
+            }
         }
 
         .reveal-card {
@@ -672,7 +755,9 @@
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.8);
             border: 1px solid transparent;
-            transition: transform 0.2s;
+            opacity: 0;
+            animation: revealCardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .reveal-card:hover {
@@ -855,7 +940,9 @@
             </div>
 
             <h3 class="section-title">選擇特殊角色</h3>
-            <p style="font-size: 13px; color: #888; margin-bottom: 12px; font-family: sans-serif;">空位將自動補齊 <span class="good">忠臣</span> 或 <span class="evil">爪牙</span></p>
+            
+            <!-- 即時名額顯示與防呆提示 -->
+            <div id="role-quota-bar" class="role-quota-bar"></div>
             
             <div class="role-cards-wrapper">
                 <div class="role-row">
@@ -956,7 +1043,7 @@
         <div id="final-reveal-area" style="display: none; margin-top: 10px;">
             <h3 class="section-title">真相大白</h3>
             <div id="final-reveal-list"></div>
-            <button class="btn-gold" onclick="location.reload()" style="margin-top: 25px; padding: 15px 30px; font-size: 18px;">重新一局</button>
+            <button class="btn-gold" onclick="resetGame()" style="margin-top: 25px; padding: 15px 30px; font-size: 18px;">重新一局</button>
         </div>
     </div>
 
@@ -999,15 +1086,94 @@
         let players = [];
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
+        let forceStartWithoutGood = false; 
+
+        /* 標準 Fisher-Yates 洗牌演算法，確保機率完全均等 */
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const countRadios = document.querySelectorAll('input[name="player-count"]');
             countRadios.forEach(radio => radio.addEventListener('change', (e) => {
                 updateDefaultRoles();
                 handlePlayerCountUI(parseInt(e.target.value));
+                updateQuotaStatus();
             }));
+
+            const roleCheckboxes = document.querySelectorAll('.role-checkbox');
+            roleCheckboxes.forEach(cb => cb.addEventListener('change', () => {
+                updateQuotaStatus();
+            }));
+
+            updateQuotaStatus();
             setupHoldButton();
         });
+
+        /* 即時計算並更新選角名額狀態與防呆提示 */
+        function updateQuotaStatus() {
+            const checkedRadio = document.querySelector('input[name="player-count"]:checked');
+            if (!checkedRadio) return;
+            const playerCount = parseInt(checkedRadio.value);
+            const ratio = rules[playerCount];
+
+            let goodCount = 0;
+            let evilCount = 0;
+
+            if (document.getElementById('role-merlin').checked) goodCount++;
+            if (document.getElementById('role-percival').checked) goodCount++;
+            if (document.getElementById('role-lizakang').checked) goodCount++;
+
+            if (document.getElementById('role-assassin').checked) evilCount++;
+            if (document.getElementById('role-morgana').checked) evilCount++;
+            if (document.getElementById('role-mordred').checked) evilCount++;
+            if (document.getElementById('role-oberon').checked) evilCount++;
+
+            const quotaBar = document.getElementById('role-quota-bar');
+            const errorEl = document.getElementById('setup-error');
+            forceStartWithoutGood = false;
+
+            const goodDiff = ratio.good - goodCount;
+            const evilDiff = ratio.evil - evilCount;
+
+            let goodText = '';
+            let goodOverClass = '';
+            if (goodDiff > 0) {
+                goodText = `<span class="good">正義 ${goodCount}/${ratio.good}</span> <span>(補 ${goodDiff} 忠臣)</span>`;
+            } else if (goodDiff === 0) {
+                goodText = `<span class="good">正義 ${goodCount}/${ratio.good}</span> <span>(已滿)</span>`;
+            } else {
+                goodText = `⚠️ 正義 ${goodCount}/${ratio.good} (超額 ${Math.abs(goodDiff)} 人)`;
+                goodOverClass = 'over-limit';
+            }
+
+            let evilText = '';
+            let evilOverClass = '';
+            if (evilDiff > 0) {
+                evilText = `<span class="evil">邪惡 ${evilCount}/${ratio.evil}</span> <span>(補 ${evilDiff} 爪牙)</span>`;
+            } else if (evilDiff === 0) {
+                evilText = `<span class="evil">邪惡 ${evilCount}/${ratio.evil}</span> <span>(已滿)</span>`;
+            } else {
+                evilText = `⚠️ 邪惡 ${evilCount}/${ratio.evil} (超額 ${Math.abs(evilDiff)} 人)`;
+                evilOverClass = 'over-limit';
+            }
+
+            quotaBar.innerHTML = `
+                <div class="quota-badge good-badge ${goodOverClass}">${goodText}</div>
+                <div class="quota-badge evil-badge ${evilOverClass}">${evilText}</div>
+            `;
+
+            if (goodDiff < 0 || evilDiff < 0) {
+                errorEl.innerText = `⚠️ 特殊角色超過 ${playerCount} 人局上限（${ratio.good}好 ${ratio.evil}壞），請取消多餘角色！`;
+            } else {
+                errorEl.innerText = '';
+            }
+        }
 
         function toggleOtherCounts() {
             const container = document.getElementById('other-counts-container');
@@ -1021,6 +1187,7 @@
                     const pc9 = document.getElementById('pc-9');
                     pc9.checked = true;
                     updateDefaultRoles();
+                    updateQuotaStatus();
                 }
             } else {
                 const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
@@ -1068,8 +1235,6 @@
             }
         }
 
-        let forceStartWithoutGood = false; 
-
         function startGame() {
             const errorEl = document.getElementById('setup-error');
             errorEl.innerText = "";
@@ -1108,7 +1273,7 @@
             while(evilRoles.length < ratio.evil) evilRoles.push('minion');
 
             let selectedRoles = goodRoles.concat(evilRoles);
-            selectedRoles = selectedRoles.sort(() => Math.random() - 0.5);
+            selectedRoles = shuffleArray(selectedRoles);
 
             players = selectedRoles.map((roleKey, index) => {
                 return {
@@ -1150,7 +1315,7 @@
             const seenByPercival = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'morgana').map(p => p.id + "號");
 
             let seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
-            seenByLiZakang = seenByLiZakang.sort(() => Math.random() - 0.5);
+            seenByLiZakang = shuffleArray(seenByLiZakang);
 
             function createTags(arr, colorClass) {
                 if (arr.length === 0) return `<span class="info-tag neutral">無</span>`;
@@ -1297,41 +1462,49 @@
             gameScreen.classList.add('active');
         }
 
-        /* ---------------- 長按解鎖邏輯 ---------------- */
+        /* ---------------- 長按解鎖邏輯（真實時間計算 + 動態蓄力金光） ---------------- */
         function setupHoldButton() {
             const holdBtn = document.getElementById('reveal-hold-btn');
             const progressBg = document.querySelector('.progress-bg');
+            const HOLD_DURATION = 1400; // 固定長按 1.4 秒，不受 60Hz / 120Hz 螢幕刷新率影響
             let holdTimer;
-            let progress = 0;
+            let holdStartTime = 0;
             let isHolding = false;
 
             function startHold(e) {
                 if (e.cancelable) e.preventDefault();
                 isHolding = true;
-                progress = 0;
+                holdStartTime = performance.now();
                 holdBtn.classList.add('holding');
                 triggerVibration([20]);
-                updateProgress();
+                holdTimer = requestAnimationFrame(updateProgress);
             }
 
             function endHold() {
                 if (!isHolding) return;
                 isHolding = false;
-                progress = 0;
-                progressBg.style.width = '0%';
                 holdBtn.classList.remove('holding');
+                holdBtn.style.boxShadow = '';
+                progressBg.style.width = '0%';
                 cancelAnimationFrame(holdTimer);
             }
 
-            function updateProgress() {
+            function updateProgress(now) {
                 if (!isHolding) return;
                 
-                progress += 1.2; // 調整這個數值可以改變長按所需時間 (越小越久)
-                progressBg.style.width = Math.min(progress, 100) + '%';
+                const elapsed = now - holdStartTime;
+                const progress = Math.min((elapsed / HOLD_DURATION) * 100, 100);
+                progressBg.style.width = progress + '%';
+
+                // 隨蓄力進度增強金色外發光，提供 iOS 強烈的視覺回饋
+                const glowSpread = Math.round(10 + (progress / 100) * 28);
+                const glowAlpha = (0.35 + (progress / 100) * 0.55).toFixed(2);
+                holdBtn.style.boxShadow = `0 0 ${glowSpread}px rgba(220, 179, 99, ${glowAlpha}), inset 0 0 18px rgba(253, 245, 211, ${glowAlpha})`;
                 
                 if (progress >= 100) {
                     isHolding = false;
                     holdBtn.classList.remove('holding');
+                    holdBtn.style.boxShadow = '';
                     revealAll(); 
                 } else {
                     holdTimer = requestAnimationFrame(updateProgress);
@@ -1355,8 +1528,8 @@
             
             const sortedPlayers = [...players].sort((a, b) => a.id - b.id);
             
-            const renderItem = p => `
-                <div class="reveal-card ${p.role.isEvil ? 'evil' : 'good'}">
+            const renderItem = (p, idx) => `
+                <div class="reveal-card ${p.role.isEvil ? 'evil' : 'good'}" style="animation-delay: ${idx * 0.09}s;">
                     <div class="reveal-card-id">${p.id}號</div>
                     <img src="${p.role.img}" alt="${p.role.name}">
                     <div class="reveal-card-name">${p.role.name}</div>
@@ -1371,6 +1544,36 @@
             gameScreen.style.padding = '25px';
 
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        /* 重新一局並保留上一局的人數與選角設定 */
+        function resetGame() {
+            currentPlayerIndex = 0;
+            players = [];
+            isTransitioning = false;
+            forceStartWithoutGood = false;
+
+            const revealArea = document.getElementById('final-reveal-area');
+            const listEl = document.getElementById('final-reveal-list');
+            const gameEndControls = document.getElementById('game-end-controls');
+            const gameScreen = document.getElementById('game-screen');
+            const progressBg = document.querySelector('.progress-bg');
+
+            revealArea.style.display = 'none';
+            listEl.innerHTML = '';
+            gameEndControls.style.display = 'flex';
+            if (progressBg) progressBg.style.width = '0%';
+
+            gameScreen.style.minHeight = '';
+            gameScreen.style.display = '';
+            gameScreen.style.padding = '';
+
+            cardInner.classList.remove('flipped');
+            nextBtn.classList.remove('visible');
+            updateQuotaStatus();
+
+            switchScreen('game-screen', 'setup-screen');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
