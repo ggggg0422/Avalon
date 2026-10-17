@@ -698,7 +698,7 @@
             color: #e8dcc4;
         }
 
-        /* 新增：五輪任務人數與雙敗規則速查條 */
+        /* 五輪任務人數與雙敗規則速查條 */
         .quest-track-box {
             background: rgba(0, 0, 0, 0.42);
             border: 1px solid rgba(220, 179, 99, 0.25);
@@ -726,37 +726,39 @@
             background: linear-gradient(145deg, rgba(30, 35, 48, 0.85), rgba(14, 17, 24, 0.95));
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 6px;
-            padding: 5px 2px;
+            padding: 6px 2px 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             font-family: sans-serif;
             position: relative;
         }
 
-        .quest-node.two-fails {
-            border-color: rgba(232, 185, 35, 0.65);
-            box-shadow: inset 0 0 8px rgba(232, 185, 35, 0.18);
-        }
-
         .quest-node-round {
             font-size: 10px;
+            line-height: 1.2;
             color: #9a9284;
             margin-bottom: 2px;
         }
 
         .quest-node-count {
             font-size: 15px;
+            line-height: 1.25;
             font-weight: 900;
             color: var(--gold-light);
         }
 
         .quest-node-note {
+            position: absolute;
+            bottom: 3px;
+            left: 0;
+            width: 100%;
+            text-align: center;
             font-size: 9px;
+            line-height: 1.1;
             color: var(--warning-yellow);
             font-weight: bold;
-            margin-top: 1px;
         }
 
         .config-factions-wrapper {
@@ -1959,7 +1961,7 @@
             const questNodesHtml = ratio.quests.map((qCount, idx) => {
                 const isTwoFails = (idx === 3 && ratio.twoFailsOnQ4);
                 return `
-                    <div class="quest-node ${isTwoFails ? 'two-fails' : ''}">
+                    <div class="quest-node">
                         <span class="quest-node-round">任務${idx + 1}</span>
                         <span class="quest-node-count">${qCount}人</span>
                         ${isTwoFails ? '<span class="quest-node-note">需2敗</span>' : ''}
