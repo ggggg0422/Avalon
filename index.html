@@ -33,7 +33,6 @@
         * { scrollbar-width: none; -ms-overflow-style: none; }
 
         body {
-            /* 全面套用襯線字體 */
             font-family: 'Noto Serif TC', serif;
             color: var(--text-color);
             text-align: center;
@@ -81,7 +80,7 @@
             max-width: 440px;
             background-color: rgba(15, 18, 25, 0.95); 
             padding: 25px 25px 30px;
-            border-radius: 12px; /* 降低圓角，增加復古感 */
+            border-radius: 12px;
             box-shadow: 0 20px 45px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05);
             border: 1px solid var(--panel-border);
             box-sizing: border-box;
@@ -190,21 +189,10 @@
             background: rgba(0,0,0,0.5);
             padding: 2px 5px;
             border-radius: 3px;
-            font-family: sans-serif; /* 數字與標籤保持清晰 */
+            font-family: sans-serif;
         }
 
-        .pc-radio:checked + .pc-item {
-            background: linear-gradient(135deg, rgba(140, 106, 43, 0.2), rgba(20, 15, 10, 0.8)); 
-            border: 1px solid var(--gold); 
-            box-shadow: 0 0 15px rgba(220, 179, 99, 0.3), inset 0 0 10px rgba(220, 179, 99, 0.1); 
-            transform: translateY(-2px); 
-        }
-
-        .pc-radio:checked + .pc-item .pc-number {
-            color: var(--gold-light);
-            text-shadow: 0 0 8px rgba(220, 179, 99, 0.8);
-        }
-
+        .pc-radio:checked + .pc-item,
         .pc-item.active-other {
             background: linear-gradient(135deg, rgba(140, 106, 43, 0.2), rgba(20, 15, 10, 0.8)); 
             border: 1px solid var(--gold); 
@@ -212,6 +200,7 @@
             transform: translateY(-2px); 
         }
 
+        .pc-radio:checked + .pc-item .pc-number,
         .pc-item.active-other .pc-number {
             color: var(--gold-light);
             text-shadow: 0 0 8px rgba(220, 179, 99, 0.8);
@@ -363,7 +352,7 @@
             padding: 16px 30px;
             margin: 10px auto; 
             font-size: 18px;
-            border-radius: 8px; /* 方正一點帶有古典感 */
+            border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
             font-weight: 900;
@@ -429,7 +418,6 @@
             box-sizing: border-box;
         }
 
-        /* 放大兩倍頂部狀態文字（X號請查驗身分 / X號你的真實身分是） */
         #current-player-title {
             margin: 8px 0 6px 0;
             font-size: clamp(32px, 9.5vw, 44px);
@@ -453,13 +441,10 @@
             position: relative;
             background-color: transparent;
             touch-action: none;
-            
-            /* 動態最大化大小，並保持長寬比 63:88 (標準卡牌比例) */
             width: 100%;
-            max-width: calc(70dvh * 63 / 88); /* 配合放大後的頂部標題微調高度上限 */
+            max-width: calc(70dvh * 63 / 88);
             aspect-ratio: 63 / 88;
             height: auto;
-            
             border-radius: 12px;
             -webkit-tap-highlight-color: transparent; 
         }
@@ -483,7 +468,7 @@
             display: flex;
             flex-direction: column;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9); /* 更深的實體陰影 */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
             pointer-events: none; 
             background-color: #0c0e14;
         }
@@ -508,7 +493,6 @@
             overflow: hidden;
         }
 
-        /* 移除整塊黑底，僅在底部 AVALON 字樣處做柔和的暗部漸層過渡，讓元素自然融合在原圖上 */
         .card-front::before {
             content: "";
             position: absolute;
@@ -533,7 +517,7 @@
 
         .card-back .instruction {
             position: absolute;
-            bottom: 11%; /* 配合牌背邊框調整位置 */
+            bottom: 11%;
             left: 50%;
             transform: translateX(-50%);
             color: #d1c9b8;
@@ -587,7 +571,6 @@
                 0 0 25px rgba(179, 57, 57, 0.85);
         }
 
-        /* 角色圖片維持圓形樣式並與背景融合 */
         .role-img {
             width: 72%;
             aspect-ratio: 1 / 1;
@@ -608,7 +591,6 @@
             z-index: 2;
         }
 
-        /* 下方角色資訊放大 1.5 倍 */
         #player-info-text { 
             font-size: clamp(19px, 5.5vw, 24px); 
             line-height: 1.35; 
@@ -623,7 +605,6 @@
             z-index: 10;
         }
         
-        /* 縮小下方交接按鈕，讓出空間給卡牌 */
         #next-player-btn {
             background: rgba(30, 35, 45, 0.9);
             border: 1px solid rgba(255,255,255,0.2);
@@ -633,11 +614,21 @@
             padding: 10px 28px;
             font-size: 15px;
             margin: 0 auto 4px auto;
-            border-radius: 20px; /* 改為圓角膠囊狀，看起來更精緻小巧 */
+            border-radius: 20px;
             width: auto;
             min-width: 180px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
             flex-shrink: 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        #next-player-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
         }
 
         #next-player-btn:hover { background: rgba(50, 55, 65, 0.9); color: #fff;}
@@ -651,6 +642,13 @@
             padding: 16px 14px 20px; 
             box-sizing: border-box;
         }
+
+        /* 揭曉真相模式的樣式切換（取代原本的 JS inline styles） */
+        #game-screen.active.revealed-mode {
+            display: block;
+            min-height: auto;
+            padding: 25px;
+        }
         
         #game-end-controls {
             flex: 1; 
@@ -658,13 +656,13 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             width: 100%;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* ---------------- 本局陣營配置看板樣式（滿版延展） ---------------- */
+        /* ---------------- 本局陣營配置看板樣式 ---------------- */
         .config-board {
             flex: 1;
             width: 100%;
@@ -674,30 +672,91 @@
             background: linear-gradient(145deg, rgba(20, 24, 34, 0.88), rgba(10, 12, 18, 0.95));
             border: 1px solid rgba(220, 179, 99, 0.4);
             border-radius: 10px;
-            padding: 18px 14px;
+            padding: 16px 12px;
             box-sizing: border-box;
             box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
         }
 
         .config-board-header {
             flex-shrink: 0;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .config-board .section-title {
-            margin: 0 0 12px 0;
-            font-size: clamp(20px, 5.8vw, 24px);
+            margin: 0 0 10px 0;
+            font-size: clamp(19px, 5.5vw, 23px);
         }
 
         .config-summary-pill {
             display: inline-block;
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(220, 179, 99, 0.3);
-            padding: 6px 18px;
+            padding: 5px 16px;
             border-radius: 20px;
-            font-size: clamp(14px, 4vw, 16px);
+            font-size: clamp(13px, 3.8vw, 15px);
             font-family: sans-serif;
             color: #e8dcc4;
+        }
+
+        /* 新增：五輪任務人數與雙敗規則速查條 */
+        .quest-track-box {
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(220, 179, 99, 0.25);
+            border-radius: 8px;
+            padding: 8px 8px 10px;
+            margin-bottom: 10px;
+        }
+
+        .quest-track-title {
+            font-size: 12px;
+            color: var(--gold);
+            font-family: sans-serif;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            opacity: 0.9;
+        }
+
+        .quest-nodes-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .quest-node {
+            background: linear-gradient(145deg, rgba(30, 35, 48, 0.85), rgba(14, 17, 24, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            padding: 5px 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            position: relative;
+        }
+
+        .quest-node.two-fails {
+            border-color: rgba(232, 185, 35, 0.65);
+            box-shadow: inset 0 0 8px rgba(232, 185, 35, 0.18);
+        }
+
+        .quest-node-round {
+            font-size: 10px;
+            color: #9a9284;
+            margin-bottom: 2px;
+        }
+
+        .quest-node-count {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--gold-light);
+        }
+
+        .quest-node-note {
+            font-size: 9px;
+            color: var(--warning-yellow);
+            font-weight: bold;
+            margin-top: 1px;
         }
 
         .config-factions-wrapper {
@@ -705,7 +764,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
-            gap: 14px;
+            gap: 12px;
             width: 100%;
         }
 
@@ -717,7 +776,7 @@
             align-items: center;
             background: rgba(0, 0, 0, 0.38);
             border-radius: 10px;
-            padding: 14px 10px;
+            padding: 12px 10px;
             border: 1px solid transparent;
         }
 
@@ -732,9 +791,9 @@
         }
 
         .config-faction-header {
-            font-size: clamp(15px, 4.3vw, 18px);
+            font-size: clamp(14px, 4vw, 17px);
             font-family: sans-serif;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             letter-spacing: 1.5px;
             display: flex;
             align-items: center;
@@ -747,7 +806,7 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 14px 16px;
+            gap: 12px 14px;
             width: 100%;
         }
 
@@ -755,15 +814,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: clamp(64px, 18vw, 78px);
+            width: clamp(60px, 17vw, 74px);
             position: relative;
         }
 
         .config-role-avatar-wrap {
             position: relative;
-            width: clamp(58px, 16vw, 70px);
-            height: clamp(58px, 16vw, 70px);
-            margin-bottom: 7px;
+            width: clamp(54px, 15vw, 66px);
+            height: clamp(54px, 15vw, 66px);
+            margin-bottom: 6px;
         }
 
         .config-role-avatar {
@@ -802,14 +861,14 @@
         }
 
         .config-role-label {
-            font-size: clamp(13px, 3.8vw, 15px);
+            font-size: clamp(12px, 3.6vw, 14px);
             color: #e8dcc4;
             white-space: nowrap;
             font-weight: 900;
             text-shadow: 0 2px 4px rgba(0,0,0,0.95);
         }
 
-        /* 結束按鈕優化：固定於底部 + 長按解鎖 + iOS 蓄力視覺震動 */
+        /* 結束按鈕優化：固定於底部 + 長按解鎖 + 蓄力視覺震動 */
         .hold-btn-container {
             width: 92%;
             max-width: 320px;
@@ -819,10 +878,10 @@
 
         #reveal-hold-btn {
             width: 100%;
-            height: 66px;
+            height: 62px;
             background: rgba(25, 20, 12, 0.9);
             border: 2px solid var(--gold);
-            border-radius: 33px;
+            border-radius: 31px;
             position: relative;
             overflow: hidden;
             display: flex;
@@ -846,7 +905,7 @@
         }
 
         #reveal-hold-btn.holding .progress-bg {
-            transition: none; /* 按住時由 requestAnimationFrame 即時精準控制 */
+            transition: none;
         }
 
         .hold-btn-text {
@@ -962,27 +1021,8 @@
         .reveal-card.good .reveal-card-name { color: #8cb4db; }
         .reveal-card.evil .reveal-card-name { color: #d67c7c; }
 
-        .player-number-text {
-            color: var(--gold);
-        }
-
-        .action-white-text {
-            color: #d1c9b8; 
-            font-size: 0.85em;
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-15px); }
-        }
-        
-        .screen.fade-out {
-            animation: fadeOut 0.35s ease-in forwards;
-            pointer-events: none;
-            display: block;
-        }
-        
-        #game-screen.fade-out { display: flex; }
+        .player-number-text { color: var(--gold); }
+        .action-white-text { color: #d1c9b8; font-size: 0.85em; }
 
         @keyframes cardFloat {
             0% { transform: translateY(0px); }
@@ -994,7 +1034,6 @@
             animation: cardFloat 3.5s ease-in-out infinite;
         }
 
-        /* 角色資訊內部標題與號碼標籤同步放大 1.5 倍 */
         .info-box {
             display: flex; flex-direction: column; gap: 8px; align-items: center;
         }
@@ -1023,19 +1062,6 @@
         .info-tag.evil { border-color: rgba(179, 57, 57, 0.8); color: #ff9999; box-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(179,57,57,0.5); }
         .info-tag.purple { border-color: rgba(156, 108, 206, 0.8); color: #dec2ff; box-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(156,108,206,0.5); }
         .info-tag.neutral { border-color: rgba(220, 179, 99, 0.4); color: #e8dcc4; }
-        
-        #next-player-btn {
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            pointer-events: none;
-        }
-        
-        #next-player-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
     </style>
 </head>
 <body>
@@ -1172,7 +1198,7 @@
                 </div>
                 <div class="card-face card-front" id="card-content">
                     <h2 id="player-role-name">角色名稱</h2>
-                    <img id="player-role-img" class="role-img" src="" alt="角色圖片">
+                    <img id="player-role-img" class="role-img" src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="角色圖片">
                     <div id="player-info-text">你的專屬資訊將顯示於此。</div>
                 </div>
             </div>
@@ -1183,7 +1209,7 @@
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
-            <!-- 本局陣營配置看板（填滿上方空間） -->
+            <!-- 本局陣營配置與任務規則看板 -->
             <div id="game-config-board" class="config-board"></div>
 
             <!-- 長按解鎖機制（固定於最下方） -->
@@ -1205,6 +1231,7 @@
     <script>
         const CARD_FRONT_RAW_URL = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
         const CARD_BACK_RAW_URL = "https://i.postimg.cc/QdHBXdPk/card0back.png";
+        const SESSION_STATE_KEY = "avalon_helper_game_state_v2";
 
         const imageCache = []; 
         function preloadImage(url) {
@@ -1213,10 +1240,7 @@
             imageCache.push(img);
         }
 
-        preloadImage(CARD_FRONT_RAW_URL);
-        preloadImage(CARD_BACK_RAW_URL);
-
-        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（不影響周圍背景） ---------------- */
+        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（附帶 sessionStorage 快取） ---------------- */
         function rgbToHsl(r, g, b) {
             r /= 255; g /= 255; b /= 255;
             const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -1253,12 +1277,10 @@
             ];
         }
 
-        /* 判斷是否為寶石內部的明亮藍色像素 */
         function isGemCoreBlue(r, g, b) {
             return (b - r > 26 && b > 55 && b >= g - 15);
         }
 
-        /* 由卡牌外緣往內掃描，僅鎖定金屬鑲框內的第一顆邊框寶石，完全避開內側背景 */
         function findEdgeGemCircle(data, W, H, direction) {
             let sumX = 0, sumY = 0, sumWeight = 0;
             const points = [];
@@ -1293,7 +1315,6 @@
                         activeSlices++;
                         if (activeSlices > maxGemSpan) break;
                     } else if (started && activeSlices >= 3) {
-                        /* 碰到寶石內側的金色金屬邊框，立即停止，不進入卡牌內部背景 */
                         break;
                     }
                 }
@@ -1324,7 +1345,6 @@
                         activeSlices++;
                         if (activeSlices > maxGemSpan) break;
                     } else if (started && activeSlices >= 3) {
-                        /* 碰到寶石內側的金色金屬邊框，立即停止，不進入卡牌內部背景 */
                         break;
                     }
                 }
@@ -1334,8 +1354,6 @@
 
             const cx = sumX / sumWeight;
             const cy = sumY / sumWeight;
-
-            /* 計算寶石半徑，並設定嚴格的金屬框內上限（最大不超過短邊的 1.9%） */
             const hardMaxRadius = Math.min(W, H) * 0.019;
             let maxDist = 0;
             for (const pt of points) {
@@ -1349,8 +1367,15 @@
             return { cx, cy, radius };
         }
 
-        /* 將指定圖片的上中、下中、左中、右中 4 顆寶石轉為紅寶石 */
-        function recolorCardMiddleGems(rawUrl, format, onSuccess) {
+        function recolorCardMiddleGems(rawUrl, format, cacheKey, onSuccess) {
+            try {
+                const cached = sessionStorage.getItem(cacheKey);
+                if (cached) {
+                    onSuccess(cached);
+                    return;
+                }
+            } catch (e) {}
+
             const tryUrls = [
                 rawUrl + "?cors=1",
                 "https://wsrv.nl/?url=" + encodeURIComponent(rawUrl)
@@ -1392,7 +1417,6 @@
                                     const idx = (y * W + x) * 4;
                                     const r = data[idx], g = data[idx + 1], b = data[idx + 2];
 
-                                    /* 僅轉換寶石圓圈內的藍色與青色光澤，不影響外圍金色鑲框 */
                                     if (b > r + 6 && b >= g - 18) {
                                         const [h, s, l] = rgbToHsl(r, g, b);
                                         if (h >= 165 && h <= 275 && s >= 0.14) {
@@ -1412,6 +1436,7 @@
                         const dataUrl = format === 'png'
                             ? canvas.toDataURL('image/png')
                             : canvas.toDataURL('image/jpeg', 0.95);
+                        try { sessionStorage.setItem(cacheKey, dataUrl); } catch (e) {}
                         onSuccess(dataUrl);
                     } catch (err) {
                         attemptLoad(index + 1);
@@ -1424,33 +1449,120 @@
             attemptLoad(0);
         }
 
+        /* ---------------- 資料驅動設定表（Data-Driven Config） ---------------- */
         const roleData = {
-            merlin: { name: "梅林", shortName: "梅林", isEvil: false, img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
-            percival: { name: "派西維爾", shortName: "派西維爾", isEvil: false, img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
-            lizakang: { name: "李砸康", shortName: "李砸康", isEvil: false, img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
-            servant: { name: "亞瑟的忠臣", shortName: "忠臣", isEvil: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
-            assassin: { name: "刺客", shortName: "刺客", isEvil: true, img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
-            morgana: { name: "莫甘娜", shortName: "莫甘娜", isEvil: true, img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
-            mordred: { name: "莫德雷德", shortName: "莫德雷德", isEvil: true, img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
-            oberon: { name: "奧伯倫", shortName: "奧伯倫", isEvil: true, img: "https://i.postimg.cc/fLYv319B/1.jpg" },
-            minion: { name: "莫德雷德的爪牙", shortName: "爪牙", isEvil: true, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
+            merlin:   { name: "梅林",           shortName: "梅林",     isEvil: false, selectable: true,  img: "https://i.postimg.cc/hjV0JNdY/7.jpg" },
+            percival: { name: "派西維爾",       shortName: "派西維爾", isEvil: false, selectable: true,  img: "https://i.postimg.cc/pLhXMqBs/010.jpg" },
+            lizakang: { name: "李砸康",         shortName: "李砸康",   isEvil: false, selectable: true,  img: "https://i.postimg.cc/vHSHKp5q/020.jpg" },
+            servant:  { name: "亞瑟的忠臣",     shortName: "忠臣",     isEvil: false, selectable: false, img: "https://i.postimg.cc/JnjQySkx/5.jpg" },
+            assassin: { name: "刺客",           shortName: "刺客",     isEvil: true,  selectable: true,  img: "https://i.postimg.cc/vmJzZGcz/4.jpg" },
+            morgana:  { name: "莫甘娜",         shortName: "莫甘娜",   isEvil: true,  selectable: true,  img: "https://i.postimg.cc/xdwR19c5/3.jpg" },
+            mordred:  { name: "莫德雷德",       shortName: "莫德雷德", isEvil: true,  selectable: true,  img: "https://i.postimg.cc/XvR8YnpP/2.jpg" },
+            oberon:   { name: "奧伯倫",         shortName: "奧伯倫",   isEvil: true,  selectable: true,  img: "https://i.postimg.cc/fLYv319B/1.jpg" },
+            minion:   { name: "莫德雷德的爪牙", shortName: "爪牙",     isEvil: true,  selectable: false, img: "https://i.postimg.cc/XJW6LdYF/8.jpg" }
         };
+
+        const SELECTABLE_ROLE_KEYS = Object.keys(roleData).filter(k => roleData[k].selectable);
 
         Object.values(roleData).forEach(role => preloadImage(role.img));
 
         const rules = {
-            5: { good: 3, evil: 2 },
-            6: { good: 4, evil: 2 },
-            7: { good: 4, evil: 3 },
-            8: { good: 5, evil: 3 },
-            9: { good: 5, evil: 4 },
-            10: { good: 6, evil: 4 }
+            5:  { good: 3, evil: 2, quests: [2, 3, 2, 3, 3], twoFailsOnQ4: false },
+            6:  { good: 4, evil: 2, quests: [2, 3, 4, 3, 4], twoFailsOnQ4: false },
+            7:  { good: 4, evil: 3, quests: [2, 3, 3, 4, 4], twoFailsOnQ4: true  },
+            8:  { good: 5, evil: 3, quests: [3, 4, 4, 5, 5], twoFailsOnQ4: true  },
+            9:  { good: 5, evil: 4, quests: [3, 4, 4, 5, 5], twoFailsOnQ4: true  },
+            10: { good: 6, evil: 4, quests: [3, 4, 4, 5, 5], twoFailsOnQ4: true  }
+        };
+
+        const defaultRolePresets = {
+            5:  ['merlin', 'assassin'],
+            6:  ['merlin', 'lizakang', 'mordred', 'assassin'],
+            7:  ['merlin', 'percival', 'mordred', 'morgana', 'oberon'],
+            8:  ['merlin', 'percival', 'mordred', 'morgana', 'assassin'],
+            9:  ['merlin', 'percival', 'lizakang', 'assassin', 'morgana', 'mordred', 'oberon'],
+            10: ['merlin', 'percival', 'assassin', 'morgana', 'mordred', 'oberon']
         };
 
         let players = [];
         let currentPlayerIndex = 0;
         let isTransitioning = false; 
-        let forceStartWithoutGood = false; 
+        let forceStartWithoutGood = false;
+        let currentScreenId = 'setup-screen';
+        let isRevealed = false;
+        let wakeLockSentinel = null;
+
+        /* ---------------- 螢幕常亮鎖定 (Screen Wake Lock API) ---------------- */
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator && currentScreenId !== 'setup-screen') {
+                try {
+                    wakeLockSentinel = await navigator.wakeLock.request('screen');
+                } catch (e) {}
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLockSentinel) {
+                wakeLockSentinel.release().catch(() => {});
+                wakeLockSentinel = null;
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && currentScreenId !== 'setup-screen') {
+                requestWakeLock();
+            }
+        });
+
+        /* ---------------- 狀態持久化（防止手機鎖屏或誤觸重整遺失進度） ---------------- */
+        function saveGameState() {
+            try {
+                if (currentScreenId === 'setup-screen' || players.length === 0) {
+                    sessionStorage.removeItem(SESSION_STATE_KEY);
+                    return;
+                }
+                const state = {
+                    players: players.map(p => ({ id: p.id, roleKey: p.roleKey, info: p.info })),
+                    currentPlayerIndex,
+                    currentScreenId,
+                    isRevealed
+                };
+                sessionStorage.setItem(SESSION_STATE_KEY, JSON.stringify(state));
+            } catch (e) {}
+        }
+
+        function restoreGameStateIfAny() {
+            try {
+                const raw = sessionStorage.getItem(SESSION_STATE_KEY);
+                if (!raw) return;
+                const state = JSON.parse(raw);
+                if (!state || !Array.isArray(state.players) || state.players.length === 0) return;
+
+                players = state.players.map(p => ({
+                    id: p.id,
+                    roleKey: p.roleKey,
+                    role: roleData[p.roleKey],
+                    info: p.info
+                }));
+                currentPlayerIndex = state.currentPlayerIndex || 0;
+                isRevealed = !!state.isRevealed;
+
+                const targetScreen = state.currentScreenId || 'buffer-screen';
+                if (targetScreen === 'buffer-screen') {
+                    switchScreen('setup-screen', 'buffer-screen', showBufferScreen);
+                } else if (targetScreen === 'pass-screen') {
+                    switchScreen('setup-screen', 'pass-screen', showPlayerPassScreen);
+                } else if (targetScreen === 'game-screen') {
+                    switchScreen('setup-screen', 'game-screen', () => {
+                        showGameScreen();
+                        if (isRevealed) revealAll(false);
+                    });
+                }
+                requestWakeLock();
+            } catch (e) {
+                sessionStorage.removeItem(SESSION_STATE_KEY);
+            }
+        }
 
         /* 標準 Fisher-Yates 洗牌演算法，確保機率完全均等 */
         function shuffleArray(array) {
@@ -1464,12 +1576,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'jpeg', (dataUrl) => {
+            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'jpeg', 'avalon_card_front_gems_v1', (dataUrl) => {
                 document.documentElement.style.setProperty('--card-front-bg', `url("${dataUrl}")`);
             });
 
             /* 2. 轉換牌背的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'png', (dataUrl) => {
+            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'png', 'avalon_card_back_gems_v1', (dataUrl) => {
                 const backImgEl = document.getElementById('card-back-img');
                 if (backImgEl) backImgEl.src = dataUrl;
             });
@@ -1477,7 +1589,7 @@
             const countRadios = document.querySelectorAll('input[name="player-count"]');
             countRadios.forEach(radio => radio.addEventListener('change', (e) => {
                 updateDefaultRoles();
-                handlePlayerCountUI(parseInt(e.target.value));
+                handlePlayerCountUI(parseInt(e.target.value, 10));
                 updateQuotaStatus();
             }));
 
@@ -1487,27 +1599,35 @@
             }));
 
             updateQuotaStatus();
+            setupCardInteractions();
             setupHoldButton();
+            restoreGameStateIfAny();
         });
+
+        /* 取得目前勾選的特殊角色清單 */
+        function getSelectedSpecialRoles() {
+            const goodRoles = [];
+            const evilRoles = [];
+            SELECTABLE_ROLE_KEYS.forEach(key => {
+                const el = document.getElementById('role-' + key);
+                if (el && el.checked) {
+                    if (roleData[key].isEvil) evilRoles.push(key);
+                    else goodRoles.push(key);
+                }
+            });
+            return { goodRoles, evilRoles };
+        }
 
         /* 即時計算並更新選角名額狀態與防呆提示 */
         function updateQuotaStatus() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
-            const playerCount = parseInt(checkedRadio.value);
+            const playerCount = parseInt(checkedRadio.value, 10);
             const ratio = rules[playerCount];
 
-            let goodCount = 0;
-            let evilCount = 0;
-
-            if (document.getElementById('role-merlin').checked) goodCount++;
-            if (document.getElementById('role-percival').checked) goodCount++;
-            if (document.getElementById('role-lizakang').checked) goodCount++;
-
-            if (document.getElementById('role-assassin').checked) evilCount++;
-            if (document.getElementById('role-morgana').checked) evilCount++;
-            if (document.getElementById('role-mordred').checked) evilCount++;
-            if (document.getElementById('role-oberon').checked) evilCount++;
+            const { goodRoles, evilRoles } = getSelectedSpecialRoles();
+            const goodCount = goodRoles.length;
+            const evilCount = evilRoles.length;
 
             const quotaBar = document.getElementById('role-quota-bar');
             const errorEl = document.getElementById('setup-error');
@@ -1554,10 +1674,10 @@
             const container = document.getElementById('other-counts-container');
             const otherBtn = document.getElementById('pc-other-btn');
             const isShowing = container.classList.toggle('show');
+            const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value, 10);
             
             if (isShowing) {
                 otherBtn.classList.add('active-other');
-                const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
                 if (currentCount === 8 || currentCount === 10) {
                     const pc9 = document.getElementById('pc-9');
                     pc9.checked = true;
@@ -1565,7 +1685,6 @@
                     updateQuotaStatus();
                 }
             } else {
-                const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
                 if ([5, 6, 7, 9].includes(currentCount)) {
                     otherBtn.classList.add('active-other');
                 } else {
@@ -1589,25 +1708,13 @@
         function updateDefaultRoles() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
-            const count = parseInt(checkedRadio.value);
-            
-            const roles = ['merlin', 'percival', 'lizakang', 'assassin', 'morgana', 'mordred', 'oberon'];
-            roles.forEach(r => document.getElementById('role-' + r).checked = false);
+            const count = parseInt(checkedRadio.value, 10);
+            const preset = defaultRolePresets[count] || [];
 
-            switch(count) {
-                case 5:
-                    ['merlin', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-                case 6:
-                    ['merlin', 'lizakang', 'mordred', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-                case 7:
-                    ['merlin', 'percival', 'mordred', 'morgana', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-                case 8:
-                    ['merlin', 'percival', 'mordred', 'morgana', 'assassin'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-                case 9:
-                    ['merlin', 'percival', 'lizakang', 'assassin', 'morgana', 'mordred', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-                case 10:
-                    ['merlin', 'percival', 'assassin', 'morgana', 'mordred', 'oberon'].forEach(r => document.getElementById('role-' + r).checked = true); break;
-            }
+            SELECTABLE_ROLE_KEYS.forEach(r => {
+                const el = document.getElementById('role-' + r);
+                if (el) el.checked = preset.includes(r);
+            });
         }
 
         function startGame() {
@@ -1615,52 +1722,41 @@
             errorEl.innerText = "";
             currentPlayerIndex = 0; 
             players = [];
+            isRevealed = false;
 
-            const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value);
+            const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value, 10);
             const ratio = rules[playerCount];
 
-            let goodRoles = [];
-            let evilRoles = [];
+            const { goodRoles, evilRoles } = getSelectedSpecialRoles();
 
-            if(document.getElementById('role-merlin').checked) goodRoles.push('merlin');
-            if(document.getElementById('role-percival').checked) goodRoles.push('percival');
-            if(document.getElementById('role-lizakang').checked) goodRoles.push('lizakang');
-            if(document.getElementById('role-assassin').checked) evilRoles.push('assassin');
-            if(document.getElementById('role-morgana').checked) evilRoles.push('morgana');
-            if(document.getElementById('role-mordred').checked) evilRoles.push('mordred');
-            if(document.getElementById('role-oberon').checked) evilRoles.push('oberon');
-
-            if(goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
+            if (goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
                 errorEl.innerText = `⚠️ ${ratio.good}名好人與${ratio.evil}名壞人。請調整角色！`;
                 forceStartWithoutGood = false; 
                 return;
             }
 
-            if(goodRoles.length === 0 && ratio.good > 0) {
-                 if(!forceStartWithoutGood) {
-                     errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊以確認。</strong>";
-                     forceStartWithoutGood = true;
-                     return;
-                 }
+            if (goodRoles.length === 0 && ratio.good > 0) {
+                if (!forceStartWithoutGood) {
+                    errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊以確認。</strong>";
+                    forceStartWithoutGood = true;
+                    return;
+                }
             }
 
-            while(goodRoles.length < ratio.good) goodRoles.push('servant');
-            while(evilRoles.length < ratio.evil) evilRoles.push('minion');
+            while (goodRoles.length < ratio.good) goodRoles.push('servant');
+            while (evilRoles.length < ratio.evil) evilRoles.push('minion');
 
-            let selectedRoles = goodRoles.concat(evilRoles);
-            selectedRoles = shuffleArray(selectedRoles);
+            const selectedRoles = shuffleArray(goodRoles.concat(evilRoles));
 
-            players = selectedRoles.map((roleKey, index) => {
-                return {
-                    id: index + 1,
-                    roleKey: roleKey,
-                    role: roleData[roleKey],
-                    info: ""
-                };
-            });
+            players = selectedRoles.map((roleKey, index) => ({
+                id: index + 1,
+                roleKey: roleKey,
+                role: roleData[roleKey],
+                info: ""
+            }));
 
             generateInfo();
-            players.forEach(p => preloadImage(p.role.img));
+            requestWakeLock();
 
             switchScreen('setup-screen', 'buffer-screen', showBufferScreen);
         }
@@ -1670,8 +1766,10 @@
             const showEl = document.getElementById(showId);
             
             hideEl.classList.remove('active', 'fade-out');
+            currentScreenId = showId;
             if (callback) callback();
             showEl.classList.add('active');
+            saveGameState();
         }
 
         function showBufferScreen() {
@@ -1684,13 +1782,12 @@
             switchScreen('buffer-screen', 'pass-screen', showPlayerPassScreen);
         }
 
+        /* 統一按座位號碼升冪排列，完全不洩漏角色順序且維持視覺一致 */
         function generateInfo() {
             const teamEvil = players.filter(p => p.role.isEvil && p.roleKey !== 'oberon').map(p => p.id + "號");
             const seenByMerlin = players.filter(p => p.role.isEvil && p.roleKey !== 'mordred').map(p => p.id + "號");
             const seenByPercival = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'morgana').map(p => p.id + "號");
-
-            let seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
-            seenByLiZakang = shuffleArray(seenByLiZakang);
+            const seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
 
             function createTags(arr, colorClass) {
                 if (arr.length === 0) return `<span class="info-tag neutral">無</span>`;
@@ -1703,14 +1800,14 @@
                 } else if (p.roleKey === 'percival') {
                     p.info = `<div class="info-box"><div class="info-label">梅林或莫甘娜</div><div class="info-tags">${createTags(seenByPercival, 'purple')}</div></div>`;
                 } else if (p.roleKey === 'lizakang') {
-                    if(seenByLiZakang.length > 0) {
-                         p.info = `<div class="info-box"><div class="info-label">梅林或莫德雷德</div><div class="info-tags">${createTags(seenByLiZakang, 'purple')}</div></div>`;
+                    if (seenByLiZakang.length > 0) {
+                        p.info = `<div class="info-box"><div class="info-label">梅林或莫德雷德</div><div class="info-tags">${createTags(seenByLiZakang, 'purple')}</div></div>`;
                     } else {
-                         p.info = `<div class="info-box"><div class="info-label">感應結果</div><div class="info-tags"><span class="info-tag neutral">無盡的虛空</span></div></div>`;
+                        p.info = `<div class="info-box"><div class="info-label">感應結果</div><div class="info-tags"><span class="info-tag neutral">無盡的虛空</span></div></div>`;
                     }
                 } else if (p.role.isEvil && p.roleKey !== 'oberon') {
                     const otherEvils = teamEvil.filter(id => id !== p.id + "號");
-                    if(otherEvils.length > 0) {
+                    if (otherEvils.length > 0) {
                         p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags">${createTags(otherEvils, 'evil')}</div></div>`;
                     } else {
                         p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags"><span class="info-tag neutral">僅有你一人</span></div></div>`;
@@ -1729,60 +1826,55 @@
 
         function triggerVibration(pattern) {
             if ('vibrate' in navigator) {
-                try { navigator.vibrate(pattern); } catch(e) {}
+                try { navigator.vibrate(pattern); } catch (e) {}
             }
         }
 
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        function handleCardPress() {
-            if (isTransitioning || cardInner.classList.contains('flipped')) return;
-            cardInner.style.transform = 'scale(0.95)';
-            cardInner.style.transition = 'transform 0.1s ease';
-            triggerVibration(15); 
+        /* ---------------- 統一使用 Pointer Events 處理卡牌互動，消除雙重觸發與 touchcancel 卡死 ---------------- */
+        function setupCardInteractions() {
+            let pointerStartX = 0;
+            let pointerStartY = 0;
+            let isPointerDown = false;
+
+            revealCardWrapper.addEventListener('pointerdown', (e) => {
+                if (isTransitioning || cardInner.classList.contains('flipped')) return;
+                isPointerDown = true;
+                pointerStartX = e.clientX;
+                pointerStartY = e.clientY;
+                cardInner.style.transform = 'scale(0.95)';
+                cardInner.style.transition = 'transform 0.1s ease';
+                triggerVibration(15);
+            });
+
+            revealCardWrapper.addEventListener('pointermove', (e) => {
+                if (!isPointerDown || cardInner.classList.contains('flipped') || isTransitioning) return;
+                const deltaX = e.clientX - pointerStartX;
+                const deltaY = e.clientY - pointerStartY;
+                const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
+                const rotateY = Math.max(-12, Math.min(12, deltaX / 6));
+                cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            function finishCardPointer(shouldFlip) {
+                if (!isPointerDown) return;
+                isPointerDown = false;
+                if (isTransitioning || cardInner.classList.contains('flipped')) return;
+                cardInner.style.transform = '';
+                cardInner.style.transition = 'transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                if (shouldFlip) flipCard();
+            }
+
+            revealCardWrapper.addEventListener('pointerup', () => finishCardPointer(true));
+            revealCardWrapper.addEventListener('pointercancel', () => finishCardPointer(false));
+            revealCardWrapper.addEventListener('pointerleave', () => finishCardPointer(false));
         }
-
-        function handleCardRelease(isAction = false) {
-            if (isTransitioning || cardInner.classList.contains('flipped')) return;
-            cardInner.style.transform = '';
-            cardInner.style.transition = 'transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1)'; 
-            if (isAction) flipCard();
-        }
-
-        revealCardWrapper.addEventListener('mousedown', handleCardPress);
-        revealCardWrapper.addEventListener('mouseleave', () => {
-             if (!cardInner.classList.contains('flipped')) handleCardRelease(false);
-        });
-        revealCardWrapper.addEventListener('mouseup', () => handleCardRelease(true));
-
-        revealCardWrapper.addEventListener('touchstart', (e) => {
-            if(isTransitioning) return;
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-            handleCardPress();
-        }, {passive: true});
-
-        revealCardWrapper.addEventListener('touchmove', (e) => {
-            if (cardInner.classList.contains('flipped') || isTransitioning) return;
-            const deltaX = e.changedTouches[0].screenX - touchStartX;
-            const deltaY = e.changedTouches[0].screenY - touchStartY;
-            const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
-            const rotateY = Math.max(-12, Math.min(12, deltaX / 6));
-            cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        }, {passive: true});
-
-        revealCardWrapper.addEventListener('touchend', (e) => {
-            if (cardInner.classList.contains('flipped') || isTransitioning) return;
-            handleCardRelease(true);
-        });
 
         function flipCard() {
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
 
             cardInner.classList.add('flipped');
-            revealCardWrapper.classList.remove('floating'); /* 停止懸浮動畫 */
-            nextBtn.classList.add('visible'); /* 平滑顯示按鈕 */
+            revealCardWrapper.classList.remove('floating');
+            nextBtn.classList.add('visible');
             triggerVibration([40, 50, 30]);
 
             const player = players[currentPlayerIndex];
@@ -1793,15 +1885,16 @@
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
             
-            revealCardWrapper.classList.add('floating'); /* 恢復懸浮動畫 */
+            revealCardWrapper.classList.add('floating');
+            cardInner.classList.remove('flipped');
+            nextBtn.classList.remove('visible');
             
             const roleNameEl = document.getElementById('player-role-name');
             roleNameEl.innerText = player.role.name;
             roleNameEl.className = player.role.isEvil ? 'evil' : 'good';
             
             const roleImgEl = document.getElementById('player-role-img');
-            roleImgEl.src = ""; 
-            setTimeout(() => { roleImgEl.src = player.role.img; }, 10);
+            roleImgEl.src = player.role.img;
             
             const infoTextEl = document.getElementById('player-info-text');
             infoTextEl.innerHTML = player.info;
@@ -1816,7 +1909,7 @@
         function nextPlayer() {
             if (isTransitioning) return; 
             isTransitioning = true; 
-            nextBtn.classList.remove('visible'); /* 平滑隱藏按鈕 */
+            nextBtn.classList.remove('visible');
             cardInner.classList.remove('flipped');
 
             setTimeout(() => {
@@ -1830,7 +1923,7 @@
             }, 700);
         }
 
-        /* 渲染「本局陣營配置」看板（滿版結構） */
+        /* 渲染「本局陣營配置」與「五輪任務人數速查」看板 */
         function renderGameConfigBoard() {
             const boardEl = document.getElementById('game-config-board');
             const totalCount = players.length;
@@ -1863,11 +1956,28 @@
                     }).join('');
             };
 
+            const questNodesHtml = ratio.quests.map((qCount, idx) => {
+                const isTwoFails = (idx === 3 && ratio.twoFailsOnQ4);
+                return `
+                    <div class="quest-node ${isTwoFails ? 'two-fails' : ''}">
+                        <span class="quest-node-round">任務${idx + 1}</span>
+                        <span class="quest-node-count">${qCount}人</span>
+                        ${isTwoFails ? '<span class="quest-node-note">需2敗</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+
             boardEl.innerHTML = `
                 <div class="config-board-header">
                     <h3 class="section-title">本局陣營配置</h3>
                     <div class="config-summary-pill">
                         <strong>${totalCount} 人局</strong> ｜ <span class="good">${ratio.good} 好人</span> vs <span class="evil">${ratio.evil} 壞人</span>
+                    </div>
+                </div>
+                <div class="quest-track-box">
+                    <div class="quest-track-title">⚔️ 各輪出任務人數需求</div>
+                    <div class="quest-nodes-row">
+                        ${questNodesHtml}
                     </div>
                 </div>
                 <div class="config-factions-wrapper">
@@ -1890,13 +2000,11 @@
         function showGameScreen() {
             renderGameConfigBoard();
             const gameScreen = document.getElementById('game-screen');
-            gameScreen.style.minHeight = ''; 
-            gameScreen.style.display = '';
-            gameScreen.style.padding = '';
+            gameScreen.classList.remove('revealed-mode');
             gameScreen.classList.add('active');
         }
 
-        /* ---------------- 長按解鎖邏輯（真實時間計算 + 動態蓄力金光） ---------------- */
+        /* ---------------- 長按解鎖邏輯（統一使用 Pointer Events + 防範 pointercancel 誤觸） ---------------- */
         function setupHoldButton() {
             const holdBtn = document.getElementById('reveal-hold-btn');
             const progressBg = document.querySelector('.progress-bg');
@@ -1906,6 +2014,7 @@
             let isHolding = false;
 
             function startHold(e) {
+                if (e.button && e.button !== 0) return;
                 if (e.cancelable) e.preventDefault();
                 isHolding = true;
                 holdStartTime = performance.now();
@@ -1930,7 +2039,6 @@
                 const progress = Math.min((elapsed / HOLD_DURATION) * 100, 100);
                 progressBg.style.width = progress + '%';
 
-                // 隨蓄力進度增強金色外發光，提供 iOS 強烈的視覺回饋
                 const glowSpread = Math.round(10 + (progress / 100) * 28);
                 const glowAlpha = (0.35 + (progress / 100) * 0.55).toFixed(2);
                 holdBtn.style.boxShadow = `0 0 ${glowSpread}px rgba(220, 179, 99, ${glowAlpha}), inset 0 0 18px rgba(253, 245, 211, ${glowAlpha})`;
@@ -1939,21 +2047,24 @@
                     isHolding = false;
                     holdBtn.classList.remove('holding');
                     holdBtn.style.boxShadow = '';
-                    revealAll(); 
+                    revealAll(true); 
                 } else {
                     holdTimer = requestAnimationFrame(updateProgress);
                 }
             }
             
-            holdBtn.addEventListener('mousedown', startHold);
-            holdBtn.addEventListener('touchstart', startHold, {passive: false});
-            window.addEventListener('mouseup', endHold);
-            window.addEventListener('touchend', endHold);
-            holdBtn.addEventListener('mouseleave', endHold);
+            holdBtn.addEventListener('pointerdown', startHold);
+            window.addEventListener('pointerup', endHold);
+            window.addEventListener('pointercancel', endHold);
+            holdBtn.addEventListener('pointerleave', endHold);
+            holdBtn.addEventListener('contextmenu', (e) => e.preventDefault());
         }
 
-        function revealAll() {
-            triggerVibration([100, 50, 100]); 
+        function revealAll(vibrate = true) {
+            if (vibrate) triggerVibration([100, 50, 100]); 
+            isRevealed = true;
+            saveGameState();
+            releaseWakeLock();
             
             const revealArea = document.getElementById('final-reveal-area');
             const listEl = document.getElementById('final-reveal-list');
@@ -1973,9 +2084,7 @@
             
             revealArea.style.display = 'block';
             gameEndControls.style.display = 'none'; 
-            gameScreen.style.minHeight = 'auto';
-            gameScreen.style.display = 'block'; 
-            gameScreen.style.padding = '25px';
+            gameScreen.classList.add('revealed-mode');
 
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
@@ -1986,6 +2095,8 @@
             players = [];
             isTransitioning = false;
             forceStartWithoutGood = false;
+            isRevealed = false;
+            releaseWakeLock();
 
             const revealArea = document.getElementById('final-reveal-area');
             const listEl = document.getElementById('final-reveal-list');
@@ -1998,10 +2109,7 @@
             gameEndControls.style.display = 'flex';
             if (progressBg) progressBg.style.width = '0%';
 
-            gameScreen.style.minHeight = '';
-            gameScreen.style.display = '';
-            gameScreen.style.padding = '';
-
+            gameScreen.classList.remove('revealed-mode');
             cardInner.classList.remove('flipped');
             nextBtn.classList.remove('visible');
             updateQuotaStatus();
