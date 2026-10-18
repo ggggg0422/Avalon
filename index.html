@@ -460,11 +460,19 @@
 
         .card-inner.flipped { transform: rotateY(180deg); }
 
+        /* [優化 1] 封印卡牌瞬間隱藏正面所有敏感資訊，徹底消除 0.7 秒翻牌殘影洩密風險 */
+        .card-inner.sealing .card-front > * {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: none !important;
+        }
+
         .card-face {
             width: 100%;
             height: 100%;
             position: absolute;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             display: flex;
             flex-direction: column;
             border-radius: 12px;
@@ -621,7 +629,7 @@
             flex-shrink: 0;
             opacity: 0;
             transform: translateY(10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            transition: opacity 0.35s ease, transform 0.35s ease;
             pointer-events: none;
         }
 
@@ -643,7 +651,7 @@
             box-sizing: border-box;
         }
 
-        /* 揭曉真相模式的樣式切換（取代原本的 JS inline styles） */
+        /* 揭曉真相模式的樣式切換 */
         #game-screen.active.revealed-mode {
             display: block;
             min-height: auto;
@@ -656,7 +664,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             width: 100%;
             padding: 0;
             box-sizing: border-box;
@@ -672,35 +680,35 @@
             background: linear-gradient(145deg, rgba(20, 24, 34, 0.88), rgba(10, 12, 18, 0.95));
             border: 1px solid rgba(220, 179, 99, 0.4);
             border-radius: 10px;
-            padding: 16px 12px;
+            padding: 14px 12px;
             box-sizing: border-box;
             box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
         }
 
         .config-board-header {
             flex-shrink: 0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .config-board .section-title {
-            margin: 0 0 10px 0;
-            font-size: clamp(19px, 5.5vw, 23px);
+            margin: 0 0 8px 0;
+            font-size: clamp(18px, 5.2vw, 22px);
         }
 
         .config-summary-pill {
             display: inline-block;
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(220, 179, 99, 0.3);
-            padding: 5px 16px;
+            padding: 4px 15px;
             border-radius: 20px;
-            font-size: clamp(13px, 3.8vw, 15px);
+            font-size: clamp(13px, 3.6vw, 15px);
             font-family: sans-serif;
             color: #e8dcc4;
         }
 
-        /* 五輪任務人數與雙敗規則速查條 */
+        /* [優化 4] 五輪任務互動式計分板與流局計數器 */
         .quest-track-box {
-            background: rgba(0, 0, 0, 0.42);
+            background: rgba(0, 0, 0, 0.45);
             border: 1px solid rgba(220, 179, 99, 0.25);
             border-radius: 8px;
             padding: 8px 8px 10px;
@@ -711,9 +719,22 @@
             font-size: 12px;
             color: var(--gold);
             font-family: sans-serif;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 6px;
-            opacity: 0.9;
+            opacity: 0.92;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2px;
+        }
+
+        .quest-score-pill {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #d1c9b8;
         }
 
         .quest-nodes-row {
@@ -724,15 +745,36 @@
 
         .quest-node {
             background: linear-gradient(145deg, rgba(30, 35, 48, 0.85), rgba(14, 17, 24, 0.95));
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.14);
             border-radius: 6px;
-            padding: 6px 2px 15px;
+            padding: 6px 2px 17px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             font-family: sans-serif;
             position: relative;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .quest-node:active {
+            transform: scale(0.95);
+        }
+
+        .quest-node.state-good {
+            background: linear-gradient(145deg, rgba(35, 68, 108, 0.85), rgba(16, 32, 54, 0.95));
+            border-color: #6ca0dc;
+            box-shadow: 0 0 12px rgba(92, 136, 181, 0.55), inset 0 0 8px rgba(92, 136, 181, 0.3);
+        }
+
+        .quest-node.state-evil {
+            background: linear-gradient(145deg, rgba(110, 30, 30, 0.85), rgba(48, 12, 12, 0.95));
+            border-color: #e05656;
+            box-shadow: 0 0 12px rgba(179, 57, 57, 0.6), inset 0 0 8px rgba(179, 57, 57, 0.3);
         }
 
         .quest-node-round {
@@ -741,6 +783,9 @@
             color: #9a9284;
             margin-bottom: 2px;
         }
+
+        .quest-node.state-good .quest-node-round { color: #b8dcff; }
+        .quest-node.state-evil .quest-node-round { color: #ffb8b8; }
 
         .quest-node-count {
             font-size: 15px;
@@ -761,12 +806,98 @@
             font-weight: bold;
         }
 
+        .quest-node.state-good .quest-node-note { color: #9cd0ff; }
+        .quest-node.state-evil .quest-node-note { color: #ff9c9c; }
+
+        /* 投票反對（流局）計數器樣式 */
+        .vote-track-bar {
+            margin-top: 8px;
+            padding-top: 7px;
+            border-top: 1px dashed rgba(220, 179, 99, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: sans-serif;
+            gap: 6px;
+        }
+
+        .vote-track-label {
+            font-size: 11px;
+            color: #c5bca8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .vote-track-label.danger {
+            color: #ff7b7b;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(179, 57, 57, 0.7);
+        }
+
+        .vote-pips-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vote-pip {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 24, 34, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #8c8476;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .vote-pip.active {
+            background: rgba(220, 179, 99, 0.25);
+            border-color: var(--gold);
+            color: var(--gold-light);
+            box-shadow: 0 0 8px rgba(220, 179, 99, 0.4);
+        }
+
+        .vote-pip.pip-5.active {
+            background: rgba(179, 57, 57, 0.85);
+            border-color: #ff8080;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(179, 57, 57, 0.8);
+        }
+
+        .vote-reset-btn {
+            font-size: 10px;
+            padding: 3px 7px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #b5ad9e;
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+        }
+
+        .vote-reset-btn:active {
+            transform: scale(0.95);
+        }
+
         .config-factions-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
         }
 
@@ -778,7 +909,7 @@
             align-items: center;
             background: rgba(0, 0, 0, 0.38);
             border-radius: 10px;
-            padding: 12px 10px;
+            padding: 10px 8px;
             border: 1px solid transparent;
         }
 
@@ -793,9 +924,9 @@
         }
 
         .config-faction-header {
-            font-size: clamp(14px, 4vw, 17px);
+            font-size: clamp(13px, 3.8vw, 16px);
             font-family: sans-serif;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             letter-spacing: 1.5px;
             display: flex;
             align-items: center;
@@ -808,7 +939,7 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 12px 14px;
+            gap: 10px 12px;
             width: 100%;
         }
 
@@ -816,15 +947,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: clamp(60px, 17vw, 74px);
+            width: clamp(56px, 16vw, 70px);
             position: relative;
         }
 
         .config-role-avatar-wrap {
             position: relative;
-            width: clamp(54px, 15vw, 66px);
-            height: clamp(54px, 15vw, 66px);
-            margin-bottom: 6px;
+            width: clamp(50px, 14vw, 62px);
+            height: clamp(50px, 14vw, 62px);
+            margin-bottom: 5px;
         }
 
         .config-role-avatar {
@@ -863,7 +994,7 @@
         }
 
         .config-role-label {
-            font-size: clamp(12px, 3.6vw, 14px);
+            font-size: clamp(12px, 3.5vw, 14px);
             color: #e8dcc4;
             white-space: nowrap;
             font-weight: 900;
@@ -880,10 +1011,10 @@
 
         #reveal-hold-btn {
             width: 100%;
-            height: 62px;
+            height: 58px;
             background: rgba(25, 20, 12, 0.9);
             border: 2px solid var(--gold);
-            border-radius: 31px;
+            border-radius: 30px;
             position: relative;
             overflow: hidden;
             display: flex;
@@ -914,7 +1045,7 @@
             position: relative;
             z-index: 2;
             color: var(--gold-light);
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             letter-spacing: 2px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
@@ -1124,23 +1255,24 @@
             <!-- 即時名額顯示與防呆提示 -->
             <div id="role-quota-bar" class="role-quota-bar"></div>
             
+            <!-- [優化 10] 為所有角色圖片加上 data 屬性與 onerror 離線紋章備援 -->
             <div class="role-cards-wrapper">
                 <div class="role-row">
                     <input type="checkbox" id="role-merlin" class="role-checkbox" checked>
                     <label for="role-merlin" class="role-card-label good">
-                        <img src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="梅林">
+                        <img src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="梅林" data-role="梅林" data-evil="false" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">梅林</div>
                     </label>
 
                     <input type="checkbox" id="role-percival" class="role-checkbox" checked>
                     <label for="role-percival" class="role-card-label good">
-                        <img src="https://i.postimg.cc/pLhXMqBs/010.jpg" alt="派西維爾">
+                        <img src="https://i.postimg.cc/pLhXMqBs/010.jpg" alt="派西維爾" data-role="派西維爾" data-evil="false" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">派西維爾</div>
                     </label>
 
                     <input type="checkbox" id="role-lizakang" class="role-checkbox">
                     <label for="role-lizakang" class="role-card-label good">
-                        <img src="https://i.postimg.cc/vHSHKp5q/020.jpg" alt="李砸康">
+                        <img src="https://i.postimg.cc/vHSHKp5q/020.jpg" alt="李砸康" data-role="李砸康" data-evil="false" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">李砸康</div>
                     </label>
                 </div>
@@ -1148,13 +1280,13 @@
                 <div class="role-row">
                     <input type="checkbox" id="role-mordred" class="role-checkbox" checked>
                     <label for="role-mordred" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/XvR8YnpP/2.jpg" alt="莫德雷德">
+                        <img src="https://i.postimg.cc/XvR8YnpP/2.jpg" alt="莫德雷德" data-role="莫德雷德" data-evil="true" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">莫德雷德</div>
                     </label>
 
                     <input type="checkbox" id="role-morgana" class="role-checkbox" checked>
                     <label for="role-morgana" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/xdwR19c5/3.jpg" alt="莫甘娜">
+                        <img src="https://i.postimg.cc/xdwR19c5/3.jpg" alt="莫甘娜" data-role="莫甘娜" data-evil="true" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">莫甘娜</div>
                     </label>
                 </div>
@@ -1162,13 +1294,13 @@
                 <div class="role-row">
                     <input type="checkbox" id="role-assassin" class="role-checkbox" checked>
                     <label for="role-assassin" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/vmJzZGcz/4.jpg" alt="刺客">
+                        <img src="https://i.postimg.cc/vmJzZGcz/4.jpg" alt="刺客" data-role="刺客" data-evil="true" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">刺客</div>
                     </label>
 
                     <input type="checkbox" id="role-oberon" class="role-checkbox" checked>
                     <label for="role-oberon" class="role-card-label evil">
-                        <img src="https://i.postimg.cc/fLYv319B/1.jpg" alt="奧伯倫">
+                        <img src="https://i.postimg.cc/fLYv319B/1.jpg" alt="奧伯倫" data-role="奧伯倫" data-evil="true" onerror="applyFallbackImg(this)">
                         <div class="role-card-name">奧伯倫</div>
                     </label>
                 </div>
@@ -1195,12 +1327,12 @@
         <div class="card-container floating" id="reveal-card">
             <div class="card-inner" id="card-inner">
                 <div class="card-face card-back">
-                    <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img">
+                    <img src="https://i.postimg.cc/QdHBXdPk/card0back.png" alt="Avalon Card Back" id="card-back-img" data-cardback="true" onerror="applyFallbackImg(this)">
                     <div class="instruction">點擊或滑動翻開</div>
                 </div>
                 <div class="card-face card-front" id="card-content">
                     <h2 id="player-role-name">角色名稱</h2>
-                    <img id="player-role-img" class="role-img" src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="角色圖片">
+                    <img id="player-role-img" class="role-img" src="https://i.postimg.cc/hjV0JNdY/7.jpg" alt="角色圖片" onerror="applyFallbackImg(this)">
                     <div id="player-info-text">你的專屬資訊將顯示於此。</div>
                 </div>
             </div>
@@ -1211,7 +1343,7 @@
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
-            <!-- 本局陣營配置與任務規則看板 -->
+            <!-- 本局陣營配置與互動式任務計分看板 -->
             <div id="game-config-board" class="config-board"></div>
 
             <!-- 長按解鎖機制（固定於最下方） -->
@@ -1233,7 +1365,57 @@
     <script>
         const CARD_FRONT_RAW_URL = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
         const CARD_BACK_RAW_URL = "https://i.postimg.cc/QdHBXdPk/card0back.png";
-        const SESSION_STATE_KEY = "avalon_helper_game_state_v2";
+        const SESSION_STATE_KEY = "avalon_helper_game_state_v3";
+
+        /* [優化 10] 外部圖床（postimg.cc）載入失敗時的 SVG 皇家紋章與書法字體備援機制 */
+        function createFallbackSvgDataUri(roleName, isEvil, isCardBack) {
+            if (isCardBack) {
+                const svgBack = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+                    <defs>
+                        <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+                            <stop offset="0%" stop-color="#1e2436"/>
+                            <stop offset="100%" stop-color="#090b10"/>
+                        </radialGradient>
+                    </defs>
+                    <rect width="300" height="420" rx="18" fill="url(#bg)"/>
+                    <rect x="14" y="14" width="272" height="392" rx="12" fill="none" stroke="#dcb363" stroke-width="2" stroke-opacity="0.65"/>
+                    <rect x="22" y="22" width="256" height="376" rx="8" fill="none" stroke="#dcb363" stroke-width="1" stroke-opacity="0.3"/>
+                    <circle cx="150" cy="210" r="78" fill="none" stroke="#dcb363" stroke-width="2" stroke-opacity="0.5"/>
+                    <polygon points="150,115 172,182 242,182 185,222 206,290 150,248 94,290 115,222 58,182 128,182" fill="none" stroke="#dcb363" stroke-width="1.8" stroke-opacity="0.45"/>
+                    <text x="150" y="218" text-anchor="middle" fill="#dcb363" font-family="serif" font-size="28" font-weight="bold" letter-spacing="6">AVALON</text>
+                </svg>`;
+                return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgBack);
+            }
+
+            const title = (roleName || "角色").slice(0, 4);
+            const mainTitle = title.length > 2 ? title.slice(0, 2) : title;
+            const c1 = isEvil ? "#4a1218" : "#142c46";
+            const c2 = isEvil ? "#140507" : "#070c14";
+            const stroke = isEvil ? "#d65a5a" : "#6ca0dc";
+
+            const svgRole = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+                <defs>
+                    <radialGradient id="rg" cx="50%" cy="45%" r="65%">
+                        <stop offset="0%" stop-color="${c1}"/>
+                        <stop offset="100%" stop-color="${c2}"/>
+                    </radialGradient>
+                </defs>
+                <rect width="240" height="240" fill="url(#rg)"/>
+                <circle cx="120" cy="120" r="102" fill="none" stroke="#dcb363" stroke-width="2" stroke-opacity="0.45"/>
+                <circle cx="120" cy="120" r="92" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-opacity="0.5"/>
+                <text x="120" y="138" text-anchor="middle" fill="#f5ead4" font-family="serif" font-size="54" font-weight="900" letter-spacing="4">${mainTitle}</text>
+            </svg>`;
+            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgRole);
+        }
+
+        function applyFallbackImg(imgEl) {
+            if (!imgEl || imgEl.dataset.fallbackApplied === "true") return;
+            imgEl.dataset.fallbackApplied = "true";
+            const isCardBack = imgEl.dataset.cardback === "true";
+            const roleName = imgEl.dataset.role || imgEl.alt || "角色";
+            const isEvil = imgEl.dataset.evil === "true";
+            imgEl.src = createFallbackSvgDataUri(roleName, isEvil, isCardBack);
+        }
 
         const imageCache = []; 
         function preloadImage(url) {
@@ -1242,7 +1424,7 @@
             imageCache.push(img);
         }
 
-        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（附帶 sessionStorage 快取） ---------------- */
+        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（附帶壓縮與 sessionStorage 快取） ---------------- */
         function rgbToHsl(r, g, b) {
             r /= 255; g /= 255; b /= 255;
             const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -1369,7 +1551,8 @@
             return { cx, cy, radius };
         }
 
-        function recolorCardMiddleGems(rawUrl, format, cacheKey, onSuccess) {
+        /* [優化 9] 縮放 Canvas 至行動端最佳解析度上限（600px）並優先使用 WebP/JPEG 0.85 輸出，節省 75% 以上記憶體與 sessionStorage 空間 */
+        function recolorCardMiddleGems(rawUrl, cacheKey, onSuccess) {
             try {
                 const cached = sessionStorage.getItem(cacheKey);
                 if (cached) {
@@ -1389,13 +1572,16 @@
                 img.crossOrigin = "anonymous";
                 img.onload = () => {
                     try {
-                        const W = img.naturalWidth;
-                        const H = img.naturalHeight;
+                        const MAX_DIM = 600;
+                        const scale = Math.min(1, MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight));
+                        const W = Math.max(1, Math.round(img.naturalWidth * scale));
+                        const H = Math.max(1, Math.round(img.naturalHeight * scale));
+
                         const canvas = document.createElement('canvas');
                         canvas.width = W;
                         canvas.height = H;
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
+                        ctx.drawImage(img, 0, 0, W, H);
 
                         const imgData = ctx.getImageData(0, 0, W, H);
                         const data = imgData.data;
@@ -1435,9 +1621,10 @@
                         });
 
                         ctx.putImageData(imgData, 0, 0);
-                        const dataUrl = format === 'png'
-                            ? canvas.toDataURL('image/png')
-                            : canvas.toDataURL('image/jpeg', 0.95);
+                        let dataUrl = canvas.toDataURL('image/webp', 0.85);
+                        if (!dataUrl.startsWith('data:image/webp')) {
+                            dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        }
                         try { sessionStorage.setItem(cacheKey, dataUrl); } catch (e) {}
                         onSuccess(dataUrl);
                     } catch (err) {
@@ -1493,6 +1680,11 @@
         let currentScreenId = 'setup-screen';
         let isRevealed = false;
         let wakeLockSentinel = null;
+        let nextBtnUnlockTimer = null;
+
+        /* [優化 4] 任務計分板狀態 (0: 未進行, 1: 藍方成功, 2: 紅方失敗) 與流局計數器 (0~5) */
+        let questStates = [0, 0, 0, 0, 0];
+        let voteRejectCount = 0;
 
         /* ---------------- 螢幕常亮鎖定 (Screen Wake Lock API) ---------------- */
         async function requestWakeLock() {
@@ -1516,18 +1708,23 @@
             }
         });
 
-        /* ---------------- 狀態持久化（防止手機鎖屏或誤觸重整遺失進度） ---------------- */
+        /* ---------------- [優化 8] 狀態持久化：完整記錄當局人數、勾選特殊角色、任務比分與流局數 ---------------- */
         function saveGameState() {
             try {
                 if (currentScreenId === 'setup-screen' || players.length === 0) {
                     sessionStorage.removeItem(SESSION_STATE_KEY);
                     return;
                 }
+                const { goodRoles, evilRoles } = getSelectedSpecialRoles();
                 const state = {
                     players: players.map(p => ({ id: p.id, roleKey: p.roleKey, info: p.info })),
+                    selectedPlayerCount: players.length,
+                    selectedRoleKeys: [...goodRoles, ...evilRoles],
                     currentPlayerIndex,
                     currentScreenId,
-                    isRevealed
+                    isRevealed,
+                    questStates,
+                    voteRejectCount
                 };
                 sessionStorage.setItem(SESSION_STATE_KEY, JSON.stringify(state));
             } catch (e) {}
@@ -1548,6 +1745,23 @@
                 }));
                 currentPlayerIndex = state.currentPlayerIndex || 0;
                 isRevealed = !!state.isRevealed;
+                questStates = Array.isArray(state.questStates) && state.questStates.length === 5 ? state.questStates : [0, 0, 0, 0, 0];
+                voteRejectCount = typeof state.voteRejectCount === 'number' ? state.voteRejectCount : 0;
+
+                /* [優化 8] 同步回填首頁的當局人數與勾選角色，確保重整後按下「重新一局」能保留原設定 */
+                const savedCount = state.selectedPlayerCount || players.length;
+                const targetRadio = document.getElementById('pc-' + savedCount);
+                if (targetRadio) {
+                    targetRadio.checked = true;
+                    handlePlayerCountUI(savedCount);
+                }
+                if (Array.isArray(state.selectedRoleKeys)) {
+                    SELECTABLE_ROLE_KEYS.forEach(key => {
+                        const cb = document.getElementById('role-' + key);
+                        if (cb) cb.checked = state.selectedRoleKeys.includes(key);
+                    });
+                }
+                updateQuotaStatus();
 
                 const targetScreen = state.currentScreenId || 'buffer-screen';
                 if (targetScreen === 'buffer-screen') {
@@ -1577,13 +1791,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            /* 清除舊版未壓縮的快取鍵值，釋放 sessionStorage 空間 */
+            try {
+                sessionStorage.removeItem('avalon_card_front_gems_v1');
+                sessionStorage.removeItem('avalon_card_back_gems_v1');
+            } catch (e) {}
+
             /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'jpeg', 'avalon_card_front_gems_v1', (dataUrl) => {
+            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'avalon_card_front_gems_v2', (dataUrl) => {
                 document.documentElement.style.setProperty('--card-front-bg', `url("${dataUrl}")`);
             });
 
             /* 2. 轉換牌背的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'png', 'avalon_card_back_gems_v1', (dataUrl) => {
+            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'avalon_card_back_gems_v2', (dataUrl) => {
                 const backImgEl = document.getElementById('card-back-img');
                 if (backImgEl) backImgEl.src = dataUrl;
             });
@@ -1725,6 +1945,8 @@
             currentPlayerIndex = 0; 
             players = [];
             isRevealed = false;
+            questStates = [0, 0, 0, 0, 0];
+            voteRejectCount = 0;
 
             const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value, 10);
             const ratio = rules[playerCount];
@@ -1832,24 +2054,29 @@
             }
         }
 
-        /* ---------------- 統一使用 Pointer Events 處理卡牌互動，消除雙重觸發與 touchcancel 卡死 ---------------- */
+        /* ---------------- [優化 5] 使用 setPointerCapture 鎖定滑動指標並移除 pointerleave 誤判 ---------------- */
         function setupCardInteractions() {
             let pointerStartX = 0;
             let pointerStartY = 0;
             let isPointerDown = false;
+            let activePointerId = null;
 
             revealCardWrapper.addEventListener('pointerdown', (e) => {
                 if (isTransitioning || cardInner.classList.contains('flipped')) return;
                 isPointerDown = true;
+                activePointerId = e.pointerId;
                 pointerStartX = e.clientX;
                 pointerStartY = e.clientY;
+                try {
+                    revealCardWrapper.setPointerCapture(e.pointerId);
+                } catch (err) {}
                 cardInner.style.transform = 'scale(0.95)';
                 cardInner.style.transition = 'transform 0.1s ease';
                 triggerVibration(15);
             });
 
             revealCardWrapper.addEventListener('pointermove', (e) => {
-                if (!isPointerDown || cardInner.classList.contains('flipped') || isTransitioning) return;
+                if (!isPointerDown || e.pointerId !== activePointerId || cardInner.classList.contains('flipped') || isTransitioning) return;
                 const deltaX = e.clientX - pointerStartX;
                 const deltaY = e.clientY - pointerStartY;
                 const rotateX = Math.max(-12, Math.min(12, -deltaY / 6));
@@ -1857,38 +2084,59 @@
                 cardInner.style.transform = `scale(0.95) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
 
-            function finishCardPointer(shouldFlip) {
+            function finishCardPointer(e, shouldFlip) {
                 if (!isPointerDown) return;
+                if (e && activePointerId !== null && e.pointerId !== activePointerId) return;
                 isPointerDown = false;
+                if (e && activePointerId !== null) {
+                    try {
+                        if (revealCardWrapper.hasPointerCapture(activePointerId)) {
+                            revealCardWrapper.releasePointerCapture(activePointerId);
+                        }
+                    } catch (err) {}
+                }
+                activePointerId = null;
+
                 if (isTransitioning || cardInner.classList.contains('flipped')) return;
                 cardInner.style.transform = '';
                 cardInner.style.transition = 'transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 if (shouldFlip) flipCard();
             }
 
-            revealCardWrapper.addEventListener('pointerup', () => finishCardPointer(true));
-            revealCardWrapper.addEventListener('pointercancel', () => finishCardPointer(false));
-            revealCardWrapper.addEventListener('pointerleave', () => finishCardPointer(false));
+            revealCardWrapper.addEventListener('pointerup', (e) => finishCardPointer(e, true));
+            revealCardWrapper.addEventListener('pointercancel', (e) => finishCardPointer(e, false));
         }
 
+        /* [優化 6] 翻牌後延遲 550ms 再啟用「封印卡牌並交接」按鈕，防止玩家連點誤觸跳過身分查驗 */
         function flipCard() {
             if (isTransitioning || cardInner.classList.contains('flipped')) return;
 
+            cardInner.classList.remove('sealing');
             cardInner.classList.add('flipped');
             revealCardWrapper.classList.remove('floating');
-            nextBtn.classList.add('visible');
             triggerVibration([40, 50, 30]);
 
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的真實身分是</span>`;
+
+            if (nextBtnUnlockTimer) clearTimeout(nextBtnUnlockTimer);
+            nextBtnUnlockTimer = setTimeout(() => {
+                if (cardInner.classList.contains('flipped') && !isTransitioning) {
+                    nextBtn.classList.add('visible');
+                }
+            }, 550);
         }
 
         function showPlayerPassScreen() {
+            if (nextBtnUnlockTimer) {
+                clearTimeout(nextBtnUnlockTimer);
+                nextBtnUnlockTimer = null;
+            }
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">請查驗身分 🔍</span>`;
             
             revealCardWrapper.classList.add('floating');
-            cardInner.classList.remove('flipped');
+            cardInner.classList.remove('flipped', 'sealing');
             nextBtn.classList.remove('visible');
             
             const roleNameEl = document.getElementById('player-role-name');
@@ -1896,6 +2144,10 @@
             roleNameEl.className = player.role.isEvil ? 'evil' : 'good';
             
             const roleImgEl = document.getElementById('player-role-img');
+            delete roleImgEl.dataset.fallbackApplied;
+            roleImgEl.dataset.role = player.role.shortName;
+            roleImgEl.dataset.evil = String(player.role.isEvil);
+            roleImgEl.alt = player.role.name;
             roleImgEl.src = player.role.img;
             
             const infoTextEl = document.getElementById('player-info-text');
@@ -1908,10 +2160,16 @@
             }
         }
 
+        /* [優化 1] 按下交接瞬間加上 .sealing 立即隱藏牌面內容，徹底杜絕 0.7 秒翻回動畫期間被旁人瞄到紅藍字或頭像 */
         function nextPlayer() {
             if (isTransitioning) return; 
             isTransitioning = true; 
+            if (nextBtnUnlockTimer) {
+                clearTimeout(nextBtnUnlockTimer);
+                nextBtnUnlockTimer = null;
+            }
             nextBtn.classList.remove('visible');
+            cardInner.classList.add('sealing');
             cardInner.classList.remove('flipped');
 
             setTimeout(() => {
@@ -1922,10 +2180,31 @@
                     switchScreen('pass-screen', 'game-screen', showGameScreen);
                 }
                 isTransitioning = false; 
-            }, 700);
+            }, 650);
         }
 
-        /* 渲染「本局陣營配置」與「五輪任務人數速查」看板 */
+        /* [優化 4] 點擊任務方塊切換：0(未進行) -> 1(藍方成功) -> 2(紅方失敗) */
+        function toggleQuestNode(idx) {
+            if (idx < 0 || idx >= 5) return;
+            questStates[idx] = (questStates[idx] + 1) % 3;
+            triggerVibration(15);
+            renderGameConfigBoard();
+            saveGameState();
+        }
+
+        /* [優化 4] 點擊投票流局圓點設定流局次數（再次點擊當前次數則減 1） */
+        function setVoteRejectCount(val) {
+            if (voteRejectCount === val) {
+                voteRejectCount = Math.max(0, val - 1);
+            } else {
+                voteRejectCount = Math.max(0, Math.min(5, val));
+            }
+            triggerVibration(voteRejectCount === 5 ? [40, 40, 60] : 15);
+            renderGameConfigBoard();
+            saveGameState();
+        }
+
+        /* 渲染「本局陣營配置」與「互動式五輪任務計分板＋投票流局計數器」 */
         function renderGameConfigBoard() {
             const boardEl = document.getElementById('game-config-board');
             const totalCount = players.length;
@@ -1949,7 +2228,7 @@
                         return `
                             <div class="config-role-item ${factionClass}">
                                 <div class="config-role-avatar-wrap">
-                                    <img class="config-role-avatar" src="${r.img}" alt="${r.shortName}">
+                                    <img class="config-role-avatar" src="${r.img}" alt="${r.shortName}" data-role="${r.shortName}" data-evil="${r.isEvil}" onerror="applyFallbackImg(this)">
                                     ${countBadge}
                                 </div>
                                 <div class="config-role-label">${r.shortName}</div>
@@ -1958,16 +2237,41 @@
                     }).join('');
             };
 
+            const goodWins = questStates.filter(s => s === 1).length;
+            const evilWins = questStates.filter(s => s === 2).length;
+
             const questNodesHtml = ratio.quests.map((qCount, idx) => {
+                const state = questStates[idx] || 0;
                 const isTwoFails = (idx === 3 && ratio.twoFailsOnQ4);
+                let stateClass = '';
+                let bottomNote = isTwoFails ? '<span class="quest-node-note">需2敗</span>' : '<span class="quest-node-note" style="opacity:0.45; color:#9a9284;">記分</span>';
+
+                if (state === 1) {
+                    stateClass = 'state-good';
+                    bottomNote = '<span class="quest-node-note">🛡️成功</span>';
+                } else if (state === 2) {
+                    stateClass = 'state-evil';
+                    bottomNote = '<span class="quest-node-note">💀失敗</span>';
+                }
+
                 return `
-                    <div class="quest-node">
+                    <div class="quest-node ${stateClass}" onclick="toggleQuestNode(${idx})">
                         <span class="quest-node-round">任務${idx + 1}</span>
                         <span class="quest-node-count">${qCount}人</span>
-                        ${isTwoFails ? '<span class="quest-node-note">需2敗</span>' : ''}
+                        ${bottomNote}
                     </div>
                 `;
             }).join('');
+
+            const votePipsHtml = [1, 2, 3, 4, 5].map(num => {
+                const activeClass = voteRejectCount >= num ? 'active' : '';
+                const fifthClass = num === 5 ? 'pip-5' : '';
+                return `<div class="vote-pip ${activeClass} ${fifthClass}" onclick="setVoteRejectCount(${num})">${num}</div>`;
+            }).join('');
+
+            const voteStatusLabel = voteRejectCount >= 5
+                ? `<span class="vote-track-label danger">⚠️ 5次流局（邪惡直勝）</span>`
+                : `<span class="vote-track-label">🗳️ 投票流局：<strong>${voteRejectCount}</strong> / 5</span>`;
 
             boardEl.innerHTML = `
                 <div class="config-board-header">
@@ -1977,9 +2281,19 @@
                     </div>
                 </div>
                 <div class="quest-track-box">
-                    <div class="quest-track-title">⚔️ 各輪出任務人數需求</div>
+                    <div class="quest-track-title">
+                        <span>⚔️ 任務板塊（點擊記分）</span>
+                        <span class="quest-score-pill"><span class="good">${goodWins} 勝</span> : <span class="evil">${evilWins} 敗</span></span>
+                    </div>
                     <div class="quest-nodes-row">
                         ${questNodesHtml}
+                    </div>
+                    <div class="vote-track-bar">
+                        ${voteStatusLabel}
+                        <div class="vote-pips-group">
+                            ${votePipsHtml}
+                            ${voteRejectCount > 0 ? `<button type="button" class="vote-reset-btn" onclick="setVoteRejectCount(0)">歸零</button>` : ''}
+                        </div>
                     </div>
                 </div>
                 <div class="config-factions-wrapper">
@@ -2078,7 +2392,7 @@
             const renderItem = (p, idx) => `
                 <div class="reveal-card ${p.role.isEvil ? 'evil' : 'good'}" style="animation-delay: ${idx * 0.09}s;">
                     <div class="reveal-card-id">${p.id}號</div>
-                    <img src="${p.role.img}" alt="${p.role.name}">
+                    <img src="${p.role.img}" alt="${p.role.name}" data-role="${p.role.shortName}" data-evil="${p.role.isEvil}" onerror="applyFallbackImg(this)">
                     <div class="reveal-card-name">${p.role.name}</div>
                 </div>`;
             
@@ -2098,6 +2412,8 @@
             isTransitioning = false;
             forceStartWithoutGood = false;
             isRevealed = false;
+            questStates = [0, 0, 0, 0, 0];
+            voteRejectCount = 0;
             releaseWakeLock();
 
             const revealArea = document.getElementById('final-reveal-area');
@@ -2112,7 +2428,7 @@
             if (progressBg) progressBg.style.width = '0%';
 
             gameScreen.classList.remove('revealed-mode');
-            cardInner.classList.remove('flipped');
+            cardInner.classList.remove('flipped', 'sealing');
             nextBtn.classList.remove('visible');
             updateQuotaStatus();
 
