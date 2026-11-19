@@ -1443,7 +1443,7 @@
 
             <h3 class="section-title">選擇特殊角色</h3>
             
-            <!-- 即時名額顯示與防呆提示 + [優化 4] 角色視野說明按鈕 -->
+            <!-- 即時名額顯示與防呆提示 -->
             <div id="role-quota-bar" class="role-quota-bar"></div>
             
             <!-- 為所有角色圖片加上 data 屬性與 onerror 離線紋章備援 -->
@@ -2099,7 +2099,7 @@
             return { goodRoles, evilRoles };
         }
 
-        /* 即時計算並更新選角名額狀態與防呆提示 + [優化 4] 視野說明按鈕 */
+        /* 即時計算並更新選角名額狀態與防呆提示 */
         function updateQuotaStatus() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
@@ -2142,7 +2142,6 @@
             quotaBar.innerHTML = `
                 <div class="quota-badge good-badge ${goodOverClass}">${goodText}</div>
                 <div class="quota-badge evil-badge ${evilOverClass}">${evilText}</div>
-                <button type="button" class="help-pill-btn" onclick="openVisionModal()">❓ 視野說明</button>
             `;
 
             if (goodDiff < 0 || evilDiff < 0) {
