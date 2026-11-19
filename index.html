@@ -222,47 +222,6 @@
         .role-list { text-align: center; margin-bottom: 10px; }
         .role-checkbox { display: none; }
 
-        /* 即時名額顯示狀態列與視野說明觸發按鈕 */
-        .role-quota-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin: 0 auto 14px auto;
-            font-family: sans-serif;
-            flex-wrap: wrap;
-        }
-
-        .quota-badge {
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 6px;
-            background: rgba(10, 12, 18, 0.75);
-            border: 1px solid var(--glass-border);
-            color: #d1c9b8;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-        }
-
-        .quota-badge.good-badge {
-            border-color: rgba(92, 136, 181, 0.45);
-        }
-
-        .quota-badge.evil-badge {
-            border-color: rgba(179, 57, 57, 0.45);
-        }
-
-        .quota-badge.over-limit {
-            border-color: var(--warning-yellow);
-            background: rgba(232, 185, 35, 0.15);
-            color: var(--warning-yellow);
-            box-shadow: 0 0 12px rgba(232, 185, 35, 0.35);
-            animation: quotaPulse 0.4s ease;
-        }
-
         /* [優化 4] 角色視野與規則速查按鈕樣式 */
         .help-pill-btn {
             font-size: 12px;
@@ -290,11 +249,6 @@
 
         .help-pill-btn:active {
             transform: scale(0.95);
-        }
-
-        @keyframes quotaPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .role-cards-wrapper {
@@ -1443,9 +1397,6 @@
 
             <h3 class="section-title">選擇特殊角色</h3>
             
-            <!-- 即時名額顯示與防呆提示 -->
-            <div id="role-quota-bar" class="role-quota-bar"></div>
-            
             <!-- 為所有角色圖片加上 data 屬性與 onerror 離線紋章備援 -->
             <div class="role-cards-wrapper">
                 <div class="role-row">
@@ -2099,7 +2050,7 @@
             return { goodRoles, evilRoles };
         }
 
-        /* 即時計算並更新選角名額狀態與防呆提示 */
+        /* 即時檢查選角是否超過人數上限並更新防呆提示 */
         function updateQuotaStatus() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
@@ -2110,39 +2061,11 @@
             const goodCount = goodRoles.length;
             const evilCount = evilRoles.length;
 
-            const quotaBar = document.getElementById('role-quota-bar');
             const errorEl = document.getElementById('setup-error');
             forceStartWithoutGood = false;
 
             const goodDiff = ratio.good - goodCount;
             const evilDiff = ratio.evil - evilCount;
-
-            let goodText = '';
-            let goodOverClass = '';
-            if (goodDiff > 0) {
-                goodText = `<span class="good">正義 ${goodCount}/${ratio.good}</span> <span>(補 ${goodDiff} 忠臣)</span>`;
-            } else if (goodDiff === 0) {
-                goodText = `<span class="good">正義 ${goodCount}/${ratio.good}</span> <span>(已滿)</span>`;
-            } else {
-                goodText = `⚠️ 正義 ${goodCount}/${ratio.good} (超額 ${Math.abs(goodDiff)} 人)`;
-                goodOverClass = 'over-limit';
-            }
-
-            let evilText = '';
-            let evilOverClass = '';
-            if (evilDiff > 0) {
-                evilText = `<span class="evil">邪惡 ${evilCount}/${ratio.evil}</span> <span>(補 ${evilDiff} 爪牙)</span>`;
-            } else if (evilDiff === 0) {
-                evilText = `<span class="evil">邪惡 ${evilCount}/${ratio.evil}</span> <span>(已滿)</span>`;
-            } else {
-                evilText = `⚠️ 邪惡 ${evilCount}/${ratio.evil} (超額 ${Math.abs(evilDiff)} 人)`;
-                evilOverClass = 'over-limit';
-            }
-
-            quotaBar.innerHTML = `
-                <div class="quota-badge good-badge ${goodOverClass}">${goodText}</div>
-                <div class="quota-badge evil-badge ${evilOverClass}">${evilText}</div>
-            `;
 
             if (goodDiff < 0 || evilDiff < 0) {
                 errorEl.innerText = `⚠️ 特殊角色超過 ${playerCount} 人局上限（${ratio.good}好 ${ratio.evil}壞），請取消多餘角色！`;
