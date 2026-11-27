@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>阿瓦隆網頁小幫手</title>
+
+    <!-- [優化 12] PWA 行動端主畫面支援與主題色 -->
+    <meta name="theme-color" content="#080a0e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="阿瓦隆小幫手">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='40%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%231d2538'/%3E%3Cstop offset='100%25' stop-color='%23080a0e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='26' fill='url(%23g)'/%3E%3Cpath d='M64 18 L104 34 V64 C104 90 86 106 64 114 C42 106 24 90 24 64 V34 Z' fill='none' stroke='%23dcb363' stroke-width='5'/%3E%3Cpath d='M64 34 L72 56 L94 56 L76 69 L83 91 L64 78 L45 91 L52 69 L34 56 L56 56 Z' fill='%23dcb363'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='40%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%231d2538'/%3E%3Cstop offset='100%25' stop-color='%23080a0e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='180' height='180' fill='url(%23g)'/%3E%3Cpath d='M90 26 L146 48 V90 C146 126 121 149 90 160 C59 149 34 126 34 90 V48 Z' fill='none' stroke='%23dcb363' stroke-width='7'/%3E%3Cpath d='M90 48 L101 79 L132 79 L107 97 L117 128 L90 109 L63 128 L73 97 L48 79 L79 79 Z' fill='%23dcb363'/%3E%3C/svg%3E">
+
     <!-- 導入 Google Fonts 的中世紀/奇幻感襯線字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,6 +60,12 @@
             z-index: 1;
         }
 
+        /* [優化 3] 彈窗開啟時鎖定背景捲動 */
+        body.modal-open {
+            overflow: hidden;
+            touch-action: none;
+        }
+
         /* 獨立固定背景層：解決 iOS Safari background-attachment: fixed 放大與掉幀問題 */
         body::after {
             content: "";
@@ -72,6 +88,43 @@
             opacity: 0.03;
             pointer-events: none;
             z-index: -1;
+        }
+
+        /* [優化 11] 右上角輕量音效靜音開關 */
+        .sound-toggle-btn {
+            position: fixed;
+            top: calc(env(safe-area-inset-top, 10px) + 6px);
+            right: 12px;
+            z-index: 900;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            margin: 0;
+            border-radius: 50%;
+            background: rgba(15, 18, 25, 0.82);
+            border: 1px solid rgba(220, 179, 99, 0.45);
+            color: var(--gold-light);
+            font-size: 16px;
+            letter-spacing: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sound-toggle-btn:active {
+            transform: scale(0.92);
+        }
+
+        .sound-toggle-btn.muted {
+            opacity: 0.55;
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #9a9284;
         }
 
         .screen {
@@ -136,6 +189,51 @@
             opacity: 0.5;
         }
 
+        /* [優化 4] 首頁「選擇特殊角色」與視野說明標題列（右側按鈕獨立定位，不影響標題完全置中） */
+        .section-header-with-action {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0 12px;
+        }
+
+        .section-header-with-action .section-title {
+            margin: 0;
+            width: 100%;
+        }
+
+        .section-header-with-action .help-pill-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            padding: 4px 8px;
+            gap: 3px;
+            background: linear-gradient(rgba(220, 179, 99, 0.14), rgba(220, 179, 99, 0.14)), #12151e;
+            z-index: 2;
+        }
+
+        .section-header-with-action .help-pill-btn:hover {
+            background: linear-gradient(rgba(220, 179, 99, 0.26), rgba(220, 179, 99, 0.26)), #12151e;
+        }
+
+        .section-header-with-action .help-pill-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        @media (max-width: 360px) {
+            .section-header-with-action .section-title {
+                font-size: 0.98em;
+                letter-spacing: 1px;
+            }
+            .section-header-with-action .help-pill-btn {
+                font-size: 10.5px;
+                padding: 3px 6px;
+            }
+        }
+
         .good { color: var(--good-color); font-weight: bold; text-shadow: 0 0 8px var(--good-shadow);}
         .evil { color: var(--evil-color); font-weight: bold; text-shadow: 0 0 8px var(--evil-shadow);}
         .purple { color: var(--purple); font-weight: bold; text-shadow: 0 0 8px rgba(156, 108, 206, 0.5);}
@@ -176,6 +274,12 @@
             background: linear-gradient(145deg, rgba(35, 40, 50, 0.7), rgba(15, 18, 25, 0.9));
         }
 
+        /* [優化 1] 其他人數展開指示邊框 */
+        .pc-item.expanded-other:not(.active-other) {
+            border-color: rgba(220, 179, 99, 0.55);
+            background: linear-gradient(145deg, rgba(45, 40, 32, 0.7), rgba(18, 16, 12, 0.9));
+        }
+
         .pc-item .pc-number {
             font-size: 16px; 
             font-weight: 700;
@@ -185,7 +289,7 @@
 
         .pc-item .desc {
             font-size: 11px; 
-            opacity: 0.8;
+            opacity: 0.85;
             background: rgba(0,0,0,0.5);
             padding: 2px 5px;
             border-radius: 3px;
@@ -222,7 +326,7 @@
         .role-list { text-align: center; margin-bottom: 10px; }
         .role-checkbox { display: none; }
 
-        /* [優化 4] 角色視野與規則速查按鈕樣式 */
+        /* 角色視野與規則速查按鈕樣式 */
         .help-pill-btn {
             font-size: 12px;
             font-family: sans-serif;
@@ -238,6 +342,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            flex-shrink: 0;
             transition: all 0.2s ease;
             -webkit-tap-highlight-color: transparent;
         }
@@ -256,7 +361,7 @@
             flex-direction: column;
             gap: 12px; 
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .role-row { display: flex; justify-content: center; gap: 12px; }
 
@@ -321,13 +426,46 @@
             font-size: 13px;
         }
 
+        /* [優化 4] 即時自動補齊忠臣/爪牙預覽列 */
+        .quota-preview-bar {
+            background: rgba(0, 0, 0, 0.48);
+            border: 1px solid rgba(220, 179, 99, 0.25);
+            border-radius: 8px;
+            padding: 7px 10px;
+            margin: 6px 0 8px;
+            font-family: sans-serif;
+            font-size: 12.5px;
+            color: #d6cebe;
+            line-height: 1.45;
+            transition: border-color 0.25s ease, background-color 0.25s ease;
+        }
+
+        .quota-preview-bar.over-limit {
+            border-color: rgba(224, 86, 86, 0.75);
+            background: rgba(110, 24, 24, 0.28);
+            color: #ffc5c5;
+        }
+
+        /* [優化 4 & 5] 錯誤與角色搭配提示樣式 */
         #setup-error { 
             color: var(--warning-yellow); 
             font-weight: bold; 
-            margin: 15px 0 10px; 
-            min-height: 20px; 
-            font-size: 14px;
+            margin: 6px 0 10px; 
+            min-height: 18px; 
+            font-size: 13px;
+            font-family: sans-serif;
+            line-height: 1.45;
             text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        #setup-error.is-error {
+            color: #ff8080;
+        }
+
+        #setup-error.is-hint {
+            color: #f0c954;
+            font-weight: normal;
+            font-size: 12.5px;
         }
 
         /* 按鈕質感升級：金屬銘牌風格 */
@@ -381,6 +519,22 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.4);
         }
 
+        /* [優化 4] 超選角色時停用開始按鈕 */
+        .btn-gold:disabled {
+            background: linear-gradient(to bottom, #4b473e, #2f2c26);
+            color: #8c8476;
+            border-color: #5a5347;
+            box-shadow: none;
+            text-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-gold:disabled::before {
+            animation: none;
+            display: none;
+        }
+
         /* 讓傳遞裝置與查驗身分畫面填滿整個手機螢幕並垂直置中 */
         #buffer-screen.active {
             min-height: calc(100dvh - 24px);
@@ -391,7 +545,7 @@
             box-sizing: border-box;
         }
 
-        /* [優化 3] 發牌中途安全退出/重設按鈕（附帶二次確認防誤觸狀態） */
+        /* 發牌中途與遊戲中安全退出/重設按鈕（附帶二次確認防誤觸狀態） */
         .btn-abort-setup {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.14);
@@ -419,6 +573,14 @@
             color: #ffb8b8;
             font-weight: bold;
             box-shadow: 0 0 12px rgba(179, 57, 57, 0.4);
+        }
+
+        /* [優化 10] 遊戲進行中不揭曉重設按鈕精簡尺寸 */
+        .btn-abort-game {
+            font-size: 12px;
+            padding: 6px 14px;
+            margin: 0 auto;
+            flex-shrink: 0;
         }
 
         /* 針對查驗身分畫面填滿手機高度，讓卡牌置中且最大化 */
@@ -661,7 +823,7 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: calc(100dvh - 24px); 
-            padding: 16px 14px 20px; 
+            padding: 14px 14px 18px; 
             box-sizing: border-box;
         }
 
@@ -678,7 +840,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             padding: 0;
             box-sizing: border-box;
@@ -694,7 +856,7 @@
             background: linear-gradient(145deg, rgba(20, 24, 34, 0.88), rgba(10, 12, 18, 0.95));
             border: 1px solid rgba(220, 179, 99, 0.4);
             border-radius: 10px;
-            padding: 14px 12px;
+            padding: 12px 12px;
             box-sizing: border-box;
             box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
         }
@@ -830,6 +992,33 @@
 
         .quest-node.state-good .quest-node-note { color: #9cd0ff; }
         .quest-node.state-evil .quest-node-note { color: #ff9c9c; }
+
+        /* [優化 9] 任務勝負階段提示橫幅 */
+        .quest-stage-banner {
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-family: sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.4px;
+            line-height: 1.4;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .quest-stage-banner.good-stage {
+            background: linear-gradient(135deg, rgba(35, 68, 108, 0.55), rgba(140, 106, 43, 0.22));
+            border: 1px solid rgba(108, 160, 220, 0.7);
+            color: #d6ecff;
+            box-shadow: 0 0 12px rgba(92, 136, 181, 0.35);
+        }
+
+        .quest-stage-banner.evil-stage {
+            background: linear-gradient(135deg, rgba(130, 30, 30, 0.62), rgba(50, 10, 10, 0.72));
+            border: 1px solid rgba(224, 86, 86, 0.78);
+            color: #ffd0d0;
+            box-shadow: 0 0 12px rgba(179, 57, 57, 0.45);
+        }
 
         /* 投票反對（流局）計數器樣式 */
         .vote-track-bar {
@@ -1023,7 +1212,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.95);
         }
 
-        /* 結束按鈕優化：固定於底部 + 長按解鎖 + 蓄力視覺震動 */
+        /* 結束按鈕優化：固定於底部 + 長按解鎖 + 蓄力視覺震動 + [優化 2] 高對比度進度條 */
         .hold-btn-container {
             width: 92%;
             max-width: 320px;
@@ -1055,7 +1244,7 @@
             position: absolute;
             top: 0; left: 0;
             height: 100%; width: 0%;
-            background: linear-gradient(90deg, #8c6a2b, #dcb363, #fdf5d3);
+            background: linear-gradient(90deg, #694914, #ad802c, #d9ae55);
             z-index: 1;
             transition: width 0.2s ease-out;
         }
@@ -1068,11 +1257,23 @@
             position: relative;
             z-index: 2;
             color: var(--gold-light);
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-shadow: 
+                0 1px 2px rgba(0, 0, 0, 1),
+                0 0 6px rgba(0, 0, 0, 0.95),
+                0 0 14px rgba(0, 0, 0, 0.85);
             pointer-events: none;
+            padding: 0 12px;
+        }
+
+        #reveal-hold-btn.holding .hold-btn-text {
+            color: #ffffff;
+            text-shadow: 
+                0 1px 3px rgba(0, 0, 0, 1),
+                0 0 8px rgba(0, 0, 0, 1),
+                0 0 16px rgba(20, 12, 0, 0.95);
         }
 
         @keyframes holdShake {
@@ -1219,7 +1420,24 @@
         .info-tag.purple { border-color: rgba(156, 108, 206, 0.8); color: #dec2ff; box-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(156,108,206,0.5); }
         .info-tag.neutral { border-color: rgba(220, 179, 99, 0.4); color: #e8dcc4; }
 
-        /* ---------------- [優化 4] 角色視野與規則速查彈窗樣式 ---------------- */
+        /* [優化 7] 多標籤（3 人以上）防重疊緊湊排版樣式 */
+        .info-box.compact {
+            gap: 5px;
+        }
+        .info-box.compact .info-label {
+            font-size: clamp(15px, 4.2vw, 18px);
+            letter-spacing: 1.2px;
+        }
+        .info-box.compact .info-tags {
+            gap: 6px;
+        }
+        .info-box.compact .info-tag {
+            padding: 3px 11px;
+            font-size: clamp(16px, 4.5vw, 19px);
+            border-radius: 12px;
+        }
+
+        /* ---------------- 角色視野與規則速查彈窗樣式 ---------------- */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1297,6 +1515,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .guide-group {
@@ -1344,6 +1563,9 @@
 </head>
 <body>
 
+    <!-- [優化 11] 全域輕量合成音效開關 -->
+    <button type="button" id="sound-toggle-btn" class="sound-toggle-btn" onclick="toggleSoundMute()" aria-label="切換音效" title="切換音效">🔊</button>
+
     <div id="setup-screen" class="screen active">
         <h1 style="color: #dcb363; text-transform: uppercase; letter-spacing: 3px;">阿瓦隆小幫手</h1>
         
@@ -1363,8 +1585,9 @@
                     <div class="desc"><span class="good">6好</span> <span class="evil">4壞</span></div>
                 </label>
 
+                <!-- [優化 1] 同步顯示已選人數與陣營比例的「其他」按鈕 -->
                 <div id="pc-other-btn" class="pc-item" onclick="toggleOtherCounts()">
-                    <div class="pc-number">其他</div>
+                    <div class="pc-number" id="other-btn-title">其他</div>
                     <div class="desc" id="other-desc">5 / 6 / 7 / 9人</div>
                 </div>
             </div>
@@ -1395,7 +1618,11 @@
                 </label>
             </div>
 
-            <h3 class="section-title">選擇特殊角色</h3>
+            <!-- [優化 4] 首頁加入「視野說明」速查入口 -->
+            <div class="section-header-with-action">
+                <h3 class="section-title">選擇特殊角色</h3>
+                <button type="button" class="help-pill-btn" onclick="openVisionModal()">❓ 視野說明</button>
+            </div>
             
             <!-- 為所有角色圖片加上 data 屬性與 onerror 離線紋章備援 -->
             <div class="role-cards-wrapper">
@@ -1449,13 +1676,15 @@
             </div>
         </div>
         
+        <!-- [優化 4] 即時自動補齊忠臣/爪牙預覽列 -->
+        <div id="setup-quota-preview" class="quota-preview-bar"></div>
         <div id="setup-error"></div>
-        <button class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
+        <button id="start-game-btn" class="btn-gold" style="margin-top: 5px;" onclick="startGame()">開始分配角色</button>
     </div>
 
     <div id="buffer-screen" class="screen">
-        <!-- [優化 3] 發牌中途安全重設退出鈕（置於傳遞裝置上方，具備二次點擊確認防誤觸） -->
-        <button type="button" id="abort-setup-btn" class="btn-abort-setup" onclick="handleAbortClick()">⚙️ 中途重設 / 返回設定</button>
+        <!-- 發牌中途安全重設退出鈕（具備二次點擊確認防誤觸） -->
+        <button type="button" id="abort-setup-btn" class="btn-abort-setup" onclick="handleAbortClick('abort-setup-btn')">⚙️ 中途重設 / 返回設定</button>
         <h3 class="section-title">傳遞裝置</h3>
         <h2 style="font-size: 24px; margin: 40px 0; color: #d1c9b8; line-height: 1.6;">
             請將裝置交給<br><br>
@@ -1487,6 +1716,9 @@
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
+            <!-- [優化 10] 遊戲進行中不揭曉直接重設的安全出口（雙擊防誤觸） -->
+            <button type="button" id="abort-game-btn" class="btn-abort-setup btn-abort-game" onclick="handleAbortClick('abort-game-btn')">⚙️ 不揭曉直接重設</button>
+
             <!-- 本局陣營配置與互動式任務計分看板 -->
             <div id="game-config-board" class="config-board"></div>
 
@@ -1494,7 +1726,7 @@
             <div class="hold-btn-container">
                 <div id="reveal-hold-btn">
                     <div class="progress-bg"></div>
-                    <span class="hold-btn-text">長按以揭曉真實身分</span>
+                    <span class="hold-btn-text" id="hold-btn-text">長按以揭曉真實身分</span>
                 </div>
             </div>
         </div>
@@ -1506,7 +1738,7 @@
         </div>
     </div>
 
-    <!-- [優化 4] 角色視野與規則速查彈窗 -->
+    <!-- 角色視野與規則速查彈窗（[優化 3] 修正繁體字、鎖定背景捲動與 Esc 關閉） -->
     <div id="vision-modal" class="modal-overlay" onclick="handleModalBackdropClick(event)">
         <div class="modal-box">
             <div class="modal-header">
@@ -1517,7 +1749,7 @@
                 <div class="guide-group good-guide">
                     <div class="guide-group-title good">🛡️ 正義方陣營（好人）</div>
                     <div class="guide-item"><span class="guide-role-tag">梅林：</span>能看見所有邪惡方角色，但<strong>看不見莫德雷德</strong>。必須隱藏身分避免最後被刺客刺殺。</div>
-                    <div class="guide-item"><span class="guide-role-tag">派西維爾：</span>開局能看見<strong>梅林与莫甘娜</strong>兩人的號碼，但不知道誰才是真梅林。</div>
+                    <div class="guide-item"><span class="guide-role-tag">派西維爾：</span>開局能看見<strong>梅林與莫甘娜</strong>兩人的號碼，但不知道誰才是真梅林。</div>
                     <div class="guide-item"><span class="guide-role-tag">李砸康：</span>特殊感知者，開局能看見<strong>梅林與莫德雷德</strong>兩人的號碼，但不知道誰好誰壞。</div>
                     <div class="guide-item"><span class="guide-role-tag">亞瑟的忠臣：</span>無特殊視野，需透過發言與投票推理出好人隊伍。</div>
                 </div>
@@ -1538,6 +1770,139 @@
         const CARD_FRONT_RAW_URL = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
         const CARD_BACK_RAW_URL = "https://i.postimg.cc/QdHBXdPk/card0back.png";
         const SESSION_STATE_KEY = "avalon_helper_game_state_v3";
+        const USER_PREFS_KEY = "avalon_helper_user_prefs_v1";
+        const SOUND_MUTE_KEY = "avalon_helper_sound_muted_v1";
+
+        /* ---------------- [優化 11] 純原生 Web Audio API 輕量合成音效引擎（彌補 iOS Safari 不支援震動） ---------------- */
+        const SoundFX = (() => {
+            let ctx = null;
+            let muted = false;
+            let holdOsc = null;
+            let holdGain = null;
+
+            try {
+                muted = localStorage.getItem(SOUND_MUTE_KEY) === 'true';
+            } catch (e) {}
+
+            function getCtx() {
+                if (muted) return null;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return null;
+                if (!ctx) ctx = new AudioCtx();
+                if (ctx.state === 'suspended') {
+                    ctx.resume().catch(() => {});
+                }
+                return ctx;
+            }
+
+            function playTone(freqStart, freqEnd, duration, type = 'sine', volume = 0.06, delay = 0) {
+                try {
+                    const ac = getCtx();
+                    if (!ac) return;
+                    const now = ac.currentTime + delay;
+                    const osc = ac.createOscillator();
+                    const gain = ac.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freqStart, now);
+                    if (freqEnd !== freqStart) {
+                        osc.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd), now + duration);
+                    }
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.linearRampToValueAtTime(volume, now + Math.min(0.015, duration * 0.25));
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                    osc.connect(gain);
+                    gain.connect(ac.destination);
+                    osc.start(now);
+                    osc.stop(now + duration + 0.02);
+                } catch (e) {}
+            }
+
+            return {
+                isMuted: () => muted,
+                toggleMute: () => {
+                    muted = !muted;
+                    try { localStorage.setItem(SOUND_MUTE_KEY, String(muted)); } catch (e) {}
+                    if (muted) SoundFX.stopHold();
+                    else SoundFX.tap();
+                    return muted;
+                },
+                tap: () => playTone(520, 390, 0.055, 'triangle', 0.055),
+                flip: () => {
+                    playTone(320, 640, 0.18, 'sine', 0.065, 0);
+                    playTone(660, 990, 0.22, 'triangle', 0.04, 0.05);
+                },
+                seal: () => playTone(420, 210, 0.14, 'sine', 0.055),
+                warn: () => {
+                    playTone(230, 190, 0.075, 'triangle', 0.07, 0);
+                    playTone(210, 175, 0.085, 'triangle', 0.07, 0.09);
+                },
+                milestoneGood: () => {
+                    playTone(523.25, 523.25, 0.16, 'triangle', 0.06, 0);
+                    playTone(659.25, 659.25, 0.22, 'triangle', 0.06, 0.09);
+                },
+                milestoneEvil: () => {
+                    playTone(246.94, 220, 0.18, 'sawtooth', 0.035, 0);
+                    playTone(196, 174.61, 0.26, 'sawtooth', 0.035, 0.11);
+                },
+                reveal: () => {
+                    // 中世紀莊嚴五度/大三和弦琶音
+                    [261.63, 392.00, 523.25, 659.25].forEach((freq, idx) => {
+                        playTone(freq, freq, 0.55, 'triangle', 0.06, idx * 0.065);
+                    });
+                },
+                startHold: () => {
+                    try {
+                        SoundFX.stopHold();
+                        const ac = getCtx();
+                        if (!ac) return;
+                        holdOsc = ac.createOscillator();
+                        holdGain = ac.createGain();
+                        holdOsc.type = 'sine';
+                        holdOsc.frequency.setValueAtTime(190, ac.currentTime);
+                        holdGain.gain.setValueAtTime(0.0001, ac.currentTime);
+                        holdGain.gain.linearRampToValueAtTime(0.038, ac.currentTime + 0.12);
+                        holdOsc.connect(holdGain);
+                        holdGain.connect(ac.destination);
+                        holdOsc.start();
+                    } catch (e) {}
+                },
+                updateHold: (progress) => {
+                    try {
+                        if (!holdOsc || !ctx) return;
+                        const targetFreq = 190 + (progress / 100) * 340;
+                        holdOsc.frequency.setTargetAtTime(targetFreq, ctx.currentTime, 0.04);
+                    } catch (e) {}
+                },
+                stopHold: () => {
+                    try {
+                        if (holdGain && ctx) {
+                            holdGain.gain.cancelScheduledValues(ctx.currentTime);
+                            holdGain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.03);
+                        }
+                        if (holdOsc && ctx) {
+                            const oscToStop = holdOsc;
+                            setTimeout(() => { try { oscToStop.stop(); oscToStop.disconnect(); } catch (e) {} }, 90);
+                        }
+                    } catch (e) {}
+                    holdOsc = null;
+                    holdGain = null;
+                }
+            };
+        })();
+
+        function updateSoundToggleUI() {
+            const btn = document.getElementById('sound-toggle-btn');
+            if (!btn) return;
+            const muted = SoundFX.isMuted();
+            btn.innerText = muted ? '🔇' : '🔊';
+            btn.classList.toggle('muted', muted);
+            btn.setAttribute('aria-label', muted ? '音效已靜音，點擊開啟' : '音效已開啟，點擊靜音');
+        }
+
+        function toggleSoundMute() {
+            SoundFX.toggleMute();
+            updateSoundToggleUI();
+        }
 
         /* 外部圖床（postimg.cc）載入失敗時的 SVG 皇家紋章與書法字體備援機制 */
         function createFallbackSvgDataUri(roleName, isEvil, isCardBack) {
@@ -1596,7 +1961,7 @@
             imageCache.push(img);
         }
 
-        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（附帶壓縮與 sessionStorage 快取） ---------------- */
+        /* ---------------- 精準將牌面與牌背的上中、下中、左中、右中 4 顆藍寶石轉為紅寶石（[優化 12] 改存 localStorage 持久化秒載） ---------------- */
         function rgbToHsl(r, g, b) {
             r /= 255; g /= 255; b /= 255;
             const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -1723,10 +2088,10 @@
             return { cx, cy, radius };
         }
 
-        /* 縮放 Canvas 至行動端最佳解析度上限（600px）並優先使用 WebP/JPEG 0.85 輸出，節省 75% 以上記憶體與 sessionStorage 空間 */
+        /* [優化 12] 優先讀取 localStorage 快取並直接使用穩定的 CORS 代理，避免重複下載與藍寶石閃變 */
         function recolorCardMiddleGems(rawUrl, cacheKey, onSuccess) {
             try {
-                const cached = sessionStorage.getItem(cacheKey);
+                const cached = localStorage.getItem(cacheKey) || sessionStorage.getItem(cacheKey);
                 if (cached) {
                     onSuccess(cached);
                     return;
@@ -1734,8 +2099,8 @@
             } catch (e) {}
 
             const tryUrls = [
-                rawUrl + "?cors=1",
-                "https://wsrv.nl/?url=" + encodeURIComponent(rawUrl)
+                "https://wsrv.nl/?url=" + encodeURIComponent(rawUrl),
+                rawUrl + "?cors=1"
             ];
 
             function attemptLoad(index) {
@@ -1797,7 +2162,11 @@
                         if (!dataUrl.startsWith('data:image/webp')) {
                             dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                         }
-                        try { sessionStorage.setItem(cacheKey, dataUrl); } catch (e) {}
+                        try {
+                            localStorage.setItem(cacheKey, dataUrl);
+                        } catch (storageErr) {
+                            try { sessionStorage.setItem(cacheKey, dataUrl); } catch (e) {}
+                        }
                         onSuccess(dataUrl);
                     } catch (err) {
                         attemptLoad(index + 1);
@@ -1854,8 +2223,12 @@
         let wakeLockSentinel = null;
         let nextBtnUnlockTimer = null;
 
-        /* [優化 3] 發牌中途安全重設的二次確認狀態計時器 */
-        let abortConfirming = false;
+        /* [優化 10] 統一管理發牌中途與遊戲中重設按鈕的二次確認狀態 */
+        const abortBtnDefaultText = {
+            'abort-setup-btn': '⚙️ 中途重設 / 返回設定',
+            'abort-game-btn': '⚙️ 不揭曉直接重設'
+        };
+        let activeAbortBtnId = null;
         let abortResetTimer = null;
 
         /* 任務計分板狀態 (0: 未進行, 1: 藍方成功, 2: 紅方失敗) 與流局計數器 (0~5) */
@@ -1884,22 +2257,71 @@
             }
         });
 
-        /* ---------------- [優化 4] 角色視野與規則速查彈窗控制 ---------------- */
+        /* ---------------- [優化 3] 角色視野與規則速查彈窗控制（鎖定背景捲動 + Esc 關閉） ---------------- */
         function openVisionModal() {
             triggerVibration(10);
+            SoundFX.tap();
             const modal = document.getElementById('vision-modal');
-            if (modal) modal.classList.add('show');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+            }
         }
 
         function closeVisionModal() {
             const modal = document.getElementById('vision-modal');
-            if (modal) modal.classList.remove('show');
+            if (modal && modal.classList.contains('show')) {
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
         }
 
         function handleModalBackdropClick(e) {
             if (e.target && e.target.id === 'vision-modal') {
                 closeVisionModal();
             }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeVisionModal();
+            }
+        });
+
+        /* ---------------- [優化 12] 慣用人數與選角偏好持久化（localStorage） ---------------- */
+        function saveUserPrefs() {
+            try {
+                const checkedRadio = document.querySelector('input[name="player-count"]:checked');
+                if (!checkedRadio) return;
+                const playerCount = parseInt(checkedRadio.value, 10);
+                const { goodRoles, evilRoles } = getSelectedSpecialRoles();
+                const prefs = {
+                    playerCount,
+                    selectedRoleKeys: [...goodRoles, ...evilRoles]
+                };
+                localStorage.setItem(USER_PREFS_KEY, JSON.stringify(prefs));
+            } catch (e) {}
+        }
+
+        function restoreUserPrefs() {
+            try {
+                const raw = localStorage.getItem(USER_PREFS_KEY);
+                if (!raw) return;
+                const prefs = JSON.parse(raw);
+                if (!prefs || !rules[prefs.playerCount]) return;
+
+                const targetRadio = document.getElementById('pc-' + prefs.playerCount);
+                if (targetRadio) {
+                    targetRadio.checked = true;
+                    handlePlayerCountUI(prefs.playerCount);
+                }
+                if (Array.isArray(prefs.selectedRoleKeys)) {
+                    SELECTABLE_ROLE_KEYS.forEach(key => {
+                        const cb = document.getElementById('role-' + key);
+                        if (cb) cb.checked = prefs.selectedRoleKeys.includes(key);
+                    });
+                }
+            } catch (e) {}
         }
 
         /* ---------------- 狀態持久化：完整記錄當局人數、勾選特殊角色、任務比分與流局數 ---------------- */
@@ -1974,7 +2396,7 @@
             }
         }
 
-        /* ---------------- [優化 10] 升級為密碼學等級洗牌亂數（crypto.getRandomValues + 消除模數偏差 Rejection Sampling） ---------------- */
+        /* ---------------- 密碼學等級洗牌亂數（crypto.getRandomValues + Rejection Sampling） ---------------- */
         function getCryptoRandomInt(maxExclusive) {
             if (maxExclusive <= 1) return 0;
             if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
@@ -2001,35 +2423,45 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            /* 清除舊版未壓縮的快取鍵值，釋放 sessionStorage 空間 */
+            updateSoundToggleUI();
+
+            /* 清除舊版快取鍵值，釋放儲存空間 */
             try {
                 sessionStorage.removeItem('avalon_card_front_gems_v1');
                 sessionStorage.removeItem('avalon_card_back_gems_v1');
+                sessionStorage.removeItem('avalon_card_front_gems_v2');
+                sessionStorage.removeItem('avalon_card_back_gems_v2');
             } catch (e) {}
 
-            /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'avalon_card_front_gems_v2', (dataUrl) => {
+            /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石（localStorage 持久快取） */
+            recolorCardMiddleGems(CARD_FRONT_RAW_URL, 'avalon_card_front_gems_v3', (dataUrl) => {
                 document.documentElement.style.setProperty('--card-front-bg', `url("${dataUrl}")`);
             });
 
-            /* 2. 轉換牌背的上中、下中、左中、右中 4 顆寶石為紅寶石 */
-            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'avalon_card_back_gems_v2', (dataUrl) => {
+            /* 2. 轉換牌背的上中、下中、左中、右中 4 顆寶石為紅寶石（localStorage 持久快取） */
+            recolorCardMiddleGems(CARD_BACK_RAW_URL, 'avalon_card_back_gems_v3', (dataUrl) => {
                 const backImgEl = document.getElementById('card-back-img');
                 if (backImgEl) backImgEl.src = dataUrl;
             });
 
             const countRadios = document.querySelectorAll('input[name="player-count"]');
             countRadios.forEach(radio => radio.addEventListener('change', (e) => {
+                const selectedCount = parseInt(e.target.value, 10);
+                SoundFX.tap();
                 updateDefaultRoles();
-                handlePlayerCountUI(parseInt(e.target.value, 10));
+                handlePlayerCountUI(selectedCount);
                 updateQuotaStatus();
+                saveUserPrefs();
             }));
 
             const roleCheckboxes = document.querySelectorAll('.role-checkbox');
             roleCheckboxes.forEach(cb => cb.addEventListener('change', () => {
+                SoundFX.tap();
                 updateQuotaStatus();
+                saveUserPrefs();
             }));
 
+            restoreUserPrefs();
             updateQuotaStatus();
             setupCardInteractions();
             setupHoldButton();
@@ -2050,7 +2482,7 @@
             return { goodRoles, evilRoles };
         }
 
-        /* 即時檢查選角是否超過人數上限並更新防呆提示 */
+        /* [優化 4 & 5] 即時更新自動補齊忠臣/爪牙預覽、超選停用開始鈕與角色搭配防呆提醒 */
         function updateQuotaStatus() {
             const checkedRadio = document.querySelector('input[name="player-count"]:checked');
             if (!checkedRadio) return;
@@ -2061,51 +2493,89 @@
             const goodCount = goodRoles.length;
             const evilCount = evilRoles.length;
 
+            const previewEl = document.getElementById('setup-quota-preview');
             const errorEl = document.getElementById('setup-error');
+            const startBtn = document.getElementById('start-game-btn');
             forceStartWithoutGood = false;
 
             const goodDiff = ratio.good - goodCount;
             const evilDiff = ratio.evil - evilCount;
+            const isOverLimit = goodDiff < 0 || evilDiff < 0;
 
-            if (goodDiff < 0 || evilDiff < 0) {
-                errorEl.innerText = `⚠️ 特殊角色超過 ${playerCount} 人局上限（${ratio.good}好 ${ratio.evil}壞），請取消多餘角色！`;
+            if (isOverLimit) {
+                const overParts = [];
+                if (goodDiff < 0) overParts.push(`正義方多選 ${Math.abs(goodDiff)} 位`);
+                if (evilDiff < 0) overParts.push(`邪惡方多選 ${Math.abs(evilDiff)} 位`);
+
+                if (previewEl) {
+                    previewEl.classList.add('over-limit');
+                    previewEl.innerHTML = `配置超額：<span class="good">${goodCount}/${ratio.good} 好人</span> ｜ <span class="evil">${evilCount}/${ratio.evil} 壞人</span>`;
+                }
+                errorEl.className = 'is-error';
+                errorEl.innerText = `⚠️ 超過 ${playerCount} 人局上限（${overParts.join('、')}），請取消多餘角色！`;
+                if (startBtn) startBtn.disabled = true;
+                return;
+            }
+
+            if (startBtn) startBtn.disabled = false;
+            if (previewEl) {
+                previewEl.classList.remove('over-limit');
+                previewEl.innerHTML = `本局配置：<span class="good">${goodCount} 特殊好人 + ${goodDiff} 忠臣</span> ｜ <span class="evil">${evilCount} 特殊壞人 + ${evilDiff} 爪牙</span>`;
+            }
+
+            /* [優化 5] 角色搭配溫和防呆提醒（不阻擋開局） */
+            const selectedSet = new Set([...goodRoles, ...evilRoles]);
+            const hints = [];
+            if (selectedSet.has('percival') && !selectedSet.has('merlin')) {
+                hints.push('已選派西維爾但未選梅林，派西維爾將看不到真梅林');
+            }
+            if (selectedSet.has('lizakang') && !selectedSet.has('merlin') && !selectedSet.has('mordred')) {
+                hints.push('已選李砸康但未選梅林與莫德雷德，其開局視野將為空');
+            }
+            if (selectedSet.has('morgana') && !selectedSet.has('percival')) {
+                hints.push('已選莫甘娜但未選派西維爾，假梅林混淆能力將無效');
+            }
+            if (selectedSet.has('merlin') && !selectedSet.has('assassin')) {
+                hints.push('已選梅林但未選刺客，請確認本局是否採用刺殺規則');
+            }
+
+            if (hints.length > 0) {
+                errorEl.className = 'is-hint';
+                errorEl.innerHTML = hints.map(h => `💡 ${h}`).join('<br>');
             } else {
+                errorEl.className = '';
                 errorEl.innerText = '';
             }
         }
 
+        /* [優化 1] 僅切換展開/收合「其他人數」抽屜，絕不自動改動目前人數 */
         function toggleOtherCounts() {
             const container = document.getElementById('other-counts-container');
             const otherBtn = document.getElementById('pc-other-btn');
             const isShowing = container.classList.toggle('show');
-            const currentCount = parseInt(document.querySelector('input[name="player-count"]:checked').value, 10);
-            
-            if (isShowing) {
-                otherBtn.classList.add('active-other');
-                if (currentCount === 8 || currentCount === 10) {
-                    const pc9 = document.getElementById('pc-9');
-                    pc9.checked = true;
-                    updateDefaultRoles();
-                    updateQuotaStatus();
-                }
-            } else {
-                if ([5, 6, 7, 9].includes(currentCount)) {
-                    otherBtn.classList.add('active-other');
-                } else {
-                    otherBtn.classList.remove('active-other');
-                }
-            }
+            otherBtn.classList.toggle('expanded-other', isShowing);
+            SoundFX.tap();
         }
 
+        /* [優化 1] 同步更新「其他人數」按鈕的文字、陣營比與收合狀態 */
         function handlePlayerCountUI(count) {
             const container = document.getElementById('other-counts-container');
             const otherBtn = document.getElementById('pc-other-btn');
+            const otherTitle = document.getElementById('other-btn-title');
+            const otherDesc = document.getElementById('other-desc');
+            const ratio = rules[count];
             
+            container.classList.remove('show');
+            otherBtn.classList.remove('expanded-other');
+
             if (count === 8 || count === 10) {
-                container.classList.remove('show');
                 otherBtn.classList.remove('active-other');
-            } else {
+                if (otherTitle) otherTitle.innerText = '其他';
+                if (otherDesc) otherDesc.innerText = '5 / 6 / 7 / 9人';
+            } else if (ratio) {
                 otherBtn.classList.add('active-other');
+                if (otherTitle) otherTitle.innerText = `${count} 人 ▾`;
+                if (otherDesc) otherDesc.innerHTML = `<span class="good">${ratio.good}好</span> <span class="evil">${ratio.evil}壞</span>`;
             }
         }
 
@@ -2123,31 +2593,34 @@
 
         function startGame() {
             const errorEl = document.getElementById('setup-error');
-            errorEl.innerText = "";
-            currentPlayerIndex = 0; 
-            players = [];
-            isRevealed = false;
-            questStates = [0, 0, 0, 0, 0];
-            voteRejectCount = 0;
-
             const playerCount = parseInt(document.querySelector('input[name="player-count"]:checked').value, 10);
             const ratio = rules[playerCount];
-
             const { goodRoles, evilRoles } = getSelectedSpecialRoles();
 
             if (goodRoles.length > ratio.good || evilRoles.length > ratio.evil) {
-                errorEl.innerText = `⚠️ ${ratio.good}名好人與${ratio.evil}名壞人。請調整角色！`;
-                forceStartWithoutGood = false; 
+                SoundFX.warn();
+                updateQuotaStatus();
                 return;
             }
 
             if (goodRoles.length === 0 && ratio.good > 0) {
                 if (!forceStartWithoutGood) {
-                    errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊以確認。</strong>";
+                    SoundFX.warn();
+                    errorEl.className = 'is-error';
+                    errorEl.innerHTML = "⚠️ 警告：目前正義方沒有任何特殊角色。<br><strong>請再次點擊「開始分配角色」以確認。</strong>";
                     forceStartWithoutGood = true;
                     return;
                 }
             }
+
+            SoundFX.tap();
+            saveUserPrefs();
+
+            currentPlayerIndex = 0; 
+            players = [];
+            isRevealed = false;
+            questStates = [0, 0, 0, 0, 0];
+            voteRejectCount = 0;
 
             while (goodRoles.length < ratio.good) goodRoles.push('servant');
             while (evilRoles.length < ratio.evil) evilRoles.push('minion');
@@ -2178,33 +2651,39 @@
             saveGameState();
         }
 
-        /* ---------------- [優化 3] 發牌中途安全重設退出邏輯（二次點擊防誤觸，不使用 confirm 彈窗） ---------------- */
+        /* ---------------- [優化 10] 發牌中途與遊戲進行中安全重設退出邏輯（二次點擊防誤觸） ---------------- */
         function resetAbortBtnState() {
-            abortConfirming = false;
+            activeAbortBtnId = null;
             if (abortResetTimer) {
                 clearTimeout(abortResetTimer);
                 abortResetTimer = null;
             }
-            const btn = document.getElementById('abort-setup-btn');
-            if (btn) {
-                btn.classList.remove('confirming');
-                btn.innerText = '⚙️ 中途重設 / 返回設定';
-            }
+            Object.keys(abortBtnDefaultText).forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.classList.remove('confirming');
+                    btn.innerText = abortBtnDefaultText[btnId];
+                }
+            });
         }
 
-        function handleAbortClick() {
-            const btn = document.getElementById('abort-setup-btn');
-            if (!abortConfirming) {
-                abortConfirming = true;
+        function handleAbortClick(btnId) {
+            const targetId = btnId || 'abort-setup-btn';
+            const btn = document.getElementById(targetId);
+
+            if (activeAbortBtnId !== targetId) {
+                resetAbortBtnState();
+                activeAbortBtnId = targetId;
                 triggerVibration(25);
+                SoundFX.warn();
                 if (btn) {
                     btn.classList.add('confirming');
                     btn.innerText = '⚠️ 確定放棄本局？（再次點擊確認）';
                 }
-                if (abortResetTimer) clearTimeout(abortResetTimer);
-                abortResetTimer = setTimeout(resetAbortBtnState, 2000);
+                abortResetTimer = setTimeout(resetAbortBtnState, 2400);
             } else {
                 triggerVibration([30, 40, 30]);
+                SoundFX.seal();
                 resetAbortBtnState();
                 resetGame();
             }
@@ -2219,43 +2698,43 @@
 
         function confirmBuffer() {
             resetAbortBtnState();
+            SoundFX.tap();
             switchScreen('buffer-screen', 'pass-screen', showPlayerPassScreen);
         }
 
-        /* 統一按座位號碼升冪排列，完全不洩漏角色順序且維持視覺一致 */
+        /* 統一按座位號碼升冪排列；[優化 7] 當感應對象達 3 人以上時自動啟用 compact 防重疊樣式 */
         function generateInfo() {
             const teamEvil = players.filter(p => p.role.isEvil && p.roleKey !== 'oberon').map(p => p.id + "號");
             const seenByMerlin = players.filter(p => p.role.isEvil && p.roleKey !== 'mordred').map(p => p.id + "號");
             const seenByPercival = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'morgana').map(p => p.id + "號");
             const seenByLiZakang = players.filter(p => p.roleKey === 'merlin' || p.roleKey === 'mordred').map(p => p.id + "號");
 
-            function createTags(arr, colorClass) {
-                if (arr.length === 0) return `<span class="info-tag neutral">無</span>`;
-                return arr.map(id => `<span class="info-tag ${colorClass}">${id}</span>`).join('');
+            function buildInfoBox(label, arr, colorClass, emptyText = '無') {
+                const isCompact = arr.length >= 3;
+                const tagsHtml = arr.length === 0
+                    ? `<span class="info-tag neutral">${emptyText}</span>`
+                    : arr.map(id => `<span class="info-tag ${colorClass}">${id}</span>`).join('');
+                return `<div class="info-box${isCompact ? ' compact' : ''}"><div class="info-label">${label}</div><div class="info-tags">${tagsHtml}</div></div>`;
             }
 
             players.forEach(p => {
                 if (p.roleKey === 'merlin') {
-                    p.info = `<div class="info-box"><div class="info-label">你感應到的邪惡勢力</div><div class="info-tags">${createTags(seenByMerlin, 'evil')}</div></div>`;
+                    p.info = buildInfoBox('你感應到的邪惡勢力', seenByMerlin, 'evil');
                 } else if (p.roleKey === 'percival') {
-                    p.info = `<div class="info-box"><div class="info-label">梅林或莫甘娜</div><div class="info-tags">${createTags(seenByPercival, 'purple')}</div></div>`;
+                    p.info = buildInfoBox('梅林或莫甘娜', seenByPercival, 'purple');
                 } else if (p.roleKey === 'lizakang') {
                     if (seenByLiZakang.length > 0) {
-                        p.info = `<div class="info-box"><div class="info-label">梅林或莫德雷德</div><div class="info-tags">${createTags(seenByLiZakang, 'purple')}</div></div>`;
+                        p.info = buildInfoBox('梅林或莫德雷德', seenByLiZakang, 'purple');
                     } else {
-                        p.info = `<div class="info-box"><div class="info-label">感應結果</div><div class="info-tags"><span class="info-tag neutral">無盡的虛空</span></div></div>`;
+                        p.info = buildInfoBox('感應結果', [], 'neutral', '無盡的虛空');
                     }
                 } else if (p.role.isEvil && p.roleKey !== 'oberon') {
                     const otherEvils = teamEvil.filter(id => id !== p.id + "號");
-                    if (otherEvils.length > 0) {
-                        p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags">${createTags(otherEvils, 'evil')}</div></div>`;
-                    } else {
-                        p.info = `<div class="info-box"><div class="info-label">邪惡陣營同伴</div><div class="info-tags"><span class="info-tag neutral">僅有你一人</span></div></div>`;
-                    }
+                    p.info = buildInfoBox('邪惡陣營同伴', otherEvils, 'evil', '僅有你一人');
                 } else if (p.roleKey === 'oberon') {
-                    p.info = `<div class="info-box"><div class="info-label">特殊狀態</div><div class="info-tags"><span class="info-tag neutral">無法得知其他同伴</span></div></div>`;
+                    p.info = buildInfoBox('特殊狀態', [], 'neutral', '無法得知其他同伴');
                 } else {
-                    p.info = `<div class="info-box"><div class="info-label">陣營提示</div><div class="info-tags"><span class="info-tag neutral">無特殊資訊</span></div></div>`;
+                    p.info = buildInfoBox('陣營提示', [], 'neutral', '無特殊資訊');
                 }
             });
         }
@@ -2331,6 +2810,7 @@
             cardInner.classList.add('flipped');
             revealCardWrapper.classList.remove('floating');
             triggerVibration([40, 50, 30]);
+            SoundFX.flip();
 
             const player = players[currentPlayerIndex];
             document.getElementById('current-player-title').innerHTML = `<span class="player-number-text">${player.id}號</span> <span class="action-white-text">你的真實身分是</span>`;
@@ -2380,6 +2860,7 @@
         function nextPlayer() {
             if (isTransitioning) return; 
             isTransitioning = true; 
+            SoundFX.seal();
             if (nextBtnUnlockTimer) {
                 clearTimeout(nextBtnUnlockTimer);
                 nextBtnUnlockTimer = null;
@@ -2399,11 +2880,26 @@
             }, 650);
         }
 
-        /* ---------------- [優化 9] 將「任務計分區」與「靜態陣營頭像區」拆開渲染，消除圖片重繪與閃爍 ---------------- */
+        /* ---------------- 將「任務計分區」與「靜態陣營頭像區」拆開渲染 + [優化 9] 勝負階段提示 ---------------- */
         function toggleQuestNode(idx) {
             if (idx < 0 || idx >= 5) return;
+            const prevGoodWins = questStates.filter(s => s === 1).length;
+            const prevEvilWins = questStates.filter(s => s === 2).length;
+
             questStates[idx] = (questStates[idx] + 1) % 3;
+
+            const newGoodWins = questStates.filter(s => s === 1).length;
+            const newEvilWins = questStates.filter(s => s === 2).length;
+
             triggerVibration(15);
+            if (newGoodWins === 3 && prevGoodWins < 3) {
+                SoundFX.milestoneGood();
+            } else if (newEvilWins === 3 && prevEvilWins < 3) {
+                SoundFX.milestoneEvil();
+            } else {
+                SoundFX.tap();
+            }
+
             updateQuestTrackUI();
             saveGameState();
         }
@@ -2415,11 +2911,13 @@
                 voteRejectCount = Math.max(0, Math.min(5, val));
             }
             triggerVibration(voteRejectCount === 5 ? [40, 40, 60] : 15);
+            if (voteRejectCount === 5) SoundFX.milestoneEvil();
+            else SoundFX.tap();
             updateQuestTrackUI();
             saveGameState();
         }
 
-        /* 僅局部更新五輪任務方塊與投票流局計數器，不觸碰下方的靜態陣營頭像 DOM */
+        /* 僅局部更新五輪任務方塊、勝負階段提示與投票流局計數器，不觸碰下方的靜態陣營頭像 DOM */
         function updateQuestTrackUI() {
             const questTrackContainer = document.getElementById('quest-track-container');
             if (!questTrackContainer || players.length === 0) return;
@@ -2428,6 +2926,7 @@
             const ratio = rules[totalCount];
             const goodWins = questStates.filter(s => s === 1).length;
             const evilWins = questStates.filter(s => s === 2).length;
+            const hasMerlin = players.some(p => p.roleKey === 'merlin');
 
             const questNodesHtml = ratio.quests.map((qCount, idx) => {
                 const state = questStates[idx] || 0;
@@ -2454,6 +2953,16 @@
                 `;
             }).join('');
 
+            /* [優化 9] 達成 3 勝 / 3 敗 / 5 次流局時顯示對應勝負階段橫幅 */
+            let stageBannerHtml = '';
+            if (evilWins >= 3 || voteRejectCount >= 5) {
+                stageBannerHtml = `<div class="quest-stage-banner evil-stage">⚔️ 邪惡方達成獲勝條件！可長按下方揭曉真相</div>`;
+            } else if (goodWins >= 3) {
+                stageBannerHtml = hasMerlin
+                    ? `<div class="quest-stage-banner good-stage">🛡️ 正義方已達 3 勝！請進入「刺客刺殺梅林」階段</div>`
+                    : `<div class="quest-stage-banner good-stage">🛡️ 正義方已達 3 勝獲勝！可長按下方揭曉真相</div>`;
+            }
+
             const votePipsHtml = [1, 2, 3, 4, 5].map(num => {
                 const activeClass = voteRejectCount >= num ? 'active' : '';
                 const fifthClass = num === 5 ? 'pip-5' : '';
@@ -2472,6 +2981,7 @@
                 <div class="quest-nodes-row">
                     ${questNodesHtml}
                 </div>
+                ${stageBannerHtml}
                 <div class="vote-track-bar">
                     ${voteStatusLabel}
                     <div class="vote-pips-group">
@@ -2546,17 +3056,20 @@
         }
 
         function showGameScreen() {
+            resetAbortBtnState();
             renderGameConfigBoard();
             const gameScreen = document.getElementById('game-screen');
             gameScreen.classList.remove('revealed-mode');
             gameScreen.classList.add('active');
         }
 
-        /* ---------------- [優化 6] 長按解鎖邏輯（使用 setPointerCapture 鎖定觸控指標並移除 pointerleave 誤觸中斷） ---------------- */
+        /* ---------------- [優化 2 & 11] 長按解鎖邏輯（支援滑開取消手勢、動態文案高對比與蓄力升頻音效） ---------------- */
         function setupHoldButton() {
             const holdBtn = document.getElementById('reveal-hold-btn');
             const progressBg = document.querySelector('.progress-bg');
-            const HOLD_DURATION = 1400; // 固定長按 1.4 秒，不受 60Hz / 120Hz 螢幕刷新率影響
+            const holdBtnText = document.getElementById('hold-btn-text');
+            const HOLD_DURATION = 1400; // 固定長按 1.4 秒，不受螢幕刷新率影響
+            const CANCEL_MARGIN_PX = 30;
             let holdTimer = null;
             let holdStartTime = 0;
             let isHolding = false;
@@ -2572,8 +3085,25 @@
                 } catch (err) {}
                 holdStartTime = performance.now();
                 holdBtn.classList.add('holding');
+                if (holdBtnText) holdBtnText.innerText = '繼續按住...（滑開可取消）';
                 triggerVibration([20]);
+                SoundFX.startHold();
                 holdTimer = requestAnimationFrame(updateProgress);
+            }
+
+            /* [優化 2] 手指移出按鈕邊界超過 30px 即安全中止蓄力，防止反悔誤揭曉 */
+            function moveHold(e) {
+                if (!isHolding || e.pointerId !== activeHoldPointerId) return;
+                const rect = holdBtn.getBoundingClientRect();
+                const isOutside = (
+                    e.clientX < rect.left - CANCEL_MARGIN_PX ||
+                    e.clientX > rect.right + CANCEL_MARGIN_PX ||
+                    e.clientY < rect.top - CANCEL_MARGIN_PX ||
+                    e.clientY > rect.bottom + CANCEL_MARGIN_PX
+                );
+                if (isOutside) {
+                    endHold();
+                }
             }
 
             function endHold(e) {
@@ -2593,6 +3123,8 @@
                 holdBtn.classList.remove('holding');
                 holdBtn.style.boxShadow = '';
                 progressBg.style.width = '0%';
+                if (holdBtnText) holdBtnText.innerText = '長按以揭曉真實身分';
+                SoundFX.stopHold();
                 if (holdTimer) {
                     cancelAnimationFrame(holdTimer);
                     holdTimer = null;
@@ -2605,6 +3137,13 @@
                 const elapsed = now - holdStartTime;
                 const progress = Math.min((elapsed / HOLD_DURATION) * 100, 100);
                 progressBg.style.width = progress + '%';
+                SoundFX.updateHold(progress);
+
+                if (holdBtnText) {
+                    holdBtnText.innerText = progress >= 65
+                        ? '即將揭曉真實身分！'
+                        : '繼續按住...（滑開可取消）';
+                }
 
                 const glowSpread = Math.round(10 + (progress / 100) * 28);
                 const glowAlpha = (0.35 + (progress / 100) * 0.55).toFixed(2);
@@ -2619,6 +3158,7 @@
             }
             
             holdBtn.addEventListener('pointerdown', startHold);
+            holdBtn.addEventListener('pointermove', moveHold);
             holdBtn.addEventListener('pointerup', endHold);
             holdBtn.addEventListener('pointercancel', endHold);
             window.addEventListener('pointerup', endHold);
@@ -2627,7 +3167,10 @@
         }
 
         function revealAll(vibrate = true) {
-            if (vibrate) triggerVibration([100, 50, 100]); 
+            if (vibrate) {
+                triggerVibration([100, 50, 100]);
+                SoundFX.reveal();
+            }
             isRevealed = true;
             saveGameState();
             releaseWakeLock();
@@ -2666,6 +3209,7 @@
             voteRejectCount = 0;
             resetAbortBtnState();
             releaseWakeLock();
+            SoundFX.stopHold();
 
             const revealArea = document.getElementById('final-reveal-area');
             const listEl = document.getElementById('final-reveal-list');
