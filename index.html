@@ -575,14 +575,6 @@
             box-shadow: 0 0 12px rgba(179, 57, 57, 0.4);
         }
 
-        /* [優化 10] 遊戲進行中不揭曉重設按鈕精簡尺寸 */
-        .btn-abort-game {
-            font-size: 12px;
-            padding: 6px 14px;
-            margin: 0 auto;
-            flex-shrink: 0;
-        }
-
         /* 針對查驗身分畫面填滿手機高度，讓卡牌置中且最大化 */
         #pass-screen.active {
             padding: 18px 12px;
@@ -1719,9 +1711,6 @@
 
     <div id="game-screen" class="screen">
         <div id="game-end-controls">
-            <!-- [優化 10] 遊戲進行中不揭曉直接重設的安全出口（雙擊防誤觸） -->
-            <button type="button" id="abort-game-btn" class="btn-abort-setup btn-abort-game" onclick="handleAbortClick('abort-game-btn')">⚙️ 不揭曉直接重設</button>
-
             <!-- 本局陣營配置與互動式任務計分看板 -->
             <div id="game-config-board" class="config-board"></div>
 
@@ -2225,9 +2214,9 @@
         let nextBtnUnlockTimer = null;
 
         /* [優化 10] 統一管理發牌中途與遊戲中重設按鈕的二次確認狀態 */
+        /* 發牌中途重設按鈕的二次確認狀態 */
         const abortBtnDefaultText = {
-            'abort-setup-btn': '⚙️ 中途重設 / 返回設定',
-            'abort-game-btn': '⚙️ 不揭曉直接重設'
+            'abort-setup-btn': '⚙️ 中途重設 / 返回設定'
         };
         let activeAbortBtnId = null;
         let abortResetTimer = null;
@@ -2521,7 +2510,7 @@
             if (startBtn) startBtn.disabled = false;
             if (previewEl) {
                 previewEl.classList.remove('over-limit');
-                previewEl.innerHTML = `本局配置：<span class="good">${goodCount} 特殊好人 + ${goodDiff} 忠臣</span> ｜ <span class="evil">${evilCount} 特殊壞人 + ${evilDiff} 爪牙</span>`;
+                previewEl.innerHTML = `<span class="good">${goodCount} 特殊好人 + ${goodDiff} 忠臣</span> ｜ <span class="evil">${evilCount} 特殊壞人 + ${evilDiff} 爪牙</span>`;
             }
 
             /* [優化 5] 角色搭配溫和防呆提醒（不阻擋開局） */
