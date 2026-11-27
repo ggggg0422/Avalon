@@ -1533,13 +1533,6 @@
             border-left: 3px solid var(--evil-color);
         }
 
-        .guide-group-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-
         .guide-item {
             margin-bottom: 6px;
         }
@@ -1551,6 +1544,16 @@
         .guide-role-tag {
             font-weight: 900;
             color: var(--gold-light);
+        }
+
+        .guide-role-tag.good-role {
+            color: #7eb2e6;
+            text-shadow: 0 0 8px rgba(92, 136, 181, 0.55);
+        }
+
+        .guide-role-tag.evil-role {
+            color: #e86f6f;
+            text-shadow: 0 0 8px rgba(179, 57, 57, 0.55);
         }
 
         .modal-footer-btn {
@@ -1747,19 +1750,17 @@
             </div>
             <div class="modal-body">
                 <div class="guide-group good-guide">
-                    <div class="guide-group-title good">🛡️ 正義方陣營（好人）</div>
-                    <div class="guide-item"><span class="guide-role-tag">梅林：</span>能看見所有邪惡方角色，但<strong>看不見莫德雷德</strong>。必須隱藏身分避免最後被刺客刺殺。</div>
-                    <div class="guide-item"><span class="guide-role-tag">派西維爾：</span>開局能看見<strong>梅林與莫甘娜</strong>兩人的號碼，但不知道誰才是真梅林。</div>
-                    <div class="guide-item"><span class="guide-role-tag">李砸康：</span>特殊感知者，開局能看見<strong>梅林與莫德雷德</strong>兩人的號碼，但不知道誰好誰壞。</div>
-                    <div class="guide-item"><span class="guide-role-tag">亞瑟的忠臣：</span>無特殊視野，需透過發言與投票推理出好人隊伍。</div>
+                    <div class="guide-item"><span class="guide-role-tag good-role">梅林：</span>能看見所有邪惡方角色，但<strong>看不見莫德雷德</strong>。必須隱藏身分避免最後被刺客刺殺。</div>
+                    <div class="guide-item"><span class="guide-role-tag good-role">派西維爾：</span>開局能看見<strong>梅林與莫甘娜</strong>兩人的號碼，但不知道誰才是真梅林。</div>
+                    <div class="guide-item"><span class="guide-role-tag good-role">李砸康：</span>特殊感知者，開局能看見<strong>梅林與莫德雷德</strong>兩人的號碼，但不知道誰好誰壞。</div>
+                    <div class="guide-item"><span class="guide-role-tag good-role">亞瑟的忠臣：</span>無特殊視野，需透過發言與投票推理出好人隊伍。</div>
                 </div>
                 <div class="guide-group evil-guide">
-                    <div class="guide-group-title evil">⚔️ 邪惡方陣營（壞人）</div>
-                    <div class="guide-item"><span class="guide-role-tag">莫德雷德：</span>隱藏於黑暗的首領，<strong>梅林看不見他</strong>（但李砸康看得到他）；知道其他壞人同伴（不含奧伯倫）。</div>
-                    <div class="guide-item"><span class="guide-role-tag">莫甘娜：</span>假扮成梅林的魔女，會出現在<strong>派西維爾</strong>的視野中混淆視聽；知道其他壞人同伴。</div>
-                    <div class="guide-item"><span class="guide-role-tag">刺客：</span>若好人達成 3 次任務成功，刺客可獨自指認 1 人，<strong>刺中梅林則邪惡方逆轉獲勝</strong>。</div>
-                    <div class="guide-item"><span class="guide-role-tag">奧伯倫：</span>盲目的孤狼，<strong>不知道其他壞人是誰</strong>，其他壞人也看不見他（但梅林看得見他）。</div>
-                    <div class="guide-item"><span class="guide-role-tag">莫德雷德的爪牙：</span>知道除奧伯倫以外的所有壞人同伴。</div>
+                    <div class="guide-item"><span class="guide-role-tag evil-role">莫德雷德：</span>隱藏於黑暗的首領，<strong>梅林看不見他</strong>（但李砸康看得到他）；知道其他壞人同伴（不含奧伯倫）。</div>
+                    <div class="guide-item"><span class="guide-role-tag evil-role">莫甘娜：</span>假扮成梅林的魔女，會出現在<strong>派西維爾</strong>的視野中混淆視聽；知道其他壞人同伴。</div>
+                    <div class="guide-item"><span class="guide-role-tag evil-role">刺客：</span>若好人達成 3 次任務成功，刺客可獨自指認 1 人，<strong>刺中梅林則邪惡方逆轉獲勝</strong>。</div>
+                    <div class="guide-item"><span class="guide-role-tag evil-role">奧伯倫：</span>盲目的孤狼，<strong>不知道其他壞人是誰</strong>，其他壞人也看不見他（但梅林看得見他）。</div>
+                    <div class="guide-item"><span class="guide-role-tag evil-role">莫德雷德的爪牙：</span>知道除奧伯倫以外的所有壞人同伴。</div>
                 </div>
             </div>
             <button type="button" class="btn-gold modal-footer-btn" onclick="closeVisionModal()">我知道了</button>
