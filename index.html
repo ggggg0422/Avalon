@@ -1760,7 +1760,6 @@
         const CARD_FRONT_RAW_URL = "https://i.postimg.cc/Kz4pwxC0/66666.jpg";
         const CARD_BACK_RAW_URL = "https://i.postimg.cc/QdHBXdPk/card0back.png";
         const SESSION_STATE_KEY = "avalon_helper_game_state_v3";
-        const USER_PREFS_KEY = "avalon_helper_user_prefs_v1";
         const SOUND_MUTE_KEY = "avalon_helper_sound_muted_v1";
 
         /* ---------------- [優化 11] 純原生 Web Audio API 輕量合成音效引擎（彌補 iOS Safari 不支援震動） ---------------- */
@@ -2278,40 +2277,14 @@
             }
         });
 
-        /* ---------------- [優化 12] 慣用人數與選角偏好持久化（localStorage） ---------------- */
-        function saveUserPrefs() {
-            try {
-                const checkedRadio = document.querySelector('input[name="player-count"]:checked');
-                if (!checkedRadio) return;
-                const playerCount = parseInt(checkedRadio.value, 10);
-                const { goodRoles, evilRoles } = getSelectedSpecialRoles();
-                const prefs = {
-                    playerCount,
-                    selectedRoleKeys: [...goodRoles, ...evilRoles]
-                };
-                localStorage.setItem(USER_PREFS_KEY, JSON.stringify(prefs));
-            } catch (e) {}
-        }
-
-        function restoreUserPrefs() {
-            try {
-                const raw = localStorage.getItem(USER_PREFS_KEY);
-                if (!raw) return;
-                const prefs = JSON.parse(raw);
-                if (!prefs || !rules[prefs.playerCount]) return;
-
-                const targetRadio = document.getElementById('pc-' + prefs.playerCount);
-                if (targetRadio) {
-                    targetRadio.checked = true;
-                    handlePlayerCountUI(prefs.playerCount);
-                }
-                if (Array.isArray(prefs.selectedRoleKeys)) {
-                    SELECTABLE_ROLE_KEYS.forEach(key => {
-                        const cb = document.getElementById('role-' + key);
-                        if (cb) cb.checked = prefs.selectedRoleKeys.includes(key);
-                    });
-                }
-            } catch (e) {}
+        /* ---------------- 每次重新執行時還原至預設 10 人局設定（避免瀏覽器保留上次勾選狀態） ---------------- */
+        function resetToDefaultSetup() {
+            const defaultRadio = document.getElementById('pc-10');
+            if (defaultRadio) {
+                defaultRadio.checked = true;
+            }
+            handlePlayerCountUI(10);
+            updateDefaultRoles();
         }
 
         /* ---------------- 狀態持久化：完整記錄當局人數、勾選特殊角色、任務比分與流局數 ---------------- */
@@ -2415,12 +2388,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateSoundToggleUI();
 
-            /* 清除舊版快取鍵值，釋放儲存空間 */
+            /* 清除舊版快取鍵值與先前殘留的選角偏好，釋放儲存空間 */
             try {
                 sessionStorage.removeItem('avalon_card_front_gems_v1');
                 sessionStorage.removeItem('avalon_card_back_gems_v1');
                 sessionStorage.removeItem('avalon_card_front_gems_v2');
                 sessionStorage.removeItem('avalon_card_back_gems_v2');
+                localStorage.removeItem('avalon_helper_user_prefs_v1');
             } catch (e) {}
 
             /* 1. 轉換角色牌正面的上中、下中、左中、右中 4 顆寶石為紅寶石（localStorage 持久快取） */
@@ -2441,17 +2415,15 @@
                 updateDefaultRoles();
                 handlePlayerCountUI(selectedCount);
                 updateQuotaStatus();
-                saveUserPrefs();
             }));
 
             const roleCheckboxes = document.querySelectorAll('.role-checkbox');
             roleCheckboxes.forEach(cb => cb.addEventListener('change', () => {
                 SoundFX.tap();
                 updateQuotaStatus();
-                saveUserPrefs();
             }));
 
-            restoreUserPrefs();
+            resetToDefaultSetup();
             updateQuotaStatus();
             setupCardInteractions();
             setupHoldButton();
@@ -2604,7 +2576,6 @@
             }
 
             SoundFX.tap();
-            saveUserPrefs();
 
             currentPlayerIndex = 0; 
             players = [];
